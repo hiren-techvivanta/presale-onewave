@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import mainbg from "../../assets/images/login-slider.png";
 import logo from "../../assets/images/logo.png";
+import axios from "axios";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ const Login = () => {
     if (!password.trim()) {
       setPasswordErrMessage("Password is required");
       isValid = false;
-    } else if (password.length <= 8) {
+    } else if (password.length < 8) {
       setPasswordErrMessage("Password must be 8 digits long");
       isValid = false;
     }
@@ -41,12 +42,29 @@ const Login = () => {
     return isValid;
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
-    toast.success("Login successful");
+    // toast.success("Login successful");
     console.log("Logging in with:", { email, password });
+
+    const formData = {
+      email,password
+    }
+
+    const {data} = await axios.post(`https://presale.onewave.app/api/login`,formData)
+
+    if (data.message === "Login successful") {
+      toast.success(data.message)
+      localStorage.setItem("user",data.data.firstName)
+      navigate("/presale");
+    }
+
+    if (data.status === false) {
+      toast.error(data.message)
+    }
+
     // navigate("/dashboard");
   };
 

@@ -1,9 +1,18 @@
 import React from "react";
 import logo from "../assets/images/logo-white.png";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
-const Topnav = ({ setshowSideNav, showSideNav }) => {
-  const navigate = useNavigate();
+const Topnav = ({ showLogin ,user}) => {
+  const navigate = useNavigate()
+
+  
+    const handleLogout = () => { 
+      localStorage.removeItem("user")
+      toast.success("Logout Successfull")
+      navigate("/")
+     }
+    
   return (
     <>
       <nav class="navbar navbar-expand-lg blur-bg-2">
@@ -115,9 +124,11 @@ const Topnav = ({ setshowSideNav, showSideNav }) => {
           <a class="nav-link nav-text" href="#">Contact</a>
         </li>
             </ul> */}
-            <div className="ms-auto">
-            <button class="rounded-2 custom-login px-4 py-2" type="submit" onClick={() => navigate("/signin")}>
-                Login
+            <div className="ms-auto d-flex">
+            <p className="fw-bold text-white my-2 me-3">{user && `Welcome, ${user}`}</p>
+
+            <button class="rounded-2 custom-login px-4 py-2" type="submit" onClick={() => showLogin === true ? navigate("/signin"): handleLogout()}>
+               {showLogin === true ? "Login" : "Logout"}
               </button>
             </div>
              

@@ -16,20 +16,28 @@ import i12 from "../../assets/images/bluejems.png";
 import i13 from "../../assets/images/bluestone.png";
 
 import { useAppKit } from '@reown/appkit/react';
+import { toast } from "react-toastify";
 
 const Presele = () => {
   const [showWallet, setShowWallet] = useState(false);
+  const [showLogin, setshowLogin] = useState(true)
+  const [user, setuser] = useState()
 
   const { open, close } = useAppKit();
 
   useEffect(() => {
-    // openWalletModal
+   const user = localStorage.getItem("user")
+   console.log(user);
+   if (user) {
+    setshowLogin(false)
+    setuser(user)
+   }
   }, [])
-  
+
   return (
     <>
       <div className="main-liner main-bg-img vh-100">
-        <Topnav />
+        <Topnav showSideNav={showLogin} user={user} />
 
         {/* images */}
         <img src={i1} className="floating-asset asset1" alt="i1" />
