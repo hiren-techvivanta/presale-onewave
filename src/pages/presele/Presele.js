@@ -17,51 +17,116 @@ import i13 from "../../assets/images/bluestone.png";
 
 import { useAppKit } from "@reown/appkit/react";
 import { Modal } from "react-bootstrap";
+import contractAbi from "../../assets/json/abi.json";
+import { useWriteContract } from "wagmi";
+import { parseUnits } from "viem";
 
 const Presele = () => {
   const [showWallet, setShowWallet] = useState(false);
   const [modalShow, setModalShow] = useState(false);
+  const [amount, setAmount] = useState("10000000");
+  const [wco, setwco] = useState(false); // Default to false initially
 
   const { open, close, isConnected, address, chain, disconnect } = useAppKit();
+  const { writeContractAsync, isPending } = useWriteContract();
 
   useEffect(() => {
+    console.log("isConnected:", isConnected); // Add logging to verify connection status
     if (isConnected) {
-      console.log("Connected Address:", address);
+        console.log("Connected Address:", address);
+        setwco(true);
+    } else {
+        setwco(false);
     }
-  }, [isConnected]);
+}, [isConnected, address]);
 
-  // befour modal
+  // Modal for purchase
   function MyVerticallyCenteredModal(props) {
+    const [showInput, setshowInput] = useState(false);
+
+    const checkStatus = () => {
+      console.log(wco); // Check the wallet connection state
+
+      if (!wco) {
+        open(); // Open wallet connection modal
+        setModalShow(false); // Close the current modal
+      } else {
+        setshowInput(true); // Proceed to input form if wallet is connected
+      }
+    };
+
     return (
-      <Modal
-        {...props}
-        size="md"
-        aria-labelledby="contained-modal-title-vcenter"
-        centered
-      >
+      <Modal {...props} size="md" aria-labelledby="contained-modal-title-vcenter" centered>
         <Modal.Body className="py-4">
-        <p className="text-center fw-semibold text-secondary">Choose option to continue purchase</p>
-          <div className="d-flex justify-content-center align-items-center gap-3">
+          {showInput && (
+            <>
+              <div>
+                <p className="text-center fw-semibold text-secondary">
+                  Enter amount to continue purchase
+                </p>
+                <label htmlFor="" className="form-label">
+                  Amount
+                </label>
+                <input
+                  type="number"
+                  className="form-control w-100 rounded-2"
+                  placeholder="Enter Amount"
+                  onChange={(e) => setAmount(e.target.value)}
+                />
+                <button className="btn btn-primary px-4 py-3 rounded-3 my-3 mx-auto" onClick={handlePurchase}>
+                  Buy Now
+                </button>
+              </div>
+            </>
+          )}
+          {!showInput && (
             <div>
-              <button className="btn btn-primary py-3 px-4 fw-semibold rounded-3" onClick={() => {
-                open()
-                setModalShow(false)
-              }
-              }>Connect Wallet</button>
+              <p className="text-center fw-semibold text-secondary">Choose option to continue purchase</p>
+              <div className="d-flex justify-content-center align-items-center gap-3">
+                <div>
+                  <button
+                    className="btn btn-primary py-3 px-4 fw-semibold rounded-3"
+                    onClick={checkStatus} // Handle wallet connection check
+                  >
+                    Connect Wallet
+                  </button>
+                </div>
+                <div className="d-flex flex-column">
+                  <hr className="w-100" style={{ transform: "rotate(90deg)" }} />
+                  <p className="m-0">or</p>
+                  <hr className="w-100" style={{ transform: "rotate(90deg)" }} />
+                </div>
+                <div>
+                  <button className="btn btn-primary py-3 px-4 fw-semibold rounded-3">
+                    Scan QR Code
+                  </button>
+                </div>
+              </div>
             </div>
-            <div className="d-flex flex-column">
-              <hr className="w-100" style={{ transform: "rotate(90deg)" }} />
-              <p className="m-0">or</p>
-              <hr className="w-100" style={{ transform: "rotate(90deg)" }} />
-            </div>
-            <div>
-              <button className="btn btn-primary py-3 px-4 fw-semibold rounded-3">Scan Qr Code</button>
-            </div>
-          </div>
+          )}
         </Modal.Body>
       </Modal>
     );
   }
+
+  const handlePurchase = async () => {
+    try {
+      const usdtAmount = parseUnits(amount, 18);
+      const phase = 1;
+      const referrer = "0x0000000000000000000000000000000000000000";
+
+      const tx = await writeContractAsync({
+        abi: contractAbi,
+        address: process.env.REACT_APP_SMART_CONTRACT,
+        functionName: "purchaseTokens",
+        args: [phase, usdtAmount, referrer],
+      });
+
+      console.log("Transaction hash:", tx.hash);
+    } catch (error) {
+      console.error("Purchase failed:", error);
+    }
+  };
 
   return (
     <>
@@ -78,8 +143,8 @@ const Presele = () => {
         <img src={i7} className="floating-asset asset7" alt="i1" />
         <img src={i8} className="floating-asset asset8" alt="i1" />
         <img src={i9} className="floating-asset asset9" alt="i1" />
-        <img src={i10} className="floating-asset asset10 z-2" alt="i1" />
-        <img src={i11} className="floating-asset asset11 z-2" alt="i1" />
+        <img src={i10} className="floating-asset asset10" alt="i1" />
+        <img src={i11} className="floating-asset asset11" alt="i1" />
         <img src={i12} className="floating-asset asset12" alt="i1" />
         <img src={i13} className="floating-asset asset13" alt="i1" />
         <div className="container">
@@ -175,7 +240,7 @@ const Presele = () => {
                   <div className="text-center pt-3">
                     <button
                       className="btn btn-primary w-100 fw-bold"
-                      onClick={open}
+                      // onClick={handlePurchase}
                       disabled
                     >
                       Buy Now
