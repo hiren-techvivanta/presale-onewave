@@ -15,29 +15,58 @@ import i11 from "../../assets/images/wave.png";
 import i12 from "../../assets/images/bluejems.png";
 import i13 from "../../assets/images/bluestone.png";
 
-import { useAppKit } from '@reown/appkit/react';
-import { toast } from "react-toastify";
+import { useAppKit } from "@reown/appkit/react";
+import { Modal } from "react-bootstrap";
 
 const Presele = () => {
   const [showWallet, setShowWallet] = useState(false);
-  const [showLogin, setshowLogin] = useState(true)
-  const [user, setuser] = useState()
+  const [modalShow, setModalShow] = useState(false);
 
-  const { open, close } = useAppKit();
+  const { open, close, isConnected, address, chain, disconnect } = useAppKit();
 
   useEffect(() => {
-   const user = localStorage.getItem("user")
-   console.log(user);
-   if (user) {
-    setshowLogin(false)
-    setuser(user)
-   }
-  }, [])
+    if (isConnected) {
+      console.log("Connected Address:", address);
+    }
+  }, [isConnected]);
+
+  // befour modal
+  function MyVerticallyCenteredModal(props) {
+    return (
+      <Modal
+        {...props}
+        size="md"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Body className="py-4">
+        <p className="text-center fw-semibold text-secondary">Choose option to continue purchase</p>
+          <div className="d-flex justify-content-center align-items-center gap-3">
+            <div>
+              <button className="btn btn-primary py-3 px-4 fw-semibold rounded-3" onClick={() => {
+                open()
+                setModalShow(false)
+              }
+              }>Connect Wallet</button>
+            </div>
+            <div className="d-flex flex-column">
+              <hr className="w-100" style={{ transform: "rotate(90deg)" }} />
+              <p className="m-0">or</p>
+              <hr className="w-100" style={{ transform: "rotate(90deg)" }} />
+            </div>
+            <div>
+              <button className="btn btn-primary py-3 px-4 fw-semibold rounded-3">Scan Qr Code</button>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
+    );
+  }
 
   return (
     <>
       <div className="main-liner main-bg-img vh-100">
-        <Topnav showSideNav={showLogin} user={user} />
+        <Topnav />
 
         {/* images */}
         <img src={i1} className="floating-asset asset1" alt="i1" />
@@ -111,7 +140,11 @@ const Presele = () => {
                     <span className="value">5% X 20 Months</span>
                   </div>
                   <div className="text-center pt-3">
-                    <button className="btn btn-primary w-100 fw-bold" onClick={open}>
+                    <button
+                      className="btn btn-primary w-100 fw-bold"
+                      // onClick={open}
+                      onClick={() => setModalShow(true)}
+                    >
                       Buy Now
                     </button>
                   </div>
@@ -140,7 +173,11 @@ const Presele = () => {
                     <span className="value">5% X 20 Months</span>
                   </div>
                   <div className="text-center pt-3">
-                    <button className="btn btn-primary w-100 fw-bold" onClick={open}>
+                    <button
+                      className="btn btn-primary w-100 fw-bold"
+                      onClick={open}
+                      disabled
+                    >
                       Buy Now
                     </button>
                   </div>
@@ -169,7 +206,11 @@ const Presele = () => {
                     <span className="value">5% X 20 Months</span>
                   </div>
                   <div className="text-center pt-3">
-                    <button className="btn btn-primary w-100 fw-bold" onClick={open}>
+                    <button
+                      className="btn btn-primary w-100 fw-bold"
+                      onClick={open}
+                      disabled
+                    >
                       Buy Now
                     </button>
                   </div>
@@ -198,7 +239,11 @@ const Presele = () => {
                     <span className="value">5% X 20 Months</span>
                   </div>
                   <div className="text-center pt-3">
-                    <button className="btn btn-primary w-100 fw-bold" onClick={open}>
+                    <button
+                      className="btn btn-primary w-100 fw-bold"
+                      onClick={open}
+                      disabled
+                    >
                       Buy Now
                     </button>
                   </div>
@@ -210,8 +255,12 @@ const Presele = () => {
           </div>
         </div>
       </div>
+      <MyVerticallyCenteredModal
+        show={modalShow}
+        onHide={() => setModalShow(false)}
+      />
     </>
   );
 };
 
-export default Presele
+export default Presele;

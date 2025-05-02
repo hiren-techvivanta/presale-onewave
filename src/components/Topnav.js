@@ -1,18 +1,29 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import logo from "../assets/images/logo-white.png";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-const Topnav = ({ showLogin ,user}) => {
-  const navigate = useNavigate()
+const Topnav = () => {
+  const navigate = useNavigate();
 
-  
-    const handleLogout = () => { 
-      localStorage.removeItem("user")
-      toast.success("Logout Successfull")
-      navigate("/")
-     }
-    
+  const [user, setuser] = useState([]);
+
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    const parsedObject = JSON.parse(user);
+    const objectArray = [parsedObject];
+    setuser(objectArray[0]);
+    if (objectArray[0] === null) {
+      navigate("/signin")
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    toast.success("Logout Successfull");
+    navigate("/");
+  };  
+
   return (
     <>
       <nav class="navbar navbar-expand-lg blur-bg-2">
@@ -21,7 +32,7 @@ const Topnav = ({ showLogin ,user}) => {
             onClick={() => navigate("/")}
             src={logo}
             alt="Wave Logo"
-            style={{maxWidth:"120px"}}
+            style={{ maxWidth: "120px" }}
             className="img-fluid"
           />
           <button
@@ -125,13 +136,20 @@ const Topnav = ({ showLogin ,user}) => {
         </li>
             </ul> */}
             <div className="ms-auto d-flex">
-            <p className="fw-bold text-white my-2 me-3">{user && `Welcome, ${user}`}</p>
+              <p className="fw-bold text-white my-2 me-3">
+                {user && `Welcome, ${user?.firstName} ${user?.lastName}`}
+              </p>
 
-            <button class="rounded-2 custom-login px-4 py-2" type="submit" onClick={() => showLogin === true ? navigate("/signin"): handleLogout()}>
-               {showLogin === true ? "Login" : "Logout"}
+              <button
+                class="rounded-2 custom-login px-4 py-2"
+                type="submit"
+                onClick={() =>
+                  user === null ? navigate("/signin") : handleLogout()
+                }
+              >
+                {user === null ? "Login" : "Logout"}
               </button>
             </div>
-             
           </div>
         </div>
       </nav>

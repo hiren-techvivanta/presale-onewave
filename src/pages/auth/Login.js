@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import mainbg from "../../assets/images/login-slider.png";
@@ -13,6 +13,16 @@ const Login = () => {
   const [emailErrMessage, setEmailErrMessage] = useState("");
   const [passwordErrMessage, setPasswordErrMessage] = useState("");
 
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    const parsedObject = JSON.parse(user);
+    const objectArray = [parsedObject];
+    if (objectArray[0] !== null) {
+      navigate("/presale")
+    }
+  }, [])
+  
+
   const validateForm = () => {
     let isValid = true;
     setEmailErrMessage("");
@@ -26,7 +36,7 @@ const Login = () => {
     } else if (!emailRegex.test(email)) {
       setEmailErrMessage("Invalid email format");
       isValid = false;
-    } else if (email.length >= 250) {
+    } else if (email.length > 250) {
       setEmailErrMessage("Too long email");
       isValid = false;
     }
@@ -46,26 +56,21 @@ const Login = () => {
     e.preventDefault();
     if (!validateForm()) return;
 
-    // toast.success("Login successful");
-    console.log("Logging in with:", { email, password });
-
     const formData = {
       email,password
     }
 
-    const {data} = await axios.post(`https://presale.onewave.app/api/login`,formData)
+    const {data} = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/login`,formData)
 
-    if (data.message === "Login successful") {
+    if (data.status === true) {
       toast.success(data.message)
-      localStorage.setItem("user",data.data.firstName)
-      navigate("/presale");
+      localStorage.setItem("user",JSON.stringify(data.data))      
+      navigate("/presale")
     }
 
     if (data.status === false) {
       toast.error(data.message)
     }
-
-    // navigate("/dashboard");
   };
 
   return (
@@ -121,13 +126,6 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
-                <button
-                  type="button"
-                  className="btn btn-link position-absolute end-0 top-50 translate-middle-y"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  <i className={showPassword ? "fa fa-eye" : "fa fa-eye-slash"} />
-                </button>
                 {passwordErrMessage && <div className="invalid-feedback">{passwordErrMessage}</div>}
               </div>
 
