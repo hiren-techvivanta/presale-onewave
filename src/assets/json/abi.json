@@ -204,6 +204,7 @@
       },
       {
         "indexed": false,
+
         "internalType": "uint256",
         "name": "waveAmount",
         "type": "uint256"
@@ -399,7 +400,6 @@
       {
         "internalType": "enum WAVEVestingWithHistory.SalePhase",
         "name": "",
-
         "type": "uint8"
       }
     ],

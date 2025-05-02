@@ -1,6 +1,7 @@
 import { createAppKit, useAppKit } from "@reown/appkit/react";
 import { WagmiProvider } from "wagmi";
-import { arbitrum, mainnet } from "@reown/appkit/networks";
+// import { arbitrum, mainnet } from "@reown/appkit/networks";
+import { bscTestnet } from "@reown/appkit/networks";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
 
@@ -8,7 +9,7 @@ const queryClient = new QueryClient();
 
 const projectId = process.env.REACT_APP_PROJECT_ID;
 
-console.log("🚀 REACT_APP_PROJECT_ID:", projectId); // this should NOT be undefined
+// console.log("🚀 REACT_APP_PROJECT_ID:", projectId); // this should NOT be undefined
 
 const metadata = {
   name: "AppKit Example",
@@ -17,7 +18,8 @@ const metadata = {
   icons: ["https://avatars.githubusercontent.com/u/179229932"],
 };
 
-const networks = [mainnet, arbitrum];
+// const networks = [mainnet, arbitrum];
+const networks = [bscTestnet];
 
 const wagmiAdapter = new WagmiAdapter({
   networks,

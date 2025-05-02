@@ -240,8 +240,8 @@ const Presele = () => {
                   <div className="text-center pt-3">
                     <button
                       className="btn btn-primary w-100 fw-bold"
-                      // onClick={handlePurchase}
-                      disabled
+                      onClick={handlePurchase}
+                      // disabled
                     >
                       Buy Now
                     </button>
