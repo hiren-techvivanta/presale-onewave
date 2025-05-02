@@ -9,4 +9,27 @@ A React-based project to get started quickly with development and production-rea
 Use the following command to install all required packages:
 
 ```bash
-npm install
+npm i --legacy-peer-deps
+```
+
+### 2. Run in dev mode
+
+Use the following command to run in dev mode:
+
+```bash
+npm start
+```
+
+### 3. Production Build
+
+Use the following command to make build
+
+```bash
+npm run build
+```
+
+### 4. .env file
+
+Add var 
+
+1.  REACT_APP_PROJECT_ID  
