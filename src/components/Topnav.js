@@ -2,11 +2,29 @@ import React, { useEffect, useState } from "react";
 import logo from "../assets/images/logo-white.png";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useAccount, useDisconnect } from "wagmi";
 
 const Topnav = () => {
   const navigate = useNavigate();
 
+    const { isConnected,address } = useAccount();
+    const { disconnect } = useDisconnect();
+
   const [user, setuser] = useState([]);
+  const [showDisconnect, setshowDisconnect] = useState(false)
+
+  useEffect(() => {
+  if (isConnected) {
+    setshowDisconnect(true)
+  } else {
+    setshowDisconnect(false)
+  }
+
+  if (address) {
+    
+  }
+  }, [isConnected,address])
+  
 
   useEffect(() => {
     const user = localStorage.getItem("user");
@@ -137,8 +155,14 @@ const Topnav = () => {
             </ul> */}
             <div className="ms-auto d-flex">
               <p className="fw-bold text-white my-2 me-3">
-                {user && `Welcome, ${user?.firstName} ${user?.lastName}`}
+                {user && `Welcome, ${user?.firstName} ${user?.lastName}`}{" "} {address && `${address.slice(0, 6)}*****${address.slice(-5)}`}
               </p>
+
+             {showDisconnect &&( <button
+              class="rounded-2 custom-login px-4 py-2 me-3"
+              onClick={disconnect}>
+                Disconnect Wallet
+              </button>)}
 
               <button
                 class="rounded-2 custom-login px-4 py-2"

@@ -18,45 +18,81 @@ import i13 from "../../assets/images/bluestone.png";
 import { useAppKit } from "@reown/appkit/react";
 import { Modal } from "react-bootstrap";
 import contractAbi from "../../assets/json/abi.json";
-import { useWriteContract } from "wagmi";
+import { useAccount, useWriteContract } from "wagmi";
 import { parseUnits } from "viem";
 
 const Presele = () => {
-  const [showWallet, setShowWallet] = useState(false);
   const [modalShow, setModalShow] = useState(false);
-  const [amount, setAmount] = useState("10000000");
-  const [wco, setwco] = useState(false); // Default to false initially
+  const [wco, setwco] = useState(false);
+  const [phases, setphase] = useState("");
+  const [conStart, setconStart] = useState(false)
 
-  const { open, close, isConnected, address, chain, disconnect } = useAppKit();
+  const { open, close } = useAppKit();
+  const { isConnected, address } = useAccount();
   const { writeContractAsync, isPending } = useWriteContract();
 
   useEffect(() => {
-    console.log("isConnected:", isConnected); // Add logging to verify connection status
     if (isConnected) {
-        console.log("Connected Address:", address);
-        setwco(true);
+      console.log("Connected Address:", address);
+      setwco(true);
     } else {
-        setwco(false);
+      setwco(false);
     }
-}, [isConnected, address]);
+
+    if (conStart === true && isConnected) {
+      setModalShow(true)
+    }
+
+  }, [isConnected,conStart]);
 
   // Modal for purchase
   function MyVerticallyCenteredModal(props) {
     const [showInput, setshowInput] = useState(false);
+    const [amounts, setAmounts] = useState("");
 
+    useEffect(() => {
+      if (conStart === true && isConnected) {
+        setshowInput(true)
+      }
+    }, [conStart,isConnected])
+    
     const checkStatus = () => {
-      console.log(wco); // Check the wallet connection state
-
       if (!wco) {
-        open(); // Open wallet connection modal
-        setModalShow(false); // Close the current modal
+        open();
+        setconStart(true)
+        setModalShow(false);
       } else {
-        setshowInput(true); // Proceed to input form if wallet is connected
+        setshowInput(true);
+      }
+    };
+
+    const handlePurchase = async () => {
+      try {
+        setModalShow(false)
+        const usdtAmount = parseUnits(amounts, 18);
+        const phase = +phases;
+        const referrer = "0x0000000000000000000000000000000000000000";
+
+        const tx = await writeContractAsync({
+          abi: contractAbi,
+          address: process.env.REACT_APP_SMART_CONTRACT,
+          functionName: "purchaseTokens",
+          args: [phase, usdtAmount, referrer],
+        });
+
+        console.log("Transaction hash:", tx.hash);
+      } catch (error) {
+        console.error("Purchase failed:", error);
       }
     };
 
     return (
-      <Modal {...props} size="md" aria-labelledby="contained-modal-title-vcenter" centered>
+      <Modal
+        {...props}
+        size="md"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
         <Modal.Body className="py-4">
           {showInput && (
             <>
@@ -64,37 +100,58 @@ const Presele = () => {
                 <p className="text-center fw-semibold text-secondary">
                   Enter amount to continue purchase
                 </p>
-                <label htmlFor="" className="form-label">
+               <div className="pt-3">
+               <label htmlFor="" className="form-label">
                   Amount
                 </label>
                 <input
                   type="number"
                   className="form-control w-100 rounded-2"
                   placeholder="Enter Amount"
-                  onChange={(e) => setAmount(e.target.value)}
+                  onChange={(e) => setAmounts(e.target.value)}
                 />
-                <button className="btn btn-primary px-4 py-3 rounded-3 my-3 mx-auto" onClick={handlePurchase}>
+               </div>
+               <div className="d-flex justify-content-center pt-3 gap-3">
+               <button
+                  className="btn btn-primary px-4 py-2 rounded-3"
+                  onClick={handlePurchase}
+                >
                   Buy Now
                 </button>
+                <button
+                  className="btn btn-secondary px-4 py-2 rounded-3"
+                  onClick={() => setshowInput(false)}
+                >
+                  Cancle
+                </button>
+               </div>
               </div>
             </>
           )}
           {!showInput && (
             <div>
-              <p className="text-center fw-semibold text-secondary">Choose option to continue purchase</p>
+              <p className="text-center fw-semibold text-secondary">
+                Choose option to continue purchase
+              </p>
               <div className="d-flex justify-content-center align-items-center gap-3">
                 <div>
                   <button
                     className="btn btn-primary py-3 px-4 fw-semibold rounded-3"
-                    onClick={checkStatus} // Handle wallet connection check
+                    onClick={checkStatus}
                   >
                     Connect Wallet
                   </button>
                 </div>
                 <div className="d-flex flex-column">
-                  <hr className="w-100" style={{ transform: "rotate(90deg)" }} />
+                  <hr
+                    className="w-100"
+                    style={{ transform: "rotate(90deg)" }}
+                  />
                   <p className="m-0">or</p>
-                  <hr className="w-100" style={{ transform: "rotate(90deg)" }} />
+                  <hr
+                    className="w-100"
+                    style={{ transform: "rotate(90deg)" }}
+                  />
                 </div>
                 <div>
                   <button className="btn btn-primary py-3 px-4 fw-semibold rounded-3">
@@ -108,25 +165,6 @@ const Presele = () => {
       </Modal>
     );
   }
-
-  const handlePurchase = async () => {
-    try {
-      const usdtAmount = parseUnits(amount, 18);
-      const phase = 1;
-      const referrer = "0x0000000000000000000000000000000000000000";
-
-      const tx = await writeContractAsync({
-        abi: contractAbi,
-        address: process.env.REACT_APP_SMART_CONTRACT,
-        functionName: "purchaseTokens",
-        args: [phase, usdtAmount, referrer],
-      });
-
-      console.log("Transaction hash:", tx.hash);
-    } catch (error) {
-      console.error("Purchase failed:", error);
-    }
-  };
 
   return (
     <>
@@ -208,7 +246,10 @@ const Presele = () => {
                     <button
                       className="btn btn-primary w-100 fw-bold"
                       // onClick={open}
-                      onClick={() => setModalShow(true)}
+                      onClick={() => {
+                        setphase("1");
+                        setModalShow(true);
+                      }}
                     >
                       Buy Now
                     </button>
@@ -222,25 +263,25 @@ const Presele = () => {
                   <div className="info-row d-flex py-2">
                     <span className="label me-auto">Price</span>
                     <div className="flex-grow-1 mx-2 dor-range"></div>{" "}
-                    {/* dynamic spacer */}
                     <span className="value">$0.4</span>
                   </div>
                   <div className="info-row d-flex py-2">
                     <span className="label me-auto">Cliff</span>
                     <div className="flex-grow-1 mx-2 dor-range"></div>{" "}
-                    {/* dynamic spacer */}
                     <span className="value">9 Months</span>
                   </div>
                   <div className="info-row d-flex py-2">
                     <span className="label me-auto">Vesting</span>
                     <div className="flex-grow-1 mx-2 dor-range"></div>{" "}
-                    {/* dynamic spacer */}
                     <span className="value">5% X 20 Months</span>
                   </div>
                   <div className="text-center pt-3">
                     <button
                       className="btn btn-primary w-100 fw-bold"
-                      onClick={handlePurchase}
+                      onClick={() => {
+                        setphase("2");
+                        setModalShow(true);
+                      }}
                       // disabled
                     >
                       Buy Now
@@ -255,26 +296,25 @@ const Presele = () => {
                   <div className="info-row d-flex py-2">
                     <span className="label me-auto">Price</span>
                     <div className="flex-grow-1 mx-2 dor-range"></div>{" "}
-                    {/* dynamic spacer */}
                     <span className="value">$0.6</span>
                   </div>
                   <div className="info-row d-flex py-2">
                     <span className="label me-auto">Cliff</span>
                     <div className="flex-grow-1 mx-2 dor-range"></div>{" "}
-                    {/* dynamic spacer */}
                     <span className="value">6 Months</span>
                   </div>
                   <div className="info-row d-flex py-2">
                     <span className="label me-auto">Vesting</span>
                     <div className="flex-grow-1 mx-2 dor-range"></div>{" "}
-                    {/* dynamic spacer */}
                     <span className="value">5% X 20 Months</span>
                   </div>
                   <div className="text-center pt-3">
                     <button
                       className="btn btn-primary w-100 fw-bold"
-                      onClick={open}
-                      disabled
+                      onClick={() => {
+                        setphase("3");
+                        setModalShow(true);
+                      }}
                     >
                       Buy Now
                     </button>
@@ -288,34 +328,31 @@ const Presele = () => {
                   <div className="info-row d-flex py-2">
                     <span className="label me-auto">Price</span>
                     <div className="flex-grow-1 mx-2 dor-range"></div>{" "}
-                    {/* dynamic spacer */}
                     <span className="value">$0.8</span>
                   </div>
                   <div className="info-row d-flex py-2">
                     <span className="label me-auto">Cliff</span>
                     <div className="flex-grow-1 mx-2 dor-range"></div>{" "}
-                    {/* dynamic spacer */}
                     <span className="value">3 Months</span>
                   </div>
                   <div className="info-row d-flex py-2">
                     <span className="label me-auto">Vesting</span>
                     <div className="flex-grow-1 mx-2 dor-range"></div>{" "}
-                    {/* dynamic spacer */}
                     <span className="value">5% X 20 Months</span>
                   </div>
                   <div className="text-center pt-3">
                     <button
                       className="btn btn-primary w-100 fw-bold"
-                      onClick={open}
-                      disabled
+                      onClick={() => {
+                        setphase("4");
+                        setModalShow(true);
+                      }}
                     >
                       Buy Now
                     </button>
                   </div>
                 </div>
               </div>
-
-              {/* <!-- Duplicate the above block and change values for Phase 2-4 --> */}
             </div>
           </div>
         </div>

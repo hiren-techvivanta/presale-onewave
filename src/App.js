@@ -6,6 +6,7 @@ import Register from './pages/auth/Register'
 import ForgotPassword from './pages/auth/ForgotPassword';
 import Presele from './pages/presele/Presele';
 import VerifyOtp from './pages/auth/VerifyOtp';
+import Dashboard from './pages/dashboard/Dashboard';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path='/signup/verify/otp' element={<VerifyOtp />} />
           <Route path='/forgot-password' element={<ForgotPassword />} />
           <Route path='/presale' element={<Presele />} />
+          <Route path='/dashboard' element={<Dashboard />} />
         </Routes>
       </BrowserRouter>
     </>
