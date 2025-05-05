@@ -15,77 +15,15 @@ import i11 from "../../assets/images/wave.png";
 import i12 from "../../assets/images/bluejems.png";
 import i13 from "../../assets/images/bluestone.png";
 
-import { useAppKit } from "@reown/appkit/react";
 import { Modal } from "react-bootstrap";
-import contractAbi from "../../assets/json/abi.json";
-import { useAccount, useWriteContract } from "wagmi";
-import { parseUnits } from "viem";
+import { useNavigate } from "react-router-dom";
 
 const Presele = () => {
+  const navigate = useNavigate()
   const [modalShow, setModalShow] = useState(false);
-  const [wco, setwco] = useState(false);
-  const [phases, setphase] = useState("");
-  const [conStart, setconStart] = useState(false)
-
-  const { open, close } = useAppKit();
-  const { isConnected, address } = useAccount();
-  const { writeContractAsync, isPending } = useWriteContract();
-
-  useEffect(() => {
-    if (isConnected) {
-      console.log("Connected Address:", address);
-      setwco(true);
-    } else {
-      setwco(false);
-    }
-
-    if (conStart === true && isConnected) {
-      setModalShow(true)
-    }
-
-  }, [isConnected,conStart]);
 
   // Modal for purchase
   function MyVerticallyCenteredModal(props) {
-    const [showInput, setshowInput] = useState(false);
-    const [amounts, setAmounts] = useState("");
-
-    useEffect(() => {
-      if (conStart === true && isConnected) {
-        setshowInput(true)
-      }
-    }, [conStart,isConnected])
-    
-    const checkStatus = () => {
-      if (!wco) {
-        open();
-        setconStart(true)
-        setModalShow(false);
-      } else {
-        setshowInput(true);
-      }
-    };
-
-    const handlePurchase = async () => {
-      try {
-        setModalShow(false)
-        const usdtAmount = parseUnits(amounts, 18);
-        const phase = +phases;
-        const referrer = "0x0000000000000000000000000000000000000000";
-
-        const tx = await writeContractAsync({
-          abi: contractAbi,
-          address: process.env.REACT_APP_SMART_CONTRACT,
-          functionName: "purchaseTokens",
-          args: [phase, usdtAmount, referrer],
-        });
-
-        console.log("Transaction hash:", tx.hash);
-      } catch (error) {
-        console.error("Purchase failed:", error);
-      }
-    };
-
     return (
       <Modal
         {...props}
@@ -94,41 +32,7 @@ const Presele = () => {
         centered
       >
         <Modal.Body className="py-4">
-          {showInput && (
-            <>
-              <div>
-                <p className="text-center fw-semibold text-secondary">
-                  Enter amount to continue purchase
-                </p>
-               <div className="pt-3">
-               <label htmlFor="" className="form-label">
-                  Amount
-                </label>
-                <input
-                  type="number"
-                  className="form-control w-100 rounded-2"
-                  placeholder="Enter Amount"
-                  onChange={(e) => setAmounts(e.target.value)}
-                />
-               </div>
-               <div className="d-flex justify-content-center pt-3 gap-3">
-               <button
-                  className="btn btn-primary px-4 py-2 rounded-3"
-                  onClick={handlePurchase}
-                >
-                  Buy Now
-                </button>
-                <button
-                  className="btn btn-secondary px-4 py-2 rounded-3"
-                  onClick={() => setshowInput(false)}
-                >
-                  Cancle
-                </button>
-               </div>
-              </div>
-            </>
-          )}
-          {!showInput && (
+         
             <div>
               <p className="text-center fw-semibold text-secondary">
                 Choose option to continue purchase
@@ -137,7 +41,7 @@ const Presele = () => {
                 <div>
                   <button
                     className="btn btn-primary py-3 px-4 fw-semibold rounded-3"
-                    onClick={checkStatus}
+                    onClick={() => navigate("/investment/decentralized")}
                   >
                     Connect Wallet
                   </button>
@@ -154,13 +58,14 @@ const Presele = () => {
                   />
                 </div>
                 <div>
-                  <button className="btn btn-primary py-3 px-4 fw-semibold rounded-3">
+                  <button className="btn btn-primary py-3 px-4 fw-semibold rounded-3"
+                   onClick={() => navigate("/investment/centralized")}>
                     Scan QR Code
                   </button>
                 </div>
               </div>
             </div>
-          )}
+      
         </Modal.Body>
       </Modal>
     );
@@ -247,7 +152,6 @@ const Presele = () => {
                       className="btn btn-primary w-100 fw-bold"
                       // onClick={open}
                       onClick={() => {
-                        setphase("1");
                         setModalShow(true);
                       }}
                     >
@@ -279,7 +183,6 @@ const Presele = () => {
                     <button
                       className="btn btn-primary w-100 fw-bold"
                       onClick={() => {
-                        setphase("2");
                         setModalShow(true);
                       }}
                       // disabled
@@ -312,7 +215,6 @@ const Presele = () => {
                     <button
                       className="btn btn-primary w-100 fw-bold"
                       onClick={() => {
-                        setphase("3");
                         setModalShow(true);
                       }}
                     >
@@ -344,7 +246,6 @@ const Presele = () => {
                     <button
                       className="btn btn-primary w-100 fw-bold"
                       onClick={() => {
-                        setphase("4");
                         setModalShow(true);
                       }}
                     >

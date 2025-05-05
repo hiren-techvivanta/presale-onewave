@@ -7,24 +7,22 @@ import { useAccount, useDisconnect } from "wagmi";
 const Topnav = () => {
   const navigate = useNavigate();
 
-    const { isConnected,address } = useAccount();
-    const { disconnect } = useDisconnect();
+  const { isConnected, address } = useAccount();
+  const { disconnect } = useDisconnect();
 
   const [user, setuser] = useState([]);
-  const [showDisconnect, setshowDisconnect] = useState(false)
+  const [showDisconnect, setshowDisconnect] = useState(false);
 
   useEffect(() => {
-  if (isConnected) {
-    setshowDisconnect(true)
-  } else {
-    setshowDisconnect(false)
-  }
+    if (isConnected) {
+      setshowDisconnect(true);
+    } else {
+      setshowDisconnect(false);
+    }
 
-  if (address) {
-    
-  }
-  }, [isConnected,address])
-  
+    if (address) {
+    }
+  }, [isConnected, address]);
 
   useEffect(() => {
     const user = localStorage.getItem("user");
@@ -32,7 +30,7 @@ const Topnav = () => {
     const objectArray = [parsedObject];
     setuser(objectArray[0]);
     if (objectArray[0] === null) {
-      navigate("/signin")
+      navigate("/signin");
     }
   }, []);
 
@@ -40,19 +38,21 @@ const Topnav = () => {
     localStorage.removeItem("user");
     toast.success("Logout Successfull");
     navigate("/");
-  };  
+  };
 
   return (
     <>
       <nav class="navbar navbar-expand-lg blur-bg-2">
         <div class="container position-relative z-2">
-          <img
-            onClick={() => navigate("/")}
-            src={logo}
-            alt="Wave Logo"
-            style={{ maxWidth: "120px" }}
-            className="img-fluid"
-          />
+          <div onClick={() => navigate("/dashboard")}>
+            <img
+              onClick={() => navigate("/")}
+              src={logo}
+              alt="Wave Logo"
+              style={{ maxWidth: "120px" }}
+              className="img-fluid"
+            />
+          </div>
           <button
             class="navbar-toggler"
             type="button"
@@ -155,14 +155,18 @@ const Topnav = () => {
             </ul> */}
             <div className="ms-auto d-flex">
               <p className="fw-bold text-white my-2 me-3">
-                {user && `Welcome, ${user?.firstName} ${user?.lastName}`}{" "} {address && `${address.slice(0, 6)}*****${address.slice(-5)}`}
+                {user && `Welcome, ${user?.firstName} ${user?.lastName}`}{" "}
+                {address && `${address.slice(0, 6)}*****${address.slice(-5)}`}
               </p>
 
-             {showDisconnect &&( <button
-              class="rounded-2 custom-login px-4 py-2 me-3"
-              onClick={disconnect}>
-                Disconnect Wallet
-              </button>)}
+              {showDisconnect && (
+                <button
+                  class="rounded-2 custom-login px-4 py-2 me-3"
+                  onClick={disconnect}
+                >
+                  Disconnect Wallet
+                </button>
+              )}
 
               <button
                 class="rounded-2 custom-login px-4 py-2"

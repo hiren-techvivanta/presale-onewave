@@ -57,10 +57,10 @@ const Login = () => {
     if (!validateForm()) return;
 
     const formData = {
-      email,password
+      email,password,
     }
 
-    const {data} = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/login`,formData)
+    const {data} = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/login`,formData,{withCredentials: true})
 
     if (data.status === true) {
       toast.success(data.message)
@@ -71,6 +71,9 @@ const Login = () => {
     if (data.status === false) {
       toast.error(data.message)
     }
+
+  
+
   };
 
   return (

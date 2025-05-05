@@ -344,6 +344,113 @@
         "type": "address"
       }
     ],
+    "name": "getUserReferralSummary",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "totalReferrals",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalReferralUSDT",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalReferralRewardUSDT",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "getUserSummary",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "totalUSDTSpent",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalWavePurchased",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalWaveClaimed",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalReferralIncomeUSDT",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      }
+    ],
+    "name": "getUserVestingRecord",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "phase",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amountPurchased",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amountClaimed",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "purchaseTime",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "lastClaimTime",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
     "name": "getVestingRecords",
     "outputs": [
       {
@@ -501,6 +608,7 @@
       },
       {
         "internalType": "uint256",
+
         "name": "rewardUSDT",
         "type": "uint256"
       },

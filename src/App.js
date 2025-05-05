@@ -7,6 +7,8 @@ import ForgotPassword from './pages/auth/ForgotPassword';
 import Presele from './pages/presele/Presele';
 import VerifyOtp from './pages/auth/VerifyOtp';
 import Dashboard from './pages/dashboard/Dashboard';
+import Investments from './pages/investment/Investments';
+import CentralizedInvestment from './pages/investment/CentralizedInvestment';
 
 function App() {
   return (
@@ -20,6 +22,8 @@ function App() {
           <Route path='/forgot-password' element={<ForgotPassword />} />
           <Route path='/presale' element={<Presele />} />
           <Route path='/dashboard' element={<Dashboard />} />
+          <Route path='/investment/centralized' element={<CentralizedInvestment />} />
+          <Route path='/investment/decentralized' element={<Investments />} />
         </Routes>
       </BrowserRouter>
     </>
