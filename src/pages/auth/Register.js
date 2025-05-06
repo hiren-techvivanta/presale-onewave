@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import logo from "../../assets/images/logo.png";
 import { customList } from "country-codes-list";
 import axios from "axios";
@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 
 const Register = () => {
   const navigate = useNavigate();
+  const {refCode} = useParams()
 
   const countryObj = customList(
     "countryCode",
@@ -134,6 +135,7 @@ const Register = () => {
         email: form.email,
         password: form.password,
         nationality: form.country,
+        sponserId: refCode || "",
       };
 
       const { data } = await axios.post(
@@ -269,7 +271,6 @@ const Register = () => {
 
                   <div className="mb-2">
                     <label className="form-label">Phone</label>
-                    <div className="input-group">
                       <input
                         type="tel"
                         className={`form-control ${
@@ -283,7 +284,6 @@ const Register = () => {
                       {errors.phone && (
                         <div className="invalid-feedback">{errors.phone}</div>
                       )}
-                    </div>
                   </div>
 
                   <div className="mb-2">
@@ -293,9 +293,9 @@ const Register = () => {
                       className={`form-control ${
                         errors.refEmail ? "is-invalid" : ""
                       }`}
-                      placeholder="Referral Email"
+                      placeholder="Referral Id"
                       name="refEmail"
-                      value={form.refEmail}
+                      value={refCode && refCode}
                       onChange={handleChange}
                     />
                     {errors.refEmail && (

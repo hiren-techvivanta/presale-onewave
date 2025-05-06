@@ -9,6 +9,7 @@ import VerifyOtp from './pages/auth/VerifyOtp';
 import Dashboard from './pages/dashboard/Dashboard';
 import Investments from './pages/investment/Investments';
 import CentralizedInvestment from './pages/investment/CentralizedInvestment';
+import ResetPassword from './pages/auth/ResetPassword';
 
 function App() {
   return (
@@ -18,6 +19,8 @@ function App() {
           <Route path='/' element={<Login />} />
           <Route path='/signin' element={<Login />} />
           <Route path='/signup' element={<Register />} />
+          <Route path='/signup/:refCode' element={<Register />} />
+          <Route path="/reset" element={<ResetPassword />} />
           <Route path='/signup/verify/otp' element={<VerifyOtp />} />
           <Route path='/forgot-password' element={<ForgotPassword />} />
           <Route path='/presale' element={<Presele />} />

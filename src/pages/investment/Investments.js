@@ -8,6 +8,8 @@ import { useAppKit } from "@reown/appkit/react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import usdtcontractAbi from "../../assets/json/usdtAbi.json";
+import { waitForTransactionReceipt } from "viem/actions";
 
 const Investments = () => {
   const navigate = useNavigate();
@@ -23,14 +25,8 @@ const Investments = () => {
   const [phaseValue, setPhaseValue] = useState(0);
   const [phaseErrorMessage, setPhaseErrorMessage] = useState("");
   const [amountErrorMessage, setAmountErrorMessage] = useState("");
-  const [history, sethistory] = useState([])
-
-  const config = {
-    withCredentials: true,
-  };
-  
-  console.log(phases);
-  
+  const [history, sethistory] = useState([]);
+  const [refWallet, setrefWallet] = useState("0x0000000000000000000000000000000000000000")
 
   const toggleSidebar = () => {
     setSidebarCollapsed(!sidebarCollapsed);
@@ -38,7 +34,7 @@ const Investments = () => {
 
   useEffect(() => {
     setShowConnectButton(!isConnected);
-    getHistory()
+    getHistory();
 
     switch (phases) {
       case "1":
@@ -72,7 +68,7 @@ const Investments = () => {
     if (!amount || isNaN(amount)) {
       setAmountErrorMessage("Please enter a valid amount.");
       valid = false;
-    } else if (amount < 10) {
+    } else if (amount < 1) {
       setAmountErrorMessage("Minimum amount is 10 USDT.");
       valid = false;
     } else {
@@ -82,14 +78,36 @@ const Investments = () => {
     return valid;
   };
 
-  const handlePurchase = async () => {
+  const approveTransaction = async (e) => {
+    e.preventDefault();
     try {
       if (!validateInputs()) return;
+  
+      const usdtAmount = parseUnits(amounts, 6); 
+      const approveTx = await writeContractAsync({
+        abi: usdtcontractAbi,
+        address: process.env.REACT_APP_USDT_SMART_CONTRACT,
+        functionName: "approve",
+        args: [process.env.REACT_APP_SMART_CONTRACT, usdtAmount],
+      });
+  
+      console.log("USDT Approved:", approveTx);
 
-      const usdtAmount = parseUnits(amounts, 18);
+      await handlePurchase(usdtAmount);
+  
+    } catch (error) {
+      console.log(error);
+      toast.error("Approval Failed");
+    }
+  };
+  
+
+  const handlePurchase = async (usdtAmountParam) => {
+    try {
+      const usdtAmount = usdtAmountParam ?? parseUnits(amounts, 6);
       const phase = Number(phases);
-      const referrer = "0x0000000000000000000000000000000000000000";
-
+      const referrer = refWallet || "0x0000000000000000000000000000000000000000";
+  
       const tx = await writeContractAsync({
         abi: contractAbi,
         address: process.env.REACT_APP_SMART_CONTRACT,
@@ -98,203 +116,243 @@ const Investments = () => {
       });
 
       const formData = {
-        phase:`Phase ${phases}`,
-        walletAddress:address,
+        phase: `Phase ${phases}`,
+        walletAddress: address,
         trxHash: tx.hash,
         amountInUsdt: amounts,
         waveQty: (parseFloat(amounts) * phaseValue).toFixed(2),
-        status:"Success"
-      }
-
-      const {data} = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/buy/dapp/token`,formData,{withCredentials:true})
-
+        status: "Success",
+      };
+  
+      const { data } = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/buy/dapp/token`,
+        formData,
+        { withCredentials: true }
+      );
+  
       if (data.status === true) {
-        toast.success("Transaction Successfull")
+        toast.success("Transaction Successful");
+        getHistory(); 
       }
-
-
     } catch (error) {
-      console.log(error.request);
-      
+      console.log(error);
+  
       const formData = {
-        phase:`Phase ${phases}`,
-        walletAddress:address,
+        phase: `Phase ${phases}`,
+        walletAddress: address,
         trxHash: "",
         amountInUsdt: amounts,
         waveQty: (parseFloat(amounts) * phaseValue).toFixed(2),
-        status:"Success"
-      }
-
-      const {data} = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/buy/dapp/token`,formData,{withCredentials:true})
-
+        status: "Failed",
+      };
+  
+      const { data } = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/buy/dapp/token`,
+        formData,
+        { withCredentials: true }
+      );
+  
       if (data.status === true) {
-        toast.error("Transaction Failed")
+        toast.error("Transaction Failed");
       }
     }
   };
+  
 
   const getHistory = async () => {
     try {
       const { data } = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/buy/dapp/transaction`,{withCredentials: true,}
+        `${process.env.REACT_APP_BACKEND_URL}/buy/dapp/transaction`,
+        { withCredentials: true }
       );
 
       if (data.status === true) {
-        sethistory(data.data)
+        sethistory(data.data);
       }
     } catch (e) {
-      toast.error(e.response.data.message)
+      toast.error(e.response.data.message);
     }
-
   };
 
   return (
-    <div className="admin-layout">
-      <Sidebar collapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
+    <>
+      <main class="page-wrapper">
+        <div class="container py-5 mt-4 mt-lg-5 mb-lg-4 my-xl-5">
+          <div class="row pt-sm-2 pt-lg-0">
+            <Sidebar
+              collapsed={sidebarCollapsed}
+              toggleSidebar={toggleSidebar}
+            />
 
-      <div className={`main-content ${sidebarCollapsed ? "expanded" : ""}`}>
-        <div className="content-header">
-          <Button
-            variant="light"
-            className="d-md-none me-2"
-            onClick={toggleSidebar}
-          >
-            <i className="fa-solid fa-list"></i>
-          </Button>
-          <h2></h2>
-        </div>
+            <div class="col-lg-9 pt-4 pb-2 pb-sm-4">
+              <h1 class="h2 mb-4">Invest With Wallet</h1>
 
-        <div className="content-body p-4 d-flex flex-column gap-3">
-          <div>
-            <h3>Invest in Wavecoin</h3>
-            <p className="text-secondary fw-semibold">
-              Buy Wavecoin with decentralized wallets
-            </p>
-          </div>
+              <div class="card border-0 shadow py-1 p-md-2 p-xl-3 p-xxl-4 mb-4">
+                <div class="card-body p-3">
+                  {showConnectButton ? (
+                    <div className="text-end">
+                      <button
+                        className="btn btn-primary py-2 px-4 rounded-3"
+                        onClick={open}
+                      >
+                        Connect Wallet
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="d-flex justify-content-end flex-column flex-lg-row gap-3 py-2 px-4">
+                        <button
+                          className="btn btn-primary py-2 px-4 rounded-3"
+                          onClick={disconnect}
+                        >
+                          Disconnect Wallet
+                        </button>
+                        <button
+                          className="btn btn-primary py-2 px-4 rounded-3"
+                          onClick={() => navigate("/investment/centralized")}
+                        >
+                          Pay via Now Payments
+                        </button>
+                      </div>
 
-          <div className="card bg-white border-0 rounded-3 shadow p-3">
-            <div className="card-body">
-              {showConnectButton ? (
-                <div className="text-end">
-                  <button
-                    className="btn btn-primary py-2 px-4 rounded-3"
-                    onClick={open}
-                  >
-                    Connect Wallet
-                  </button>
+                      <p className="text-center fw-semibold m-0 text-secondary">
+                        Enter amount to continue purchase
+                      </p>
+
+                      <div className="row g-3">
+                        <div className="col-12 col-md-6">
+                          <div className="pt-3">
+                            <label htmlFor="phase" className="form-label">
+                              Phase
+                            </label>
+                            <select
+                              id="phase"
+                              className="form-select shadow-none "
+                              value={phases}
+                              onChange={(e) => {
+                                setPhaseErrorMessage("");
+                                setPhase(e.target.value);
+                              }}
+                            >
+                              <option value="">Select Phase</option>
+                              <option value="1">Phase 1</option>
+                              <option value="2">Phase 2</option>
+                              <option value="3">Phase 3</option>
+                              <option value="4">Phase 4</option>
+                            </select>
+                            {phaseErrorMessage && (
+                              <p className="text-danger m-0 mt-1">
+                                {phaseErrorMessage}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        <div className="col-12 col-md-6">
+                          <div className="pt-3">
+                            <label htmlFor="amount" className="form-label">
+                              Amount (IN USDT)
+                            </label>
+                            <input
+                              id="amount"
+                              type="number"
+                              className="form-control  rounded-2"
+                              placeholder="Enter Amount In USDT"
+                              onChange={(e) => {
+                                setAmountErrorMessage("");
+                                setAmounts(e.target.value);
+                              }}
+                            />
+                            {amountErrorMessage && (
+                              <p className="text-danger m-0 mt-1">
+                                {amountErrorMessage}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        <div className="col-12 col-md-6">
+                        <div className="pt-3">
+                        <label htmlFor="amount" className="form-label">
+                              Ref Wallet Address (Optinal)
+                            </label>
+                            <input type="text" className="form-control rounded-2" placeholder="Enter ref wallet address" onChange={(e) => setrefWallet(e.target.value)} />
+                            </div>
+                        </div>
+                        <div className="col-12 col-md-6">
+                          <div className="pt-3">
+                            <label htmlFor="wavecoins" className="form-label">
+                              Wave Coins
+                            </label>
+                            <input
+                              id="wavecoins"
+                              type="number"
+                              className="form-control  rounded-2"
+                              value={
+                                amounts && phaseValue
+                                  ? (parseFloat(amounts) * phaseValue).toFixed(
+                                      2
+                                    )
+                                  : ""
+                              }
+                              disabled
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="d-flex justify-content-start pt-3 gap-3">
+                        <button
+                          className="btn btn-primary"
+                          // onClick={handlePurchase}
+                          onClick={approveTransaction}
+                        >
+                          Buy Now
+                        </button>
+                        <button className="btn btn-secondary">Cancel</button>
+                      </div>
+                    </>
+                  )}
                 </div>
-              ) : (
-                <>
-                  <div className="d-flex justify-content-end gap-3 py-2 px-4">
-                    <button
-                      className="btn btn-primary py-2 px-4 rounded-3"
-                      onClick={disconnect}
-                    >
-                      Disconnect Wallet
-                    </button>
-                    <button
-                      className="btn btn-primary py-2 px-4 rounded-3"
-                      onClick={() => navigate("/investment/centralized")}
-                    >
-                      Pay via Now Payments
-                    </button>
+              </div>
+
+              <div class="card border-0 shadow py-1 p-md-2 p-xl-3 p-xxl-4 mb-4">
+                <div class="card-body p-3">
+                <div class="d-flex align-items-center mt-sm-n1 pb-4 mb-0 mb-lg-1 mb-xl-3">
+                  <h2 class="h4 mb-0">Payment History</h2>
+                </div>
+                <div className="overflow-auto">
+                    <div class="table table-responsive">
+                      <table class="table table-striped">
+                        <thead>
+                          <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Phase</th>
+                            <th scope="col">Aamount(In USDT)</th>
+                            <th scope="col">Wave Qty</th>
+                            <th scope="col">Status</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                        {history?.map((val,ind) => (
+                          <tr key={ind}>
+                            <th scope="row">{ind + 1}</th>
+                            <td>{val.phase}</td>
+                            <td>{val.amountInUsdt}</td>
+                            <td>{val.waveQty}</td>
+                            <td className={val.status === "Success" ? "text-success" : "text-danger"}>{val.status}</td>
+                          </tr>
+                        ))}
+                        
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
-
-                  <p className="text-center fw-semibold text-secondary">
-                    Enter amount to continue purchase
-                  </p>
-
-                  <div className="pt-3">
-                    <label htmlFor="phase" className="form-label">
-                      Phase
-                    </label>
-                    <select
-                      id="phase"
-                      className="form-select shadow-none w-50"
-                      value={phases}
-                      onChange={(e) => {
-                        setPhaseErrorMessage("");
-                        setPhase(e.target.value);
-                      }}
-                    >
-                      <option value="">Select Phase</option>
-                      <option value="1">Phase 1</option>
-                      <option value="2">Phase 2</option>
-                      <option value="3">Phase 3</option>
-                      <option value="4">Phase 4</option>
-                    </select>
-                    {phaseErrorMessage && (
-                      <p className="text-danger m-0 mt-1">
-                        {phaseErrorMessage}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="pt-3">
-                    <label htmlFor="amount" className="form-label">
-                      Amount (IN USDT)
-                    </label>
-                    <input
-                      id="amount"
-                      type="number"
-                      className="form-control w-50 rounded-2"
-                      placeholder="Enter Amount In USDT"
-                      onChange={(e) => {
-                        setAmountErrorMessage("");
-                        setAmounts(e.target.value);
-                      }}
-                    />
-                    {amountErrorMessage && (
-                      <p className="text-danger m-0 mt-1">
-                        {amountErrorMessage}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="pt-3">
-                    <label htmlFor="wavecoins" className="form-label">
-                      Wave Coins
-                    </label>
-                    <input
-                      id="wavecoins"
-                      type="number"
-                      className="form-control w-50 rounded-2"
-                      value={
-                        amounts && phaseValue
-                          ? (parseFloat(amounts) * phaseValue).toFixed(2)
-                          : ""
-                      }
-                      disabled
-                    />
-                  </div>
-
-                  <div className="d-flex justify-content-start pt-3 gap-3">
-                    <button
-                      className="btn btn-primary px-4 py-2 rounded-3"
-                      onClick={handlePurchase}
-                    >
-                      Buy Now
-                    </button>
-                    <button className="btn btn-secondary px-4 py-2 rounded-3">
-                      Cancel
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-
-          <div className="card bg-white border-0 rounded-3 shadow p-3">
-            <div className="card-body">
-              <p className="text-center fw-semibold text-secondary">
-                Investment History
-              </p>
-              <h5 className="text-center">No History Found</h5>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </main>
+    </>
   );
 };
 

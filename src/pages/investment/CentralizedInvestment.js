@@ -19,6 +19,7 @@ const CentralizedInvestment = () => {
   const [phaseData, setPhaseData] = useState([]);
   const [phaseErrorMessage, setPhaseErrorMessage] = useState("");
   const [amountErrorMessage, setAmountErrorMessage] = useState("");
+  const [history, sethistory] = useState([]);
 
   const toggleSidebar = () => {
     setSidebarCollapsed(!sidebarCollapsed);
@@ -48,7 +49,8 @@ const CentralizedInvestment = () => {
   const getPhaseData = async () => {
     try {
       const { data } = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/buy/phase`, { withCredentials: true}
+        `${process.env.REACT_APP_BACKEND_URL}/buy/phase`,
+        { withCredentials: true }
       );
 
       if (data.status === true) {
@@ -88,7 +90,9 @@ const CentralizedInvestment = () => {
     try {
       if (!validateInputs()) return;
 
-      const pakgeId = phaseData.filter((element) => +phases === element.tokenPrice)      
+      const pakgeId = phaseData.filter(
+        (element) => +phases === element.tokenPrice
+      );
 
       const formData = {
         amount: 100,
@@ -96,140 +100,191 @@ const CentralizedInvestment = () => {
         currency: "USD",
       };
 
-      const {data} = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/payment/create`,formData,{withCredentials: true})
+      const { data } = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/payment/create`,
+        formData,
+        { withCredentials: true }
+      );
 
       if (data.invoice_url) {
-        window.open(data.invoice_url)
+        window.open(data.invoice_url);
       }
       // if (data.status === "true") {
       //   toast.success("Transaction Successful")
       // }
     } catch (error) {
-      toast.error("Transaction Failed" )
+      toast.error("Transaction Failed");
     }
   };
 
+  const getHistory = async () => {
+    try {
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/buy/transaction`,
+        { withCredentials: true }
+      );
+
+      if (data.status === true) {
+        sethistory(data.data);
+      }
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
+  };
+
+  useEffect(() => {}, []);
+
   return (
     <>
-      <div className="admin-layout">
-        <Sidebar collapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
+      <main class="page-wrapper">
+        <div class="container py-5 mt-4 mt-lg-5 mb-lg-4 my-xl-5">
+          <div class="row pt-sm-2 pt-lg-0">
+            <Sidebar
+              collapsed={sidebarCollapsed}
+              toggleSidebar={toggleSidebar}
+            />
 
-        <div className={`main-content ${sidebarCollapsed ? "expanded" : ""}`}>
-          <div className="content-header">
-            <Button
-              variant="light"
-              className="d-md-none me-2"
-              onClick={toggleSidebar}
-            >
-              <i className="fa-solid fa-list"></i>
-              {/* <List size={20} /> */}
-            </Button>
-            <h2></h2>
-          </div>
+            <div class="col-lg-9 pt-4 pb-2 pb-sm-4">
+              <h1 class="h2 mb-4">Invest with Now Payments</h1>
 
-          <div className="content-body p-4 d-flex flex-column gap-3">
-            <div>
-              <h3>Invest in Wavecoin</h3>
-              <p className="text-secondary fw-semibold">
-                Buy wavecoin with decentralized wallets
-              </p>
-            </div>
-
-            <div className="card bg-white border-0 rounded-3 shadow p-3">
-              <div className="card-body">
-                <div className="d-flex justify-content-end gap-3 py-2 px-4">
-                  <button
-                    className="btn btn-primary py-2 px-4 rounded-3"
-                    onClick={() => navigate("/investment/decentralized")}
-                  >
-                    Pay via Wallet
-                  </button>
-                </div>
-                <div>
-                  <p className="text-center fw-semibold text-secondary">
-                    Enter amount to continue purchase
-                  </p>
-                  <div className="pt-3">
-                    <label htmlFor="" className="form-label">
-                      Phase
-                    </label>
-                    <select
-                      class="form-select shadow-none w-50"
-                      aria-label="Default select example"
-                      onChange={(e) => setphase(e.target.value)}
-                    >
-                      <option selected>Select Phase</option>
-                      {phaseData?.map((val, ind) => (
-                        <option key={ind} value={val.tokenPrice}>
-                          {val.packageName}
-                        </option>
-                      ))}
-                    </select>
-                    {phaseErrorMessage && (
-                      <p className="text-danger m-0 mt-1">
-                        {phaseErrorMessage}
-                      </p>
-                    )}
-                  </div>
-                  <div className="pt-3">
-                    <label htmlFor="" className="form-label">
-                      Amount (In USD)
-                    </label>
-                    <input
-                      type="number"
-                      className="form-control w-50 rounded-2"
-                      placeholder="Enter Amount In USD"
-                      onChange={(e) => setAmounts(e.target.value)}
-                    />
-                    {amountErrorMessage && (
-                      <p className="text-danger m-0 mt-1">
-                        {amountErrorMessage}
-                      </p>
-                    )}
-                  </div>
-                  <div className="pt-3">
-                    <label htmlFor="wavecoins" className="form-label">
-                      Wave Coins
-                    </label>
-                    <input
-                      id="wavecoins"
-                      type="number"
-                      className="form-control w-50 rounded-2"
-                      value={
-                        amounts && phaseValue
-                          ? (parseFloat(amounts) * phaseValue).toFixed(2)
-                          : ""
-                      }
-                      disabled
-                    />
-                  </div>
-                  <div className="d-flex justify-content-start pt-3 gap-3">
+              <div class="card border-0  shadow py-1 p-md-2 p-xl-3 p-xxl-4 mb-4">
+                <div class="card-body p-3">
+                  <div className="d-flex justify-content-end gap-3 py-2 px-4">
                     <button
-                      className="btn btn-primary px-4 py-2 rounded-3"
-                      onClick={handlePurchase}
+                      className="btn btn-primary py-2 px-4 rounded-3"
+                      onClick={() => navigate("/investment/decentralized")}
                     >
-                      Buy Now
+                      Pay via Wallet
                     </button>
-                    <button className="btn btn-secondary px-4 py-2 rounded-3">
-                      Cancel
-                    </button>
+                  </div>
+                  <div>
+                    <p className="text-center fw-semibold text-secondary m-0">
+                      Enter amount to continue purchase
+                    </p>
+                    <div className="row g-3">
+                      <div className="col-12 col-md-6">
+                        <div className="pt-3">
+                          <label htmlFor="" className="form-label">
+                            Phase
+                          </label>
+                          <select
+                            class="form-select shadow-none "
+                            aria-label="Default select example"
+                            onChange={(e) => setphase(e.target.value)}
+                          >
+                            <option selected>Select Phase</option>
+                            {phaseData?.map((val, ind) => (
+                              <option key={ind} value={val.tokenPrice}>
+                                {val.packageName}
+                              </option>
+                            ))}
+                          </select>
+                          {phaseErrorMessage && (
+                            <p className="text-danger m-0 mt-1">
+                              {phaseErrorMessage}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="col-12 col-md-6">
+                        <div className="pt-3">
+                          <label htmlFor="" className="form-label">
+                            Amount (In USD)
+                          </label>
+                          <input
+                            type="number"
+                            className="form-control  rounded-2"
+                            placeholder="Enter Amount In USD"
+                            onChange={(e) => setAmounts(e.target.value)}
+                          />
+                          {amountErrorMessage && (
+                            <p className="text-danger m-0 mt-1">
+                              {amountErrorMessage}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="col-12 col-md-6">
+                        <div className="pt-3">
+                          <label htmlFor="wavecoins" className="form-label">
+                            Wave Coins
+                          </label>
+                          <input
+                            id="wavecoins"
+                            type="number"
+                            className="form-control  rounded-2"
+                            value={
+                              amounts && phaseValue
+                                ? (parseFloat(amounts) * phaseValue).toFixed(2)
+                                : ""
+                            }
+                            disabled
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="d-flex justify-content-start pt-3 gap-3">
+                      <button
+                        className="btn btn-primary"
+                        onClick={handlePurchase}
+                      >
+                        Buy Now
+                      </button>
+                      <button className="btn btn-secondary">Cancel</button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div className="card bg-white border-0 rounded-3 shadow p-3">
-              <div className="card-body">
-                <p className="text-center fw-semibold text-secondary">
-                  Investment History
-                </p>
-
-                <h5 className="text-center">No History Found</h5>
+              <div class="card border-0  shadow py-1 p-md-2 p-xl-3 p-xxl-4 mb-4">
+                <div class="card-body p-3">
+                  <div class="d-flex align-items-center mt-sm-n1 pb-4 mb-0 mb-lg-1 mb-xl-3">
+                    <h2 class="h4 mb-0">Payment History</h2>
+                  </div>
+                  <div className="overflow-auto">
+                    <div class="table table-responsive">
+                      {history.length === 0 ? (
+                        <h5 className="text-center">No Data Found</h5>
+                      ) : (
+                        <table class="table table-striped">
+                          <thead>
+                            <tr>
+                              <th scope="col">#</th>
+                              <th scope="col">Phase</th>
+                              <th scope="col">Aamount(In USD)</th>
+                              <th scope="col">Wave Qty</th>
+                              <th scope="col">Status</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {history?.map((val, ind) => (
+                              <tr key={ind}>
+                                <th scope="row">{ind + 1}</th>
+                                <td>{val.phase}</td>
+                                <td>{val.amountInUsdt}</td>
+                                <td>{val.waveQty}</td>
+                                <td
+                                  className={
+                                    val.status === "Success"
+                                      ? "text-success"
+                                      : "text-danger"
+                                  }
+                                >
+                                  {val.status}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </main>
     </>
   );
 };

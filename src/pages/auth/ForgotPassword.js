@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import logo from "../../assets/images/logo.png";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
@@ -15,6 +17,22 @@ const ForgotPassword = () => {
       navigate("/presale");
     }
   }, []);
+
+  const handleSubmit = async (e) => { 
+    e.preventDefault()
+    try {
+      const formData = {
+        email
+      }
+      const {data} = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/forgetPassword`,formData,{withCredentials:true})
+
+      if (data.status === true) {
+        toast.info("Chack your Email to change password")
+      }
+    } catch (error) {
+      toast.error(error.response.data.message || "Internal server error")
+    }
+   }
   return (
     <>
       <div className="blur-bg py-3 px-4 d-flex justify-content-between align-items-center w-100 shadow-sm position-absolute top-0">
@@ -51,7 +69,7 @@ const ForgotPassword = () => {
             </div>
             <hr />
 
-            <form className="px-3">
+            <form className="px-3" onSubmit={handleSubmit}>
               {/* Email Input */}
               <div className="mb-3">
                 <label className="form-label fw-medium">Email</label>
