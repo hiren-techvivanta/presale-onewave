@@ -1,0 +1,526 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700&display=swap');
+
+// Variables
+$blue-gradient: linear-gradient(
+  86.17deg,
+  rgba(112, 171, 255, 1) 12.21%,
+  rgba(0, 105, 255, 1) 92.71%
+);
+$primary-blue: #2477f1;
+$dark-blue: #0046ad;
+$white: #ffffff;
+$light-gray: #f1f1f1;
+$border-gray: #cdcdcd;
+$text-gray: #717171;
+$black: #000000;
+$warning-bg: #fff4e6;
+$warning-text: #ff8902;
+
+// Mixins
+@mixin card {
+  background: $white;
+  border-radius: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  padding: 10px;
+}
+
+@mixin button {
+  border-radius: 12px;
+  padding: 14px 40px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+@mixin icon-container {
+  width: 80px !important;
+  height: 80px !important;
+  border-radius: 20px;
+  background: $primary-blue;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $white;
+}
+
+// Global styles
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.dashboard-container {
+  min-height: 100vh;
+  background: $blue-gradient;
+  overflow-x: hidden;
+  position: relative;
+}
+
+// Navbar styles
+.navbar {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12.5px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 10px rgba(210, 210, 210, 0.25);
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+
+    &-image {
+      height: 60px;
+      width: auto;
+    }
+  }
+
+  .wallet-button {
+    background: $white;
+    border-radius: 70px;
+    padding: 14px 30px;
+    font-weight: 700;
+    color: $primary-blue;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: inset 0 4px 4px rgba(255, 255, 255, 0.25);
+    cursor: pointer;
+  }
+}
+
+// Main content styles
+.main-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  position: relative;
+  
+  .background-image {
+    position: absolute;
+    top: -340px;
+    left: 0;
+    right: 0;
+    height: 600px;
+    background-image: url('../../assets/images/image46.png');
+    background-size: cover;
+    background-position: center;
+    mix-blend-mode: darken;
+  }
+}
+
+// Headings
+.dashboard-title, .referrals-title {
+  font-size: 56px;
+  font-weight: 700;
+  color: $white;
+  text-align: center;
+  margin: 60px 0 40px;
+  text-shadow: 0 7px 3px #0000006b;
+  
+  @media (max-width: 768px) {
+    font-size: 40px;
+    margin: 40px 0 30px;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 32px;
+    margin: 30px 0 20px;
+  }
+}
+
+// Stats cards
+.stats-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: center;
+  margin-bottom: 60px;
+  
+  @media (max-width: 1200px) {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+.stat-card {
+  @include card;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+  min-width: 300px;
+  max-width: 335px;
+  
+  @media (max-width: 480px) {
+    flex-direction: column;
+    text-align: center;
+    min-width: 100%;
+  }
+  
+  .icon-container {
+    @include icon-container;
+    
+    .icon {
+      font-size: 30px;
+    }
+  }
+  
+  .stat-info {
+    h3 {
+      font-size: 18px;
+      font-weight: 500;
+      color: $black;
+      margin-bottom: 8px;
+      
+      @media (max-width: 768px) {
+        font-size: 16px;
+      }
+    }
+    
+    h2 {
+      font-size: 28px;
+      font-weight: 700;
+      color: $black;
+      
+      @media (max-width: 768px) {
+        font-size: 24px;
+      }
+    }
+  }
+}
+
+// Presale section
+.presale-section {
+  margin: 80px 0;
+  
+  .no-presale {
+    text-align: center;
+    color: $white;
+    
+    h2 {
+      font-size: 25px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      
+      @media (max-width: 768px) {
+        font-size: 28px;
+      }
+    }
+    
+    p {
+      font-size: 22px;
+      font-weight: 500;
+      margin-bottom: 24px;
+      
+      @media (max-width: 768px) {
+        font-size: 18px;
+      }
+    }
+    
+    .buy-wave-btn {
+      @include button;
+      padding: 7px 80px !important;
+      background: $light-gray;
+      border: none;
+      color: $primary-blue;
+      font-size: 22px;
+      font-weight: 600;
+      margin: 0 auto;
+      
+      &:hover {
+        background: darken($light-gray, 5%);
+      }
+      
+      @media (max-width: 768px) {
+        font-size: 18px;
+        padding: 12px 30px;
+      }
+    }
+  }
+}
+
+// Referral stats
+.referral-stats-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: center;
+  margin-bottom: 40px;
+  
+  @media (max-width: 992px) {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+.referral-card {
+  @include card;
+  flex: 1;
+  min-width: 300px;
+  max-width: 365px;
+  padding: 20px !important;
+  
+  @media (max-width: 480px) {
+    min-width: 100%;
+  }
+  
+  .stat-info {
+    h3 {
+      font-size: 22px;
+      font-weight: 700;
+      color: $black;
+      margin-bottom: 16px;
+      margin: 0;
+      
+      @media (max-width: 768px) {
+        font-size: 18px;
+      }
+    }
+    
+    h2 {
+      font-size: 32px;
+      font-weight: 500;
+      color: $black;
+      margin: 0;
+      
+      @media (max-width: 768px) {
+        font-size: 28px;
+      }
+    }
+  }
+}
+
+// Referral link card
+.referral-link-card {
+  @include card;
+  margin-bottom: 24px;
+  max-width: 1150px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 20px;
+  
+  h3 {
+    font-size: 17px;
+    font-weight: 700;
+    color: $black;
+    margin-bottom: 20px;
+  }
+  
+  .link-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    
+    @media (max-width: 768px) {
+      flex-direction: column;
+    }
+  }
+  
+  .link-box {
+    background: $light-gray;
+    border-radius: 12px;
+    padding: 16px;
+    flex-grow: 1;
+    min-width: 0;
+    overflow: hidden;
+    
+    .link-text {
+      color: $text-gray;
+      font-size: 18px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: block;
+      
+      @media (max-width: 768px) {
+        font-size: 16px;
+      }
+    }
+  }
+  
+  .action-btn {
+    @include button;
+    background: $light-gray;
+    border: none;
+    color: $text-gray;
+    padding: 16px 20px;
+    font-size: 18px;
+    white-space: nowrap;
+    
+    &:hover {
+      background: darken($light-gray, 5%);
+    }
+    
+    @media (max-width: 768px) {
+      padding: 12px 20px;
+      font-size: 16px;
+      width: 100%;
+    }
+  }
+}
+
+// Presale referrals card
+.presale-referrals-card {
+  @include card;
+  max-width: 1150px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 20px;
+  
+  h3 {
+    font-size: 17px;
+    font-weight: 700;
+    color: $black;
+    margin-bottom: 20px;
+  }
+  
+  .referrals-table {
+    width: 100%;
+    
+    .table-header {
+      display: flex;
+      margin-bottom: 16px;
+      
+      @media (max-width: 768px) {
+        display: none;
+      }
+    }
+    
+    .table-row {
+      display: flex;
+      padding: 16px 0;
+      border-top: 1px solid $text-gray;
+      
+      @media (max-width: 768px) {
+        flex-direction: column;
+        gap: 16px;
+      }
+    }
+    
+    .table-cell {
+      flex: 1;
+      
+      &.phase, &.bnb, &.usd {
+        flex: 0 0 150px;
+        
+        @media (max-width: 992px) {
+          flex: 1;
+        }
+        
+        @media (max-width: 768px) {
+          display: flex;
+          justify-content: space-between;
+          
+          &::before {
+            content: attr(data-label);
+            font-weight: 700;
+            color: $text-gray;
+          }
+        }
+      }
+      
+      &.status {
+        flex: 0 0 200px;
+        
+        @media (max-width: 992px) {
+          flex: 1;
+        }
+        
+        @media (max-width: 768px) {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          
+          &::before {
+            content: attr(data-label);
+            font-weight: 700;
+            color: $text-gray;
+          }
+        }
+      }
+      
+      &.actions {
+        flex: 2;
+        display: flex;
+        justify-content: flex-end;
+        
+        @media (max-width: 768px) {
+          justify-content: center;
+        }
+      }
+    }
+    
+    .status-tag {
+      display: inline-block;
+      padding: 10px 24px;
+      border-radius: 80px;
+      font-size: 18px;
+      font-weight: 500;
+      
+      &.no-earnings {
+        background: $warning-bg;
+        color: $warning-text;
+      }
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 16px;
+      
+      @media (max-width: 768px) {
+        flex-direction: column;
+        width: 100%;
+      }
+    }
+    
+    .withdraw-btn {
+      @include button;
+      background: $white;
+      border: 1px solid $border-gray;
+      color: $black;
+      font-size: 17px;
+      font-weight: 400;
+      padding: 12px 24px;
+      box-shadow: inset 0 4px 4px rgba(255, 255, 255, 0.25);
+      
+      &:hover {
+        background: $light-gray;
+      }
+      
+      @media (max-width: 768px) {
+        font-size: 16px;
+        width: 100%;
+      }
+    }
+  }
+}
+
+.dashboardy {
+   color: #fff;
+    text-align: center;
+    font-family: "PlusJakartaSans-Bold", sans-serif;
+    font-size: 45px;
+    font-weight: 700;
+    position: relative;
+    margin: 3rem 0;
+    text-shadow: 0 7px 3px #0000006b;
+  }
