@@ -204,7 +204,6 @@
       },
       {
         "indexed": false,
-
         "internalType": "uint256",
         "name": "waveAmount",
         "type": "uint256"
@@ -570,6 +569,32 @@
   },
   {
     "inputs": [],
+    "name": "totalUSDTCollected",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "totalWaveLocked",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "usdtToken",
     "outputs": [
       {
@@ -608,7 +633,6 @@
       },
       {
         "internalType": "uint256",
-
         "name": "rewardUSDT",
         "type": "uint256"
       },

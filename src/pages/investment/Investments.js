@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Sidebar from "../../components/Sidebar";
 import { Button } from "react-bootstrap";
 import { useAccount, useDisconnect, useWriteContract } from "wagmi";
-import { parseUnits } from "viem";
+import { parseEther, parseUnits } from "viem";
 import contractAbi from "../../assets/json/abi.json";
 import { useAppKit } from "@reown/appkit/react";
 import { useNavigate } from "react-router-dom";
@@ -10,6 +10,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import usdtcontractAbi from "../../assets/json/usdtAbi.json";
 import { waitForTransactionReceipt } from "viem/actions";
+import { useReadContract } from 'wagmi'
 
 const Investments = () => {
   const navigate = useNavigate();
@@ -26,7 +27,10 @@ const Investments = () => {
   const [phaseErrorMessage, setPhaseErrorMessage] = useState("");
   const [amountErrorMessage, setAmountErrorMessage] = useState("");
   const [history, sethistory] = useState([]);
-  const [refWallet, setrefWallet] = useState("0x0000000000000000000000000000000000000000")
+  const [showBuyNow, setshowBuyNow] = useState(false);
+  const [refWallet, setrefWallet] = useState(
+    "0x0000000000000000000000000000000000000000"
+  );
 
   const toggleSidebar = () => {
     setSidebarCollapsed(!sidebarCollapsed);
@@ -82,61 +86,65 @@ const Investments = () => {
     e.preventDefault();
     try {
       if (!validateInputs()) return;
-  
-      const usdtAmount = parseUnits(amounts, 6); 
+
+      const usdtAmount = parseEther(amounts);
       const approveTx = await writeContractAsync({
-        abi: usdtcontractAbi,
         address: process.env.REACT_APP_USDT_SMART_CONTRACT,
+        abi: usdtcontractAbi,
         functionName: "approve",
         args: [process.env.REACT_APP_SMART_CONTRACT, usdtAmount],
       });
-  
-      console.log("USDT Approved:", approveTx);
 
-      await handlePurchase(usdtAmount);
-  
+      console.log("USDT Approved:", approveTx);
+      setshowBuyNow(true);
+      // await handlePurchase(usdtAmount);
     } catch (error) {
       console.log(error);
-      toast.error("Approval Failed");
+      // toast.error("Approval Failed");
     }
   };
-  
 
   const handlePurchase = async (usdtAmountParam) => {
     try {
-      const usdtAmount = usdtAmountParam ?? parseUnits(amounts, 6);
+      const usdtAmount = parseEther(amounts);
+      console.log(usdtAmount);
+      
       const phase = Number(phases);
-      const referrer = refWallet || "0x0000000000000000000000000000000000000000";
-  
+      const referrer =
+        refWallet || "0x0000000000000000000000000000000000000000";
+
       const tx = await writeContractAsync({
-        abi: contractAbi,
         address: process.env.REACT_APP_SMART_CONTRACT,
+        abi: contractAbi,
         functionName: "purchaseTokens",
         args: [phase, usdtAmount, referrer],
       });
 
+      console.log(tx);
+      
+
       const formData = {
         phase: `Phase ${phases}`,
         walletAddress: address,
-        trxHash: tx.hash,
+        trxHash: tx,
         amountInUsdt: amounts,
         waveQty: (parseFloat(amounts) * phaseValue).toFixed(2),
         status: "Success",
       };
-  
+
       const { data } = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/buy/dapp/token`,
         formData,
         { withCredentials: true }
       );
-  
+
       if (data.status === true) {
         toast.success("Transaction Successful");
-        getHistory(); 
+        getHistory();
       }
     } catch (error) {
       console.log(error);
-  
+
       const formData = {
         phase: `Phase ${phases}`,
         walletAddress: address,
@@ -145,19 +153,18 @@ const Investments = () => {
         waveQty: (parseFloat(amounts) * phaseValue).toFixed(2),
         status: "Failed",
       };
-  
+
       const { data } = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/buy/dapp/token`,
         formData,
         { withCredentials: true }
       );
-  
+
       if (data.status === true) {
         toast.error("Transaction Failed");
       }
     }
   };
-  
 
   const getHistory = async () => {
     try {
@@ -173,6 +180,40 @@ const Investments = () => {
       toast.error(e.response.data.message);
     }
   };
+
+  const result = useReadContract({
+    abi: contractAbi,
+    address: process.env.REACT_APP_SMART_CONTRACT, 
+    functionName: 'getVestingRecords',
+    args: ['0xEF1980dfdEd266429D1cEcA90DC3cD3806093614'], 
+    // enabled: !!address,
+  })
+  
+  useEffect(() => {
+    if (result) {      
+      console.log("Vesting data:", result)
+    }
+  }, [result])
+
+  const handleClaim = async (txn) => {
+    try {
+      const tx = await writeContractAsync({
+        abi: contractAbi,
+        address: process.env.REACT_APP_SMART_CONTRACT,
+        functionName: "claimTokens", 
+        args: [txn.walletAddress], 
+      });
+  
+      toast.success("Claim transaction sent!");
+      console.log("Claim TX Hash:", tx);
+  
+    } catch (error) {
+      console.error("Claim failed:", error);
+      toast.error("Claim failed!");
+    }
+  };
+  
+  
 
   return (
     <>
@@ -270,12 +311,17 @@ const Investments = () => {
                           </div>
                         </div>
                         <div className="col-12 col-md-6">
-                        <div className="pt-3">
-                        <label htmlFor="amount" className="form-label">
+                          <div className="pt-3">
+                            <label htmlFor="amount" className="form-label">
                               Ref Wallet Address (Optinal)
                             </label>
-                            <input type="text" className="form-control rounded-2" placeholder="Enter ref wallet address" onChange={(e) => setrefWallet(e.target.value)} />
-                            </div>
+                            <input
+                              type="text"
+                              className="form-control rounded-2"
+                              placeholder="Enter ref wallet address"
+                              onChange={(e) => setrefWallet(e.target.value)}
+                            />
+                          </div>
                         </div>
                         <div className="col-12 col-md-6">
                           <div className="pt-3">
@@ -300,14 +346,23 @@ const Investments = () => {
                       </div>
 
                       <div className="d-flex justify-content-start pt-3 gap-3">
-                        <button
-                          className="btn btn-primary"
-                          // onClick={handlePurchase}
-                          onClick={approveTransaction}
-                        >
-                          Buy Now
-                        </button>
-                        <button className="btn btn-secondary">Cancel</button>
+                        {showBuyNow === true ? (
+                          <button
+                            className="btn btn-primary"
+                            // onClick={handlePurchase}
+                            onClick={handlePurchase}
+                          >
+                            Buy Now
+                          </button>
+                        ) : (
+                          <button
+                            className="btn btn-primary"
+                            // onClick={handlePurchase}
+                            onClick={approveTransaction}
+                          >
+                            Approve Now
+                          </button>
+                        )}
                       </div>
                     </>
                   )}
@@ -316,10 +371,10 @@ const Investments = () => {
 
               <div class="card border-0 shadow py-1 p-md-2 p-xl-3 p-xxl-4 mb-4">
                 <div class="card-body p-3">
-                <div class="d-flex align-items-center mt-sm-n1 pb-4 mb-0 mb-lg-1 mb-xl-3">
-                  <h2 class="h4 mb-0">Payment History</h2>
-                </div>
-                <div className="overflow-auto">
+                  <div class="d-flex align-items-center mt-sm-n1 pb-4 mb-0 mb-lg-1 mb-xl-3">
+                    <h2 class="h4 mb-0">Payment History</h2>
+                  </div>
+                  <div className="overflow-auto">
                     <div class="table table-responsive">
                       <table class="table table-striped">
                         <thead>
@@ -329,19 +384,32 @@ const Investments = () => {
                             <th scope="col">Aamount(In USDT)</th>
                             <th scope="col">Wave Qty</th>
                             <th scope="col">Status</th>
+                            <th scope="col">Action</th>
                           </tr>
                         </thead>
                         <tbody>
-                        {history?.map((val,ind) => (
-                          <tr key={ind}>
-                            <th scope="row">{ind + 1}</th>
-                            <td>{val.phase}</td>
-                            <td>{val.amountInUsdt}</td>
-                            <td>{val.waveQty}</td>
-                            <td className={val.status === "Success" ? "text-success" : "text-danger"}>{val.status}</td>
-                          </tr>
-                        ))}
-                        
+                          {history?.map((val, ind) => (
+                            <tr key={ind}>
+                              <th scope="row">{ind + 1}</th>
+                              <td>{val.phase}</td>
+                              <td>{val.amountInUsdt}</td>
+                              <td>{val.waveQty}</td>
+                              <td
+                                className={
+                                  val.status === "Success"
+                                    ? "text-success"
+                                    : "text-danger"
+                                }
+                              >
+                                {val.status}
+                              </td>
+                              <td>{
+                                  val.status === "Success"
+                                    ? (<button className="btn btn-secondary btn-sm" onClick={() => handleClaim(val)}>Claim</button>)
+                                    : null
+                                }</td>
+                            </tr>
+                          ))}
                         </tbody>
                       </table>
                     </div>

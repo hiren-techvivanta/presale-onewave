@@ -67,8 +67,10 @@
 import { useEffect, useState } from 'react';
 import Topnav from '../../components/Topnav'
 import './dashboard.scss';
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
+  const navigate = useNavigate()
   const [copied, setCopied] = useState(false);
   const [referralLink, setreferralLink] = useState("")
 
@@ -140,7 +142,7 @@ const Dashboard = () => {
           <div class="dashboardy">Dashboard</div>
             <h2 className='text-white'>No Presale Participation Found</h2>
             <p>You haven't participated in any presales yet.</p>
-            <button className="buy-wave-btn">Buy WAVE</button>
+            <button className="buy-wave-btn" onClick={() => navigate("/presale")}>Buy WAVE</button>
           </div>
         </div>
         

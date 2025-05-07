@@ -77,7 +77,7 @@ const Topnav = () => {
             </ul>
             <div className="ms-auto d-flex">
               <p className="fw-bold text-white my-2 me-3">
-                <i className="fa-solid fa-wallet me-2"></i>{address && `${address.slice(0, 4)}***${address.slice(-4)}`}
+                {address && <i className="fa-solid fa-wallet me-2"></i>}{address && `${address.slice(0, 4)}***${address.slice(-4)}`}
               </p>
 
               {showDisconnect && (
