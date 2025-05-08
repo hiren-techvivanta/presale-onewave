@@ -57,9 +57,9 @@ const Sidebar = ({ collapsed, toggleSidebar }) => {
     //   </div>
     // </div>
     <>
-      <aside class="col-lg-3 pe-lg-4 pe-xl-5 mt-n3">
+      <aside class="col-lg-3 pe-lg-4 pe-xl-5 ps-lg-4 ps-xl-5 mt-n3 pt-4 shadow bg-white rounded-5">
         <div class="position-lg-sticky top-0">
-          <div class="d-none d-lg-block" style={{paddingTop: "105px"}}></div>
+          {/* <div class="d-none d-lg-block" style={{paddingTop: "105px"}}></div> */}
           <div class="offcanvas-lg offcanvas-start" id="sidebarAccount">
             <button
               class="btn-close position-absolute top-0 end-0 mt-3 me-3 d-lg-none"
@@ -74,21 +74,21 @@ const Sidebar = ({ collapsed, toggleSidebar }) => {
                   class="nav-link fw-semibold py-2 px-0"
                   to="/dashboard"
                 >
-                  <i class="fa-solid fa-home fs-5 opacity-60 me-2"></i>
+                  <i class="fa-solid fa-home fs-5 opacity-60 me-3"></i>
                   Dashboard
                 </Link>
                 <Link
                   class="nav-link fw-semibold py-2 px-0"
                   to="/investment/decentralized"
                 >
-                  <i class="fa-solid fa-wallet fs-5 opacity-60 me-2"></i>
+                  <i class="fa-solid fa-wallet fs-5 opacity-60 me-3"></i>
                   Invest via wallet
                 </Link>
                 <Link
                   class="nav-link fw-semibold py-2 px-0"
                   to="/investment/centralized"
                 >
-                  <i class="fa-solid fa-coins fs-5 opacity-60 me-2"></i>
+                  <i class="fa-solid fa-coins fs-5 opacity-60 me-3"></i>
                   Invest via Now payment
                 </Link>
               </nav>
@@ -98,7 +98,7 @@ const Sidebar = ({ collapsed, toggleSidebar }) => {
                   onClick={handleLogout}
                   // to="account-signin.html"
                 >
-                  <i class="fa-solid fa-arrow-right-from-bracket fs-5 opacity-60 me-2"></i>
+                  <i class="fa-solid fa-arrow-right-from-bracket fs-5 opacity-60 me-3"></i>
                   Sign out
                 </Link>
               </nav>

@@ -3,12 +3,14 @@ import logo from "../assets/images/logo-white.png";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAccount, useDisconnect } from "wagmi";
+import { useAppKit } from "@reown/appkit/react";
 
 const Topnav = () => {
   const navigate = useNavigate();
 
   const { isConnected, address } = useAccount();
   const { disconnect } = useDisconnect();
+    const { open, close } = useAppKit();
 
   const [user, setuser] = useState([]);
   const [showDisconnect, setshowDisconnect] = useState(false);
@@ -86,6 +88,14 @@ const Topnav = () => {
                   onClick={disconnect}
                 >
                   Disconnect Wallet
+                </button>
+              )} 
+              {!showDisconnect && (
+                <button
+                  class="rounded-2 custom-login px-4 py-2 me-3"
+                  onClick={open}
+                >
+                  Connect Wallet
                 </button>
               )}
 

@@ -56,20 +56,24 @@ const Login = () => {
     e.preventDefault();
     if (!validateForm()) return;
 
-    const formData = {
-      email,password,
-    }
-
-    const {data} = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/login`,formData,{withCredentials: true})
-
-    if (data.status === true) {
-      toast.success(data.message)
-      localStorage.setItem("user",JSON.stringify(data.data))      
-      navigate("/presale")
-    }
-
-    if (data.status === false) {
-      toast.error(data.message)
+    try {
+      const formData = {
+        email,password,
+      }
+  
+      const {data} = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/login`,formData,{withCredentials: true})
+  
+      if (data.status === true) {
+        toast.success(data.message)
+        localStorage.setItem("user",JSON.stringify(data.data))      
+        navigate("/presale")
+      }
+  
+      if (data.status === false) {
+        toast.error(data.message)
+      }
+    } catch (error) {
+      toast.error(error.response.data.message || "Internal server error")
     }
 
   

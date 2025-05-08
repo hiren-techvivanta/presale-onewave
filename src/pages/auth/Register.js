@@ -138,6 +138,7 @@ const Register = () => {
         sponserId: refCode || "",
       };
 
+     try {
       const { data } = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/register`,
         formData
@@ -147,6 +148,9 @@ const Register = () => {
         toast.success(data.message);
         navigate("/signup/verify/otp");
       }
+     } catch (error) {
+      toast.error(error.response.data.message || "Internal server error")
+     }
     }
   };
 

@@ -3622,7 +3622,7 @@ textarea.form-control.is-invalid {
 .btn.disabled,
 fieldset:disabled .btn {
   color: var(--ar-btn-disabled-color);
-  pointer-events: none;
+  pointer-events: all !important;
   background-color: var(--ar-btn-disabled-bg);
   border-color: var(--ar-btn-disabled-border-color);
   opacity: var(--ar-btn-disabled-opacity);
@@ -17893,4 +17893,9 @@ img-comparison-slider:focus {
 }
 .blinking {
   animation: blinking 1s infinite;
+}
+
+.point-dis {
+  cursor: not-allowed !important;
+   pointer-events: all !important;
 }

@@ -132,12 +132,15 @@ const CentralizedInvestment = () => {
     }
   };
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    getHistory()
+  }, [])
+  
 
   return (
     <>
       <main class="page-wrapper">
-        <div class="container py-5 mt-4 mt-lg-5 mb-lg-4 my-xl-5">
+        <div class="container py-5 mb-lg-4">
           <div class="row pt-sm-2 pt-lg-0">
             <Sidebar
               collapsed={sidebarCollapsed}
@@ -261,8 +264,8 @@ const CentralizedInvestment = () => {
                               <tr key={ind}>
                                 <th scope="row">{ind + 1}</th>
                                 <td>{val.phase}</td>
-                                <td>{val.amountInUsdt}</td>
-                                <td>{val.waveQty}</td>
+                                <td>{val.amount}</td>
+                                <td>{val.tokenQuantity}</td>
                                 <td
                                   className={
                                     val.status === "Success"

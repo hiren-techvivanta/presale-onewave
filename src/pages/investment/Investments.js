@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../../components/Sidebar";
-import { Button } from "react-bootstrap";
 import { useAccount, useDisconnect, useWriteContract } from "wagmi";
 import { parseEther, parseUnits } from "viem";
 import contractAbi from "../../assets/json/abi.json";
@@ -9,8 +8,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import usdtcontractAbi from "../../assets/json/usdtAbi.json";
-import { waitForTransactionReceipt } from "viem/actions";
-import { useReadContract } from 'wagmi'
+import { useReadContract } from "wagmi";
 
 const Investments = () => {
   const navigate = useNavigate();
@@ -106,10 +104,10 @@ const Investments = () => {
 
   const handlePurchase = async (usdtAmountParam) => {
     try {
-      const usdtAmount = parseEther(amounts);
+      const usdtAmount = parseUnits(amounts,18);
       console.log(usdtAmount);
-      
-      const phase = Number(phases);
+
+      const phase = Number(phases - 1);
       const referrer =
         refWallet || "0x0000000000000000000000000000000000000000";
 
@@ -121,7 +119,6 @@ const Investments = () => {
       });
 
       console.log(tx);
-      
 
       const formData = {
         phase: `Phase ${phases}`,
@@ -142,6 +139,7 @@ const Investments = () => {
         toast.success("Transaction Successful");
         getHistory();
       }
+      setshowBuyNow(false)
     } catch (error) {
       console.log(error);
 
@@ -154,6 +152,7 @@ const Investments = () => {
         status: "Failed",
       };
 
+      setshowBuyNow(false)
       const { data } = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/buy/dapp/token`,
         formData,
@@ -181,44 +180,37 @@ const Investments = () => {
     }
   };
 
-  const result = useReadContract({
+  const { data: vestings, isLoading } = useReadContract({
+    address: process.env.REACT_APP_SMART_CONTRACT,
     abi: contractAbi,
-    address: process.env.REACT_APP_SMART_CONTRACT, 
-    functionName: 'getVestingRecords',
-    args: ['0xEF1980dfdEd266429D1cEcA90DC3cD3806093614'], 
-    // enabled: !!address,
-  })
+    functionName: "getVestingRecords",
+    args: [address],
+    enabled: !!address,
+  });
   
-  useEffect(() => {
-    if (result) {      
-      console.log("Vesting data:", result)
-    }
-  }, [result])
 
-  const handleClaim = async (txn) => {
+  const handleClaim = async (vestingId) => {
     try {
       const tx = await writeContractAsync({
-        abi: contractAbi,
         address: process.env.REACT_APP_SMART_CONTRACT,
-        functionName: "claimTokens", 
-        args: [txn.walletAddress], 
+        abi: contractAbi,
+        functionName: "claimTokens",
+        args: [vestingId],
       });
   
       toast.success("Claim transaction sent!");
-      console.log("Claim TX Hash:", tx);
-  
+      console.log("Claim TX:", tx);
     } catch (error) {
       console.error("Claim failed:", error);
-      toast.error("Claim failed!");
+      toast.error("Claim failed");
     }
   };
-  
   
 
   return (
     <>
       <main class="page-wrapper">
-        <div class="container py-5 mt-4 mt-lg-5 mb-lg-4 my-xl-5">
+        <div class="container py-5 mb-lg-4">
           <div class="row pt-sm-2 pt-lg-0">
             <Sidebar
               collapsed={sidebarCollapsed}
@@ -376,42 +368,43 @@ const Investments = () => {
                   </div>
                   <div className="overflow-auto">
                     <div class="table table-responsive">
-                      <table class="table table-striped">
+                    {vestings === undefined ? (<p>No History Found</p>) : (
+                      <table className="table table-striped">
                         <thead>
                           <tr>
-                            <th scope="col">#</th>
                             <th scope="col">Phase</th>
-                            <th scope="col">Aamount(In USDT)</th>
-                            <th scope="col">Wave Qty</th>
-                            <th scope="col">Status</th>
+                            <th scope="col">Purchased Amount</th>
+                            <th scope="col">Claimed Amount</th>
+                            <th scope="col">Purchase Time</th>
                             <th scope="col">Action</th>
                           </tr>
                         </thead>
                         <tbody>
-                          {history?.map((val, ind) => (
-                            <tr key={ind}>
-                              <th scope="row">{ind + 1}</th>
-                              <td>{val.phase}</td>
-                              <td>{val.amountInUsdt}</td>
-                              <td>{val.waveQty}</td>
-                              <td
-                                className={
-                                  val.status === "Success"
-                                    ? "text-success"
-                                    : "text-danger"
-                                }
-                              >
-                                {val.status}
+                          {vestings?.map((v, i) => (
+                            <tr key={i}>
+                              <td>Phase {Number(v.phase) + 1}</td>
+                              <td>{(Number(v.amountPurchased) /1000000000000000000).toFixed(2)} USDT</td>
+                              <td>{(Number(v.amountClaimed) /1000000000000000000).toFixed(2) }</td>
+                              <td>
+                                {new Date(
+                                  Number(v.purchaseTime) * 1000
+                                ).toLocaleString()}
                               </td>
-                              <td>{
-                                  val.status === "Success"
-                                    ? (<button className="btn btn-secondary btn-sm" onClick={() => handleClaim(val)}>Claim</button>)
-                                    : null
-                                }</td>
+                              <td>
+                                <button
+                                  className={(Number(v.amountClaimed) /1000000000000000000) === 0 ? "btn btn-primary btn-sm" : "btn btn-primary btn-sm point-dis"}
+                                  onClick={() => handleClaim(i)}
+                                  disabled={(Number(v.amountClaimed) /1000000000000000000) === 0 ? false : true }
+                                >
+                                  Claim
+                                </button>
+                              </td>
                             </tr>
                           ))}
                         </tbody>
                       </table>
+                    )}
+                
                     </div>
                   </div>
                 </div>
