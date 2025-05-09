@@ -43,7 +43,7 @@ const Presele = () => {
                     className="btn btn-primary py-3 px-4 fw-semibold rounded-3"
                     onClick={() => navigate("/investment/decentralized")}
                   >
-                    Connect Wallet
+                    Pay via Wallet
                   </button>
                 </div>
                 <div className="d-flex flex-column">
@@ -60,7 +60,7 @@ const Presele = () => {
                 <div>
                   <button className="btn btn-primary py-3 px-4 fw-semibold rounded-3"
                    onClick={() => navigate("/investment/centralized")}>
-                    Scan QR Code
+                    Pay via Now Payments
                   </button>
                 </div>
               </div>

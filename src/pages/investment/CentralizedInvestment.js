@@ -140,7 +140,7 @@ const CentralizedInvestment = () => {
   return (
     <>
       <main class="page-wrapper">
-        <div class="container py-5 mb-lg-4">
+        <div class="container-fluid  mb-lg-4">
           <div class="row pt-sm-2 pt-lg-0">
             <Sidebar
               collapsed={sidebarCollapsed}

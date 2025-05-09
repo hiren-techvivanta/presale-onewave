@@ -461,6 +461,11 @@
           },
           {
             "internalType": "uint256",
+            "name": "usdtAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
             "name": "amountPurchased",
             "type": "uint256"
           },
@@ -667,6 +672,11 @@
       },
       {
         "internalType": "uint256",
+        "name": "usdtAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
         "name": "amountPurchased",
         "type": "uint256"
       },
@@ -712,7 +722,6 @@
         "type": "uint256"
       }
     ],
-
     "stateMutability": "view",
     "type": "function"
   },

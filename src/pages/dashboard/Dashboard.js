@@ -11,7 +11,9 @@ import { toast } from "react-toastify";
 const Dashboard = () => {
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
+    const [copied2, setCopied2] = useState(false);
   const [referralLink, setreferralLink] = useState("");
+  const [referralurl, setreferralurl] = useState("");
   const { isConnected, address } = useAccount();
 
   const [nowTokens, setnowTokens] = useState([])
@@ -25,6 +27,15 @@ const Dashboard = () => {
     );
   }, []);
 
+  useEffect(() => {
+    if (isConnected) {
+      setreferralurl(`${process.env.REACT_APP_PROJECT_URL}/investment/decentralized/${address}`)
+    }
+  
+  
+  }, [isConnected])
+  
+
   // const referralLink = `${process.env.REACT_APP_PROJECT_URL}/signup/`
   //  "https://onewave.app/presale?referral=0x3Af5783057A282028549dad4031640941A1A2194";
 
@@ -32,6 +43,12 @@ const Dashboard = () => {
     navigator.clipboard.writeText(referralLink);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+   const handleCopyAddress = () => {
+    navigator.clipboard.writeText(referralurl);
+    setCopied2(true);
+    setTimeout(() => setCopied2(false), 2000);
   };
 
   const { data: vestings, isLoading } = useReadContract({
@@ -91,7 +108,7 @@ useEffect(() => {
               <i class="fa-solid fa-receipt icon"></i>
             </div>
             <div className="stat-info">
-              <h3 className="m-0">Total Bought Via Wallet</h3>
+              <h3 className="m-0">Total Bought via wallet</h3>
               <h2 className="m-0">{isConnected === false ? (0):totalDeCoin?.toFixed(2)/1000000000000000000} USDT</h2>
             </div>
           </div>
@@ -125,7 +142,7 @@ useEffect(() => {
               <i class="fa-solid fa-dollar icon"></i>
             </div>
             <div className="stat-info">
-              <h3 className="m-0">Total Bought in USD</h3>
+              <h3 className="m-0">Total Bought via now payments</h3>
               <h2 className="m-0">0.00 USD</h2>
             </div>
           </div>
@@ -190,6 +207,23 @@ useEffect(() => {
               <span>Share</span>
             </button>
           </div>
+          {isConnected && (
+            <div className="link-container mt-3  overflow-hidden" style={{flexWrap: "nowrap"}}>
+            <div className="link-box w-75  overflow-hidden">
+              <span className="link-text" onClick={handleCopyAddress}>{referralurl}</span>
+            </div>
+            <button className="action-btn copy-btn overflow-hidden" onClick={handleCopyAddress}>
+              {/* <FontAwesomeIcon icon={copied ? faCircleCheck : faCopy} /> */}
+              <i className="fa-solid fa-copy"></i>
+              <span>{copied2 ? "Copied" : "Copy"}</span>
+            </button>
+            <button className="action-btn share-btn" onClick={handleCopyAddress}>
+              {/* <FontAwesomeIcon icon={faShareNodes} /> */}
+              <i className="fa-solid fa-share-nodes"></i>
+              <span>Share</span>
+            </button>
+          </div>
+          )}
         </div>
 
         {/* Presale Referrals Card */}

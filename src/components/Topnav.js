@@ -73,7 +73,7 @@ const Topnav = () => {
           <Link class="nav-link nav-text" to="/dashboard">Dashboard</Link>
         </li>
         <li class="nav-item px-2">
-          <Link class="nav-link nav-text" to="/presale">Presele</Link>
+          <Link class="nav-link nav-text" to="/presale">Presale</Link>
         </li>
         
             </ul>

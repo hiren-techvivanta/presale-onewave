@@ -365,7 +365,7 @@ const Register = () => {
                     />
                     <label className="form-check-label" htmlFor="agree">
                       I agree to the{" "}
-                      <Link to="/" className="text-decoration-none">
+                      <Link to="/terms" className="text-decoration-none">
                         {" "}
                         terms and conditions
                       </Link>
