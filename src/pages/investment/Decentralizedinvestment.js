@@ -10,20 +10,13 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import usdtcontractAbi from "../../assets/json/usdtAbi.json";
 import { useReadContract } from "wagmi";
+import { number } from "framer-motion";
 
 export default function WavePresale() {
+  const { ref } = useParams();
   const [bnbAmount, setBnbAmount] = useState(0);
   const [waveAmount, setWaveAmount] = useState(0);
   const [activeTab, setActiveTab] = useState("all");
-
-  // Mock transaction data
-  const transactions = [
-    { id: 1, address: "0x3A....2194", waveBought: 1, boughtWith: 1 },
-    { id: 2, address: "0x3A....2194", waveBought: 1, boughtWith: 1 },
-    { id: 3, address: "0x3A....2194", waveBought: 1, boughtWith: 1 },
-    { id: 4, address: "0x3A....2194", waveBought: 1, boughtWith: 1 },
-    { id: 5, address: "0x3A....2194", waveBought: 1, boughtWith: 1 },
-  ];
 
   const handleBnbChange = (e) => {
     const value = parseFloat(e.target.value) || 0;
@@ -33,7 +26,6 @@ export default function WavePresale() {
   };
 
   const navigate = useNavigate();
-  const { ref } = useParams();
 
   const { open, close } = useAppKit();
   const { disconnect } = useDisconnect();
@@ -48,10 +40,10 @@ export default function WavePresale() {
   const [phaseValuePrice, setPhaseValuePrice] = useState(0);
   const [phaseErrorMessage, setPhaseErrorMessage] = useState("");
   const [amountErrorMessage, setAmountErrorMessage] = useState("");
-  const [history, sethistory] = useState([]);
   const [showBuyNow, setshowBuyNow] = useState(false);
-  const [refWallet, setrefWallet] = useState("");
+  const [refWallet, setrefWallet] = useState(ref);
   const [loading, setloading] = useState(false);
+  const [cPayment, setcPayment] = useState("")
 
   const toggleSidebar = () => {
     setSidebarCollapsed(!sidebarCollapsed);
@@ -59,7 +51,6 @@ export default function WavePresale() {
 
   useEffect(() => {
     setShowConnectButton(!isConnected);
-    getHistory();
 
     switch (phases) {
       case "1":
@@ -71,7 +62,7 @@ export default function WavePresale() {
         setPhaseValuePrice(0.4);
         break;
       case "3":
-        setPhaseValue(1.66);
+        setPhaseValue(1.66667);
         setPhaseValuePrice(0.6);
         break;
       case "4":
@@ -126,11 +117,9 @@ export default function WavePresale() {
         functionName: "approve",
         args: [process.env.REACT_APP_SMART_CONTRACT, usdtAmount],
       });
-
-      console.log("USDT Approved:", approveTx);
       setshowBuyNow(true);
       setloading(false);
-      // await handlePurchase(usdtAmount);
+      await handlePurchase(usdtAmount);
     } catch (error) {
       setloading(false);
       toast.error("Approval Failed");
@@ -141,7 +130,6 @@ export default function WavePresale() {
     setloading(true);
     try {
       const usdtAmount = parseUnits(amounts, 18);
-      console.log(usdtAmount);
 
       const phase = Number(phases - 1);
       const referrer =
@@ -174,13 +162,11 @@ export default function WavePresale() {
         toast.success("Transaction Successful");
         setTimeout(() => {
           window.location.reload();
-        }, 4000);
+        }, 2000);
       }
       setshowBuyNow(false);
       setAmounts(0);
     } catch (error) {
-      console.log(error);
-
       const formData = {
         phase: `Phase ${phases}`,
         walletAddress: address,
@@ -205,21 +191,6 @@ export default function WavePresale() {
     }
   };
 
-  const getHistory = async () => {
-    try {
-      const { data } = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/buy/dapp/transaction`,
-        { withCredentials: true }
-      );
-
-      if (data.status === true) {
-        sethistory(data.data);
-      }
-    } catch (e) {
-      toast.error(e.response.data.message);
-    }
-  };
-
   const { data: vestings, isLoading } = useReadContract({
     address: process.env.REACT_APP_SMART_CONTRACT,
     abi: contractAbi,
@@ -238,16 +209,43 @@ export default function WavePresale() {
       });
 
       toast.success("Claim transaction sent!");
-      console.log("Claim TX:", tx);
 
       setTimeout(() => {
         window.location.reload();
       }, 4000);
     } catch (error) {
-      console.error("Claim failed:", error);
       toast.error("Claim failed");
     }
   };
+
+  useEffect(() => {
+   axios.get(`${process.env.REACT_APP_BACKEND_URL}/buy/transaction`,{withCredentials:true}).then((res) => {
+    if (res.data.status === "success") {
+      setcPayment(res.data.data)
+    }
+   }).catch((e) => {
+    toast.error(e.response.data.message || "Internal server error")
+   })
+  }, [])
+  
+
+  const { data: totalWave } = useReadContract({
+    address: process.env.REACT_APP_SMART_CONTRACT,
+    abi: contractAbi,
+    functionName: "totalWaveLocked",
+  });
+
+  let valueWave = Number(totalWave) / 1000000000000000000;
+  let x = (valueWave * 100) / 23000000;
+  let width = x;
+
+  const totalDeCoin = vestings?.reduce((sum, v) => {
+    return sum + Number(v.amountPurchased);
+  }, 0);
+
+  const totalVesting = vestings?.reduce((sum, v) => {
+    return sum + Number(v.amountClaimed);
+  }, 0);
 
   return (
     <div className="wave-presale">
@@ -261,13 +259,16 @@ export default function WavePresale() {
 
         {/* Progress section */}
         <div className="progress-section">
-          <div className="phase-info">Phase 1</div>
+          <div className="phase-info">Total Wave</div>
           <div className="progress-bar-container">
             <div className="progress-bar">
-              <div className="progress-fill" style={{ width: "30%" }}></div>
+              <div
+                className="progress-fill"
+                style={{ width: `${width}%` }}
+              ></div>
             </div>
           </div>
-          <div className="tokens-info">96420 WAVE</div>
+          <div className="tokens-info">2.30cr WAVE</div>
         </div>
 
         {/* Info Cards */}
@@ -278,7 +279,7 @@ export default function WavePresale() {
             </div>
             <div className="card-content">
               <p className="card-label m-0">Your Total Wave Balance</p>
-              <p className="card-value">0.000 WAVE</p>
+              <p className="card-value">{(Number(totalDeCoin)/1000000000000000000). toFixed(2)} WAVE</p>
             </div>
           </div>
 
@@ -300,206 +301,256 @@ export default function WavePresale() {
             </div>
             <div className="card-content">
               <p className="card-label m-0">Number of vested coins</p>
-              <p className="card-value">0.000 WAVE</p>
+              <p className="card-value">{(Number(totalVesting)/1000000000000000000).toFixed(2)} WAVE</p>
             </div>
           </div>
         </div>
 
         {/* Buy Section and Transactions */}
         {showConnectButton === false ? (
-           <div className="bottom-section">
-          {/* Buy Section */}
-          <div className="buy-section">
-            <h2 className="section-title">Buy WAVE</h2>
-            <div className="exchange-container">
-              <form>
-                <div className="row g-3">
-                  <div className="col-md-12 mb-3 border rounded-3 p-3">
-                    <label
-                      htmlFor="phase"
-                      className="form-label fs-5 fw-semibold text-secondary"
-                    >
-                      Phase
-                    </label>
-                    <select
-                      id="phase"
-                      className="form-select shadow-none "
-                      value={phases}
-                      onChange={(e) => {
-                        setPhaseErrorMessage("");
-                        setPhase(e.target.value);
-                      }}
-                    >
-                      <option value="">Select Phase</option>
-                      <option value="1">Phase 1</option>
-                      <option value="2">Phase 2</option>
-                      <option value="3">Phase 3</option>
-                      <option value="4">Phase 4</option>
-                    </select>
-                    {phaseErrorMessage && (
-                      <p className="text-danger m-0 mt-1">
-                        {phaseErrorMessage}
-                      </p>
-                    )}
-                  </div>
-                  <div className="col-md-12 mb-3 border rounded-3 p-3">
-                    <label className="form-label fs-5 fw-semibold text-secondary">
-                      You Pay (IN USDT)
-                    </label>
-                    <input
-                      type="number"
-                      className="form-control rounded-2"
-                      placeholder="Enter Amount In USDT"
-                      onChange={(e) => {
-                        setAmountErrorMessage("");
-                        setAmounts(e.target.value);
-                      }}
-                    />
-                    {amountErrorMessage && (
-                      <p className="text-danger m-0 mt-1">
-                        {amountErrorMessage}
-                      </p>
-                    )}
-                  </div>
-                  <div className="col-md-12 mb-3 border rounded-3 p-3">
-                    <label className="form-label fs-5 fw-semibold text-secondary">
-                      You Get (IN Wave)
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control rounded-2"
-                      value={
-                        amounts && phaseValue
-                          ? (parseFloat(amounts) * phaseValue).toFixed(2)
-                          : ""
-                      }
-                      disabled
-                    />
-                  </div>
-                  <div className="col-md-12 mb-3 border rounded-3 p-3">
-                    <label className="form-label fs-5 fw-semibold text-secondary">
-                      Ref Wallet Address (optional)
-                    </label>
-                    <input
-                      type="number"
-                      className="form-control rounded-2"
-                      placeholder="Enter ref wallet address"
-                      value={refWallet}
-                      onChange={(e) => setrefWallet(e.target.value)}
-                    />
-                  </div>
-                </div>
-              </form>
-            </div>
-
-            {/* <button className="buy-button">Buy With BNB</button> */}
-            {showBuyNow === true ? (
-              <button
-                className="btn btn-primary py-3 fs-5"
-                // onClick={handlePurchase}
-                onClick={handlePurchase}
-                disabled={loading}
-              >
-                {loading ? <>Loading...</> : <>Buy Now</>}
-              </button>
-            ) : (
-              <button
-                className="btn btn-primary py-3 fs-5"
-                // onClick={handlePurchase}
-                onClick={approveTransaction}
-                disabled={loading}
-              >
-                {loading ? <>Loading...</> : <>Approve Now</>}
-              </button>
-            )}
-          </div>
-
-          {/* Transactions Section */}
-          <div className="transactions-section">
-            <div className="tabs-container">
-              <div className={`tab ${activeTab === "your" ? "active" : ""}`}>
-                Your Transactions
-              </div>
-            </div>
-
-            <div className="row g-3 transactions-list w-100">
-              {vestings?.length === 0 && (
-                <div className="card">
-                  <h5 className="text-center m-0 p-2">No Transactions Found</h5>
-                </div>
-              )}
-              {vestings?.map((v, i) => (
-                <div className="col-6 col-md-12 transaction-item w-100" key={i}>
-                  <div className="transaction-icon">
-                    <i class="fa-solid fa-coins transaction-svg text-white"></i>
-                  </div>
-                  <div className="transaction-details">
-                    <div className="transaction-amounts flex-wrap">
-                      <div className="amount-bought">
-                        <span className="label">Phase:</span>
-                        <span className="value">
-                          {" "}
-                          Phase {Number(v.phase) + 1}
-                        </span>
-                      </div>
-                      <div className="amount-bought">
-                        <span className="label">WAVE Bought:</span>
-                        <span className="value">
-                          {" "}
-                          {(
-                            Number(v.amountPurchased) / 1000000000000000000
-                          ).toFixed(2)}
-                        </span>
-                      </div>
-                      <div className="amount-bought">
-                        <span className="label">Bought With:</span>
-                        <span className="value">
-                          {" "}
-                          {(Number(v.usdtAmount) / 1000000000000000000).toFixed(
-                            2
-                          )}{" "}
-                          USDT
-                        </span>
-                      </div>
-                      <div className="amount-bought">
-                        <span className="label">Claimed:</span>
-                        <span className="value">
-                          {" "}
-                          {(
-                            Number(v.amountClaimed) / 1000000000000000000
-                          ).toFixed(2)}
-                        </span>
-                      </div>
+          <div className="bottom-section">
+            {/* Buy Section */}
+            <div className="buy-section">
+              <h2 className="section-title">Buy WAVE</h2>
+              <div className="exchange-container">
+                <form>
+                  <div className="row g-3">
+                    <div className="col-md-12 mb-3 border rounded-3 p-3">
+                      <label
+                        htmlFor="phase"
+                        className="form-label fs-5 fw-semibold text-secondary"
+                      >
+                        Phase
+                      </label>
+                      <select
+                        id="phase"
+                        className="form-select shadow-none "
+                        value={phases}
+                        onChange={(e) => {
+                          setPhaseErrorMessage("");
+                          setPhase(e.target.value);
+                        }}
+                      >
+                        <option value="">Select Phase</option>
+                        <option value="1">Phase 1</option>
+                        <option value="2">Phase 2</option>
+                        <option value="3">Phase 3</option>
+                        <option value="4">Phase 4</option>
+                      </select>
+                      {phaseErrorMessage && (
+                        <p className="text-danger m-0 mt-1">
+                          {phaseErrorMessage}
+                        </p>
+                      )}
+                    </div>
+                    <div className="col-md-12 mb-3 border rounded-3 p-3">
+                      <label className="form-label fs-5 fw-semibold text-secondary">
+                        You Pay (IN USDT)
+                      </label>
+                      <input
+                        type="number"
+                        className="form-control rounded-2"
+                        placeholder="Enter Amount In USDT"
+                        onChange={(e) => {
+                          setAmountErrorMessage("");
+                          setAmounts(e.target.value);
+                        }}
+                      />
+                      {amountErrorMessage && (
+                        <p className="text-danger m-0 mt-1">
+                          {amountErrorMessage}
+                        </p>
+                      )}
+                    </div>
+                    <div className="col-md-12 mb-3 border rounded-3 p-3">
+                      <label className="form-label fs-5 fw-semibold text-secondary">
+                        You Get (IN Wave)
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control rounded-2"
+                        value={
+                          amounts && phaseValue
+                            ? (parseFloat(amounts) * phaseValue).toFixed(2)
+                            : ""
+                        }
+                        disabled
+                      />
+                    </div>
+                    <div className="col-md-12 mb-3 border rounded-3 p-3">
+                      <label className="form-label fs-5 fw-semibold text-secondary">
+                        Ref Wallet Address (optional)
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control rounded-2"
+                        placeholder="Enter ref wallet address"
+                        value={refWallet}
+                        onChange={(e) => setrefWallet(e.target.value)}
+                      />
                     </div>
                   </div>
-                  <div className="text-center">
-                    <button
-                      className={
-                        Number(v.amountClaimed) / 1000000000000000000 === 0
-                          ? "btn btn-primary btn-sm"
-                          : "btn btn-primary btn-sm point-dis"
-                      }
-                      onClick={() => handleClaim(i)}
-                      disabled={
-                        Number(v.amountClaimed) / 1000000000000000000 === 0
-                          ? false
-                          : true
-                      }
-                    >
-                      Claim
-                    </button>
-                  </div>
+                </form>
+              </div>
+
+              {/* <button className="buy-button">Buy With BNB</button> */}
+              {showBuyNow === true ? (
+                <button
+                  className="btn btn-primary py-3 fs-5"
+                  // onClick={handlePurchase}
+                  onClick={handlePurchase}
+                  disabled={loading}
+                >
+                  {loading ? <>Loading...</> : <>Buy Now</>}
+                </button>
+              ) : (
+                <button
+                  className="btn btn-primary py-3 fs-5"
+                  // onClick={handlePurchase}
+                  onClick={approveTransaction}
+                  disabled={loading}
+                >
+                  {loading ? <>Loading...</> : <>Buy Now</>}
+                </button>
+              )}
+            </div>
+
+            {/* Transactions Section */}
+            <div className="transactions-section">
+              <div className="tabs-container">
+                <div className={`tab ${activeTab === "your" ? "active" : ""}`}>
+                  Your Transactions
                 </div>
-              ))}
+              </div>
+
+              <div className="row g-3 transactions-list w-100">
+                {vestings?.length === 0 && (
+                  <div className="card">
+                    <h5 className="text-center m-0 p-2">
+                      No Transactions Found
+                    </h5>
+                  </div>
+                )}
+                {vestings?.map((v, i) => (
+                  <div
+                    className="col-6 col-md-12 transaction-item w-100"
+                    key={i}
+                  >
+                    <div className="transaction-icon">
+                      <i className="fa-solid fa-coins transaction-svg text-white"></i>
+                    </div>
+                    <div className="transaction-details">
+                      <div className="transaction-amounts flex-wrap">
+                        <div className="amount-bought">
+                          <span className="label">Phase:</span>
+                          <span className="value">
+                            {" "}
+                            Phase {Number(v.phase) + 1}
+                          </span>
+                        </div>
+                        <div className="amount-bought">
+                          <span className="label">WAVE Bought:</span>
+                          <span className="value">
+                            {" "}
+                            {(
+                              Number(v.amountPurchased) / 1000000000000000000
+                            ).toFixed(2)}
+                          </span>
+                        </div>
+                        <div className="amount-bought">
+                          <span className="label">Bought With:</span>
+                          <span className="value">
+                            {" "}
+                            {(
+                              Number(v.usdtAmount) / 1000000000000000000
+                            ).toFixed(2)}{" "}
+                            USDT
+                          </span>
+                        </div>
+                        <div className="amount-bought">
+                          <span className="label">Claimed:</span>
+                          <span className="value">
+                            {" "}
+                            {(
+                              Number(v.amountClaimed) / 1000000000000000000
+                            ).toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-center">
+                      {(() => {
+                        const phase = Number(v.phase); // 0-indexed
+                        const lockMonths = [12, 9, 6, 3];
+                        const lockInMonths = lockMonths[phase] || 0;
+
+                        const purchaseTime = Number(v.purchaseTime); // seconds
+                        const unlockDate = new Date(purchaseTime * 1000);
+                        unlockDate.setMonth(
+                          unlockDate.getMonth() + lockInMonths
+                        );
+
+                        const now = new Date();
+                        const isUnlocked = now >= unlockDate;
+                        const alreadyClaimed =
+                          Number(v.amountClaimed) >= Number(v.amountPurchased);
+
+                        if (!isUnlocked) {
+                          return (
+                            <button
+                              className="btn btn-secondary btn-sm"
+                              disabled
+                            >
+                              Locked
+                            </button>
+                          );
+                        }
+
+                        if (alreadyClaimed) {
+                          return (
+                            <button className="btn btn-success btn-sm" disabled>
+                              Claimed
+                            </button>
+                          );
+                        }
+
+                        return (
+                          <button
+                            className="btn btn-primary btn-sm"
+                            onClick={() => handleClaim(i)}
+                          >
+                            Claim
+                          </button>
+                        );
+                      })()}
+                      {/* <button
+                        className={
+                          Number(v.amountClaimed) / 1000000000000000000 === 0
+                            ? "btn btn-primary btn-sm"
+                            : "btn btn-primary btn-sm point-dis"
+                        }
+                        onClick={() => handleClaim(i)}
+                        disabled={
+                          Number(v.amountClaimed) / 1000000000000000000 === 0
+                            ? false
+                            : true
+                        }
+                      >
+                        Claim
+                      </button> */}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
         ) : (
           <div className="card p-3">
-            <p className="m-0 text-center fw-semibold">Plase Connect Wallet To Invest In Wave</p>
+            <p className="m-0 text-center fw-semibold">
+              Plase Connect Wallet To Invest In Wave
+            </p>
           </div>
         )}
-       
       </main>
     </div>
   );

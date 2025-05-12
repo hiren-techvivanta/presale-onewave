@@ -129,7 +129,6 @@ const Register = () => {
     e.preventDefault();
     if (validateStepTwo()) {
       setloading(true);
-      console.log("Registration form submitted:", form);
       const formData = {
         firstName: form.firstName,
         lastName: form.lastName,
@@ -137,7 +136,7 @@ const Register = () => {
         email: form.email,
         password: form.password,
         nationality: form.country,
-        sponserId: refCode || "",
+        refEmail: refCode || "",
       };
 
       try {
@@ -295,9 +294,9 @@ const Register = () => {
                   </div>
 
                   <div className="mb-2">
-                    <label className="form-label">Referral Id (optional)</label>
+                    <label className="form-label">Referral Email (optional)</label>
                     <input
-                      type="text"
+                      type="email"
                       className={`form-control ${
                         errors.refEmail ? "is-invalid" : ""
                       }`}
@@ -334,6 +333,7 @@ const Register = () => {
                     >
                       <i className={`fa ${showPassword ? "fa-eye" : "fa-eye-slash"}`} />
                     </button> */}
+                    <p className="fs-xs ps-2 text-secondary">Use letters, numbers, and special characters to create a strong password.</p>
                     {errors.password && (
                       <div className="invalid-feedback">{errors.password}</div>
                     )}

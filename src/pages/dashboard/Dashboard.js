@@ -6,6 +6,7 @@ import { useAccount, useReadContract } from "wagmi";
 import contractAbi from "../../assets/json/abi.json";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { formatUnits } from "viem";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ const Dashboard = () => {
     const parsedObject = JSON.parse(user);
     const objectArray = [parsedObject];
     setreferralLink(
-      `${process.env.REACT_APP_PROJECT_URL}/signup/${objectArray[0]?._id}`
+      `${process.env.REACT_APP_PROJECT_URL}/signup/${objectArray[0]?.email}`
     );
   }, []);
 
@@ -69,6 +70,48 @@ const Dashboard = () => {
     getData();
   }, []);
 
+  // get user summry
+  const { data: userSummry } = useReadContract({
+    address: process.env.REACT_APP_SMART_CONTRACT,
+    abi: contractAbi,
+    functionName: "getUserSummary",
+    args: [
+      address,
+      // "0xF594E5931638dbf21f84594769BB1bBcf8D4f12E", // user address
+    ],
+    enabled: !!address,
+  });
+
+  // // get ref list
+  // const { data: refList } = useReadContract({
+  //   address: process.env.REACT_APP_SMART_CONTRACT,
+  //   abi: contractAbi,
+  //   functionName: "getUserReferralSummary",
+  //   args: [
+  //     address
+  //     // "0xF594E5931638dbf21f84594769BB1bBcf8D4f12E",
+  //     // 0,
+  //   ],
+  //   enabled: !!address,
+  // });
+
+  // get ref list
+  const { data: refList } = useReadContract({
+    address: process.env.REACT_APP_SMART_CONTRACT,
+    abi: contractAbi,
+    functionName: "getReferralRecords",
+    args: [
+      address,
+      // "0xF594E5931638dbf21f84594769BB1bBcf8D4f12E",
+      // 0,
+    ],
+    enabled: !!address,
+  });
+
+  const totalRefList = refList?.reduce((sum, v) => {
+    return sum + Number(v.rewardUSDT);
+  }, 0);
+
   const getData = async () => {
     try {
       const { data } = await axios.get(
@@ -97,7 +140,7 @@ const Dashboard = () => {
           <div className="stat-card">
             <div className="icon-container">
               {/* <FontAwesomeIcon icon={faWallet} className="icon" /> */}
-              <i class="fa-solid fa-receipt icon"></i>
+              <i className="fa-solid fa-receipt icon"></i>
             </div>
             <div className="stat-info">
               <h3 className="m-0">Total Bought via wallet</h3>
@@ -113,7 +156,7 @@ const Dashboard = () => {
           <div className="stat-card" style={{ maxWidth: "410px" }}>
             <div className="icon-container">
               {/* <FontAwesomeIcon icon={faCoins} className="icon" /> */}
-              <i class="fa-solid fa-coins icon"></i>
+              <i className="fa-solid fa-coins icon"></i>
             </div>
             <div className="stat-info">
               <h3 className="m-0">Total WAVE Allocated and Vesting</h3>
@@ -124,7 +167,7 @@ const Dashboard = () => {
           <div className="stat-card">
             <div className="icon-container">
               {/* <FontAwesomeIcon icon={faChartLine} className="icon" /> */}
-              <i class="fa-solid fa-hexagon-nodes icon"></i>
+              <i className="fa-solid fa-hexagon-nodes icon"></i>
             </div>
             <div className="stat-info">
               <h3 className="m-0">Total Claimed In Wallet</h3>
@@ -139,7 +182,7 @@ const Dashboard = () => {
           <div className="stat-card">
             <div className="icon-container">
               {/* <FontAwesomeIcon icon={faWallet} className="icon" /> */}
-              <i class="fa-solid fa-dollar icon"></i>
+              <i className="fa-solid fa-dollar icon"></i>
             </div>
             <div className="stat-info">
               <h3 className="m-0">Total Bought via now payments</h3>
@@ -151,7 +194,7 @@ const Dashboard = () => {
         {/* Presale Participation Section */}
         <div className="presale-section">
           <div className="no-presale">
-            <div class="dashboardy">Dashboard</div>
+            <div className="dashboardy">Dashboard</div>
             <h2 className="text-white">No Presale Participation Found</h2>
             <p>You haven't participated in any presales yet.</p>
             <button
@@ -167,24 +210,24 @@ const Dashboard = () => {
 
         {/* Referral Stats Cards */}
         <div className="referral-stats-container">
-          <div className="referral-card">
+          {/* <div className="referral-card">
             <div className="stat-info">
               <h3>Total Presales</h3>
               <h2>1</h2>
             </div>
-          </div>
+          </div> */}
 
           <div className="referral-card">
             <div className="stat-info">
-              <h3>Total BNB Earnings</h3>
-              <h2>0 BNB</h2>
+              <h3>Total Earnings Via Wallet</h3>
+              <h2>{totalRefList / 1000000000000000000} USDT</h2>
             </div>
           </div>
 
           <div className="referral-card">
             <div className="stat-info">
-              <h3>Total USD Earnings</h3>
-              <h2>$0.000</h2>
+              <h3>Total Earnings Via Now Payments</h3>
+              <h2>$0.00</h2>
             </div>
           </div>
         </div>
@@ -200,11 +243,6 @@ const Dashboard = () => {
               {/* <FontAwesomeIcon icon={copied ? faCircleCheck : faCopy} /> */}
               <i className="fa-solid fa-copy"></i>
               <span>{copied ? "Copied" : "Copy"}</span>
-            </button>
-            <button className="action-btn share-btn" onClick={handleCopy}>
-              {/* <FontAwesomeIcon icon={faShareNodes} /> */}
-              <i className="fa-solid fa-share-nodes"></i>
-              <span>Share</span>
             </button>
           </div>
           {isConnected && (
@@ -225,14 +263,6 @@ const Dashboard = () => {
                 <i className="fa-solid fa-copy"></i>
                 <span>{copied2 ? "Copied" : "Copy"}</span>
               </button>
-              <button
-                className="action-btn share-btn"
-                onClick={handleCopyAddress}
-              >
-                {/* <FontAwesomeIcon icon={faShareNodes} /> */}
-                <i className="fa-solid fa-share-nodes"></i>
-                <span>Share</span>
-              </button>
             </div>
           )}
         </div>
@@ -243,27 +273,25 @@ const Dashboard = () => {
 
           <div className="referrals-table">
             <div className="table-header">
-              <div className="table-cell phase">Phase</div>
-              <div className="table-cell bnb">BNB</div>
-              <div className="table-cell usd">USD</div>
-              <div className="table-cell status">Status</div>
-              <div className="table-cell actions">Actions</div>
+              <div className="table-cell phase">User</div>
+              <div className="table-cell bnb">Reward in USDT</div>
+              <div className="table-cell usd">User spend</div>
             </div>
 
-            <div className="table-row">
-              <div className="table-cell phase">Phase 1</div>
-              <div className="table-cell bnb">0 BNB</div>
-              <div className="table-cell usd">$ 0.000</div>
-              <div className="table-cell status">
-                <span className="status-tag no-earnings">No Earnings</span>
-              </div>
-              <div className="table-cell actions">
-                <div className="action-buttons">
-                  <button className="withdraw-btn">Withdraw BNB</button>
-                  <button className="withdraw-btn">Withdraw USD</button>
+            {refList?.map((v, i) => (
+              <div className="table-row" key={i}>
+                <div className="table-cell phase">{`${v.referee.slice(
+                  0,
+                  4
+                )}***${v.referee.slice(-4)}`}</div>
+                <div className="table-cell bnb">
+                  {Number(v.rewardUSDT) / 1000000000000000000} USDT
+                </div>
+                <div className="table-cell usd">
+                  {Number(v.usdtAmount) / 1000000000000000000} USDT
                 </div>
               </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>

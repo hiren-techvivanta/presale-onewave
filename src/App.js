@@ -37,7 +37,7 @@ function App() {
 
           <Route
             path="/investment/decentralized/:ref"
-            element={<Investments />}
+            element={<WavePresale />}
           />
           <Route
             path="/terms"

@@ -214,19 +214,19 @@ const Investments = () => {
 
   return (
     <>
-      <main class="page-wrapper">
-        <div class="container-fluid mb-lg-4">
-          <div class="row pt-sm-2 pt-lg-0">
+      <main className="page-wrapper">
+        <div className="container-fluid mb-lg-4">
+          <div className="row pt-sm-2 pt-lg-0">
             <Sidebar
               collapsed={sidebarCollapsed}
               toggleSidebar={toggleSidebar}
             />
 
-            <div class="col-lg-9 pt-4 pb-2 pb-sm-4">
-              <h1 class="h2 mb-4">Invest With Wallet</h1>
+            <div className="col-lg-9 pt-4 pb-2 pb-sm-4">
+              <h1 className="h2 mb-4">Invest With Wallet</h1>
 
-              <div class="card border-0 shadow py-1 p-md-2 p-xl-3 p-xxl-4 mb-4">
-                <div class="card-body p-3">
+              <div className="card border-0 shadow py-1 p-md-2 p-xl-3 p-xxl-4 mb-4">
+                <div className="card-body p-3">
                   {showConnectButton ? (
                     <div className="text-end">
                       <button
@@ -367,13 +367,13 @@ const Investments = () => {
                 </div>
               </div>
 
-              <div class="card border-0 shadow py-1 p-md-2 p-xl-3 p-xxl-4 mb-4">
-                <div class="card-body p-3">
-                  <div class="d-flex align-items-center mt-sm-n1 pb-4 mb-0 mb-lg-1 mb-xl-3">
-                    <h2 class="h4 mb-0">Payment History</h2>
+              <div className="card border-0 shadow py-1 p-md-2 p-xl-3 p-xxl-4 mb-4">
+                <div className="card-body p-3">
+                  <div className="d-flex align-items-center mt-sm-n1 pb-4 mb-0 mb-lg-1 mb-xl-3">
+                    <h2 className="h4 mb-0">Payment History</h2>
                   </div>
                   <div className="overflow-auto">
-                    <div class="table table-responsive">
+                    <div className="table table-responsive">
                       {vestings === undefined ? (
                         <p>No History Found</p>
                       ) : (

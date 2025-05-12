@@ -106,7 +106,7 @@ const ForgotPassword = () => {
                 ) : (
                   <>
                     {" "}
-                    Continue <i class="fa-solid fa-arrow-right ms-2"></i>
+                    Continue <i className="fa-solid fa-arrow-right ms-2"></i>
                   </>
                 )}
               </button>

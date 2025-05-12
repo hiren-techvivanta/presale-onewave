@@ -276,7 +276,8 @@ $warning-text: #ff8902;
   @include card;
   flex: 1;
   min-width: 300px;
-  max-width: 365px;
+  // max-width: 365px;
+  max-width: 565px;
   padding: 20px !important;
   
   @media (max-width: 480px) {

@@ -49,8 +49,8 @@ const Topnav = () => {
 
   return (
     <>
-      <nav class="navbar navbar-expand-lg blur-bg-2">
-        <div class="container position-relative z-2">
+      <nav className="navbar navbar-expand-lg blur-bg-2">
+        <div className="container position-relative z-2">
           <div onClick={() => navigate("/dashboard")}>
             <img
               onClick={() => navigate("/")}
@@ -61,7 +61,7 @@ const Topnav = () => {
             />
           </div>
           <button
-            class="navbar-toggler"
+            className="navbar-toggler"
             type="button"
             data-bs-toggle="collapse"
             data-bs-target="#navbarSupportedContent"
@@ -69,16 +69,16 @@ const Topnav = () => {
             aria-expanded="false"
             aria-label="Toggle navigation"
           >
-            <span class="navbar-toggler-icon"></span>
+            <span className="navbar-toggler-icon"></span>
           </button>
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <div className="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
            
-            <li class="nav-item px-2">
-          <Link class="nav-link nav-text" to="/dashboard">Dashboard</Link>
+            <li className="nav-item px-2">
+          <Link className="nav-link nav-text" to="/dashboard">Dashboard</Link>
         </li>
-        <li class="nav-item px-2">
-          <Link class="nav-link nav-text" to="/presale">Presale</Link>
+        <li className="nav-item px-2">
+          <Link className="nav-link nav-text" to="/presale">Presale</Link>
         </li>
         
             </ul>
@@ -89,7 +89,7 @@ const Topnav = () => {
 
               {showDisconnect && (
                 <button
-                  class="rounded-2 custom-login px-4 py-2 me-3"
+                  className="rounded-2 custom-login px-4 py-2 me-3"
                   onClick={handleDisconnectWallet}
                 >
                   Disconnect Wallet
@@ -97,7 +97,7 @@ const Topnav = () => {
               )} 
               {!showDisconnect && (
                 <button
-                  class="rounded-2 custom-login px-4 py-2 me-3"
+                  className="rounded-2 custom-login px-4 py-2 me-3"
                   onClick={open}
                 >
                   Connect Wallet
@@ -105,7 +105,7 @@ const Topnav = () => {
               )}
 
               <button
-                class="rounded-2 custom-login px-4 py-2"
+                className="rounded-2 custom-login px-4 py-2"
                 type="submit"
                 onClick={() =>
                   user === null ? navigate("/signin") : handleLogout()

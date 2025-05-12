@@ -85,37 +85,37 @@
 //     return valid;
 //   };
 
-//   const handlePurchase = async (e) => {
-//     e.preventDefault();
-//     try {
-//       if (!validateInputs()) return;
+// const handlePurchase = async (e) => {
+//   e.preventDefault();
+//   try {
+//     if (!validateInputs()) return;
 
-//       const pakgeId = phaseData.filter(
-//         (element) => +phases === element.tokenPrice
-//       );
+//     const pakgeId = phaseData.filter(
+//       (element) => +phases === element.tokenPrice
+//     );
 
-//       const formData = {
-//         amount: 100,
-//         packageId: pakgeId[0]?._id,
-//         currency: "USD",
-//       };
+//     const formData = {
+//       amount: 100,
+//       packageId: pakgeId[0]?._id,
+//       currency: "USD",
+//     };
 
-//       const { data } = await axios.post(
-//         `${process.env.REACT_APP_BACKEND_URL}/payment/create`,
-//         formData,
-//         { withCredentials: true }
-//       );
+//     const { data } = await axios.post(
+//       `${process.env.REACT_APP_BACKEND_URL}/payment/create`,
+//       formData,
+//       { withCredentials: true }
+//     );
 
-//       if (data.invoice_url) {
-//         window.open(data.invoice_url);
-//       }
-//       // if (data.status === "true") {
-//       //   toast.success("Transaction Successful")
-//       // }
-//     } catch (error) {
-//       toast.error("Transaction Failed");
+//     if (data.invoice_url) {
+//       window.open(data.invoice_url);
 //     }
-//   };
+//     // if (data.status === "true") {
+//     //   toast.success("Transaction Successful")
+//     // }
+//   } catch (error) {
+//     toast.error("Transaction Failed");
+//   }
+// };
 
 //   const getHistory = async () => {
 //     try {
@@ -138,19 +138,19 @@
 
 //   return (
 //     <>
-//       <main class="page-wrapper">
-//         <div class="container-fluid  mb-lg-4">
-//           <div class="row pt-sm-2 pt-lg-0">
+//       <main className="page-wrapper">
+//         <div className="container-fluid  mb-lg-4">
+//           <div className="row pt-sm-2 pt-lg-0">
 //             <Sidebar
 //               collapsed={sidebarCollapsed}
 //               toggleSidebar={toggleSidebar}
 //             />
 
-//             <div class="col-lg-9 pt-4 pb-2 pb-sm-4">
-//               <h1 class="h2 mb-4">Invest with Now Payments</h1>
+//             <div className="col-lg-9 pt-4 pb-2 pb-sm-4">
+//               <h1 className="h2 mb-4">Invest with Now Payments</h1>
 
-//               <div class="card border-0  shadow py-1 p-md-2 p-xl-3 p-xxl-4 mb-4">
-//                 <div class="card-body p-3">
+//               <div className="card border-0  shadow py-1 p-md-2 p-xl-3 p-xxl-4 mb-4">
+//                 <div className="card-body p-3">
 //                   <div className="d-flex justify-content-end gap-3 py-2 px-4">
 //                     <button
 //                       className="btn btn-primary py-2 px-4 rounded-3"
@@ -170,7 +170,7 @@
 //                             Phase
 //                           </label>
 //                           <select
-//                             class="form-select shadow-none "
+//                             className="form-select shadow-none "
 //                             aria-label="Default select example"
 //                             onChange={(e) => setphase(e.target.value)}
 //                           >
@@ -238,17 +238,17 @@
 //                 </div>
 //               </div>
 
-//               <div class="card border-0  shadow py-1 p-md-2 p-xl-3 p-xxl-4 mb-4">
-//                 <div class="card-body p-3">
-//                   <div class="d-flex align-items-center mt-sm-n1 pb-4 mb-0 mb-lg-1 mb-xl-3">
-//                     <h2 class="h4 mb-0">Payment History</h2>
+//               <div className="card border-0  shadow py-1 p-md-2 p-xl-3 p-xxl-4 mb-4">
+//                 <div className="card-body p-3">
+//                   <div className="d-flex align-items-center mt-sm-n1 pb-4 mb-0 mb-lg-1 mb-xl-3">
+//                     <h2 className="h4 mb-0">Payment History</h2>
 //                   </div>
 //                   <div className="overflow-auto">
-//                     <div class="table table-responsive">
+//                     <div className="table table-responsive">
 //                       {history.length === 0 ? (
 //                         <h5 className="text-center">No Data Found</h5>
 //                       ) : (
-//                         <table class="table table-striped">
+//                         <table className="table table-striped">
 //                           <thead>
 //                             <tr>
 //                               <th scope="col">#</th>
@@ -299,11 +299,14 @@ import Topnav from "../../components/Topnav";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useAccount, useReadContract } from "wagmi";
+import contractAbi from "../../assets/json/abi.json";
 
 export default function WavePresale() {
   const [activeTab, setActiveTab] = useState("all");
 
   const navigate = useNavigate();
+    const { isConnected, address } = useAccount();
 
   const [showConnectButton, setShowConnectButton] = useState(false);
   const [amounts, setAmounts] = useState("");
@@ -314,10 +317,11 @@ export default function WavePresale() {
   const [amountErrorMessage, setAmountErrorMessage] = useState("");
   const [history, sethistory] = useState([]);
   const [loading, setloading] = useState(false);
-
-
+  const [phaseData, setPhaseData] = useState([]);
+  const [cPayment, setcPayment] = useState("");
 
   useEffect(() => {
+    getPhaseData();
     getHistory();
 
     switch (phases) {
@@ -340,9 +344,22 @@ export default function WavePresale() {
       default:
         setPhaseValue(0);
     }
-  }, [ phases]);
+  }, [phases]);
 
+  const getPhaseData = async () => {
+    try {
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/buy/phase`,
+        { withCredentials: true }
+      );
 
+      if (data.status === true) {
+        setPhaseData(data.data);
+      }
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
+  };
 
   const validateInputs = () => {
     let valid = true;
@@ -368,14 +385,34 @@ export default function WavePresale() {
     return valid;
   };
 
-
-
   const handlePurchase = async (usdtAmountParam) => {
     setloading(true);
     try {
-     
+      if (!validateInputs()) return;
+
+      const pakgeId = phaseData.filter(
+        (element) => +phases === element.tokenPrice
+      );
+
+      const formData = {
+        amount: amounts,
+        packageId: pakgeId[0]?._id,
+        currency: "USD",
+      };
+
+      const { data } = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/payment/create`,
+        formData,
+        { withCredentials: true }
+      );
+
+      if (data.invoice_url) {
+        window.open(data.invoice_url);
+        setloading(false);
+      }
     } catch (error) {
-     
+      setloading(false);
+      toast.error("Transaction Failed");
     }
   };
 
@@ -394,9 +431,44 @@ export default function WavePresale() {
     }
   };
 
-//  {investmentId, amount, tokenQuantity, lockingPeriod, phase, createdAt}
+    const { data: vestings, isLoading } = useReadContract({
+      address: process.env.REACT_APP_SMART_CONTRACT,
+      abi: contractAbi,
+      functionName: "getVestingRecords",
+      args: [address],
+      enabled: !!address,
+    });
 
+  useEffect(() => {
+    axios
+      .get(`${process.env.REACT_APP_BACKEND_URL}/buy/transaction`, { withCredentials: true })
+      .then((res) => {
+        if (res.data.status === "success") {
+          setcPayment(res.data.data);
+        }
+      })
+      .catch((e) => {
+        toast.error(e.response.data.message || "Internal server error");
+      });
+  }, []);
 
+  const { data: totalWave } = useReadContract({
+    address: process.env.REACT_APP_SMART_CONTRACT,
+    abi: contractAbi,
+    functionName: "totalWaveLocked",
+  });
+
+  let valueWave = Number(totalWave) / 1000000000000000000;
+  let x = (valueWave * 100) / 23000000;
+  let width = x;
+
+    const totalDeCoin = vestings?.reduce((sum, v) => {
+    return sum + Number(v.amountPurchased);
+  }, 0);
+
+  const totalVesting = vestings?.reduce((sum, v) => {
+    return sum + Number(v.amountClaimed);
+  }, 0);
 
   return (
     <div className="wave-presale">
@@ -413,10 +485,13 @@ export default function WavePresale() {
           <div className="phase-info">Phase 1</div>
           <div className="progress-bar-container">
             <div className="progress-bar">
-              <div className="progress-fill" style={{ width: "30%" }}></div>
+              <div
+                className="progress-fill"
+                style={{ width: `${width}%` }}
+              ></div>
             </div>
           </div>
-          <div className="tokens-info">96420 WAVE</div>
+          <div className="tokens-info">2.30cr WAVE</div>
         </div>
 
         {/* Info Cards */}
@@ -427,7 +502,7 @@ export default function WavePresale() {
             </div>
             <div className="card-content">
               <p className="card-label m-0">Your Total Wave Balance</p>
-              <p className="card-value">0.000 WAVE</p>
+              <p className="card-value">{(Number(totalDeCoin)/1000000000000000000).toFixed(2)} WAVE</p>
             </div>
           </div>
 
@@ -440,16 +515,6 @@ export default function WavePresale() {
               <p className="card-value">
                 {phaseValue ? phaseValuePrice.toFixed(2) : 0} USD
               </p>
-            </div>
-          </div>
-
-          <div className="info-card">
-            <div className="card-icon-container">
-              <i className="fa-solid fa-coins text-white card-icon"></i>
-            </div>
-            <div className="card-content">
-              <p className="card-label m-0">Number of vested coins</p>
-              <p className="card-value">0.000 WAVE</p>
             </div>
           </div>
         </div>
@@ -479,11 +544,12 @@ export default function WavePresale() {
                           setPhase(e.target.value);
                         }}
                       >
-                        <option value="">Select Phase</option>
-                        <option value="1">Phase 1</option>
-                        <option value="2">Phase 2</option>
-                        <option value="3">Phase 3</option>
-                        <option value="4">Phase 4</option>
+                        <option selected>Select Phase</option>
+                        {phaseData?.map((val, ind) => (
+                          <option key={ind} value={val.tokenPrice}>
+                            {val.packageName}
+                          </option>
+                        ))}
                       </select>
                       {phaseErrorMessage && (
                         <p className="text-danger m-0 mt-1">
@@ -556,16 +622,13 @@ export default function WavePresale() {
               {history?.map((v, i) => (
                 <div className="col-6 col-md-12 transaction-item w-100" key={i}>
                   <div className="transaction-icon">
-                    <i class="fa-solid fa-coins transaction-svg text-white"></i>
+                    <i className="fa-solid fa-coins transaction-svg text-white"></i>
                   </div>
                   <div className="transaction-details">
                     <div className="transaction-amounts flex-wrap">
                       <div className="amount-bought">
                         <span className="label">Phase:</span>
-                        <span className="value">
-                          {" "}
-                          Phase {v.phase}
-                        </span>
+                        <span className="value"> Phase {v.phase}</span>
                       </div>
                       <div className="amount-bought">
                         <span className="label">WAVE Bought:</span>
@@ -576,10 +639,7 @@ export default function WavePresale() {
                       </div>
                       <div className="amount-bought">
                         <span className="label">Lock In Period:</span>
-                        <span className="value">
-                          {" "}
-                          {v.lockingPeriod}
-                        </span>
+                        <span className="value"> {v.lockingPeriod}</span>
                       </div>
                     </div>
                   </div>
