@@ -3,20 +3,19 @@ import Topnav from "../../components/Topnav";
 import "./dashboard.scss";
 import { useNavigate } from "react-router-dom";
 import { useAccount, useReadContract } from "wagmi";
-import contractAbi from '../../assets/json/abi.json'
+import contractAbi from "../../assets/json/abi.json";
 import axios from "axios";
 import { toast } from "react-toastify";
-
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
-    const [copied2, setCopied2] = useState(false);
+  const [copied2, setCopied2] = useState(false);
   const [referralLink, setreferralLink] = useState("");
   const [referralurl, setreferralurl] = useState("");
   const { isConnected, address } = useAccount();
 
-  const [nowTokens, setnowTokens] = useState([])
+  const [nowTokens, setnowTokens] = useState([]);
 
   useEffect(() => {
     const user = localStorage.getItem("user");
@@ -29,12 +28,11 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (isConnected) {
-      setreferralurl(`${process.env.REACT_APP_PROJECT_URL}/investment/decentralized/${address}`)
+      setreferralurl(
+        `${process.env.REACT_APP_PROJECT_URL}/investment/decentralized/${address}`
+      );
     }
-  
-  
-  }, [isConnected])
-  
+  }, [isConnected]);
 
   // const referralLink = `${process.env.REACT_APP_PROJECT_URL}/signup/`
   //  "https://onewave.app/presale?referral=0x3Af5783057A282028549dad4031640941A1A2194";
@@ -45,7 +43,7 @@ const Dashboard = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-   const handleCopyAddress = () => {
+  const handleCopyAddress = () => {
     navigator.clipboard.writeText(referralurl);
     setCopied2(true);
     setTimeout(() => setCopied2(false), 2000);
@@ -63,33 +61,27 @@ const Dashboard = () => {
     return sum + Number(v.amountPurchased);
   }, 0);
 
-  const totalVesting = vestings?.reduce((sum,v) => {
-    return sum +  Number(v.amountClaimed);
-  },0)
+  const totalVesting = vestings?.reduce((sum, v) => {
+    return sum + Number(v.amountClaimed);
+  }, 0);
 
   useEffect(() => {
-    getData()
-  }, [])
-  
+    getData();
+  }, []);
 
-  const getData = async () => { 
+  const getData = async () => {
     try {
-      const {data} = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/buy/total`,{withCredentials:true})
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/buy/total`,
+        { withCredentials: true }
+      );
       if (data.status === "success") {
-        setnowTokens(data.data)
+        setnowTokens(data.data);
       }
     } catch (error) {
-      toast.error(error.response.data.message||"Internal server error")
+      toast.error(error.response.data.message || "Internal server error");
     }
-   }
-
-useEffect(() => {
-  if (!isConnected) {
-    toast.info("Please Connect wallet to show data.")
-  }
-}, [isConnected])
-
-   
+  };
 
   return (
     <div className="dashboard-container">
@@ -109,7 +101,12 @@ useEffect(() => {
             </div>
             <div className="stat-info">
               <h3 className="m-0">Total Bought via wallet</h3>
-              <h2 className="m-0">{isConnected === false ? (0):totalDeCoin?.toFixed(2)/1000000000000000000} USDT</h2>
+              <h2 className="m-0">
+                {isConnected === false
+                  ? 0
+                  : totalDeCoin?.toFixed(2) / 1000000000000000000}{" "}
+                USDT
+              </h2>
             </div>
           </div>
 
@@ -131,12 +128,15 @@ useEffect(() => {
             </div>
             <div className="stat-info">
               <h3 className="m-0">Total Claimed In Wallet</h3>
-              <h2 className="m-0">{isConnected === false ? (0) : totalVesting /1000000000000000000} WAVE</h2>
+              <h2 className="m-0">
+                {isConnected === false ? 0 : totalVesting / 1000000000000000000}{" "}
+                WAVE
+              </h2>
             </div>
           </div>
         </div>
         <div className="stats-container">
-        <div className="stat-card">
+          <div className="stat-card">
             <div className="icon-container">
               {/* <FontAwesomeIcon icon={faWallet} className="icon" /> */}
               <i class="fa-solid fa-dollar icon"></i>
@@ -208,21 +208,32 @@ useEffect(() => {
             </button>
           </div>
           {isConnected && (
-            <div className="link-container mt-3  overflow-hidden" style={{flexWrap: "nowrap"}}>
-            <div className="link-box w-75  overflow-hidden">
-              <span className="link-text" onClick={handleCopyAddress}>{referralurl}</span>
+            <div
+              className="link-container mt-3  overflow-hidden"
+              style={{ flexWrap: "nowrap" }}
+            >
+              <div className="link-box w-75  overflow-hidden">
+                <span className="link-text" onClick={handleCopyAddress}>
+                  {referralurl}
+                </span>
+              </div>
+              <button
+                className="action-btn copy-btn overflow-hidden"
+                onClick={handleCopyAddress}
+              >
+                {/* <FontAwesomeIcon icon={copied ? faCircleCheck : faCopy} /> */}
+                <i className="fa-solid fa-copy"></i>
+                <span>{copied2 ? "Copied" : "Copy"}</span>
+              </button>
+              <button
+                className="action-btn share-btn"
+                onClick={handleCopyAddress}
+              >
+                {/* <FontAwesomeIcon icon={faShareNodes} /> */}
+                <i className="fa-solid fa-share-nodes"></i>
+                <span>Share</span>
+              </button>
             </div>
-            <button className="action-btn copy-btn overflow-hidden" onClick={handleCopyAddress}>
-              {/* <FontAwesomeIcon icon={copied ? faCircleCheck : faCopy} /> */}
-              <i className="fa-solid fa-copy"></i>
-              <span>{copied2 ? "Copied" : "Copy"}</span>
-            </button>
-            <button className="action-btn share-btn" onClick={handleCopyAddress}>
-              {/* <FontAwesomeIcon icon={faShareNodes} /> */}
-              <i className="fa-solid fa-share-nodes"></i>
-              <span>Share</span>
-            </button>
-          </div>
           )}
         </div>
 

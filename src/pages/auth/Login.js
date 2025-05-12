@@ -12,16 +12,16 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [emailErrMessage, setEmailErrMessage] = useState("");
   const [passwordErrMessage, setPasswordErrMessage] = useState("");
+  const [loading, setloading] = useState(false)
 
   useEffect(() => {
     const user = localStorage.getItem("user");
     const parsedObject = JSON.parse(user);
     const objectArray = [parsedObject];
     if (objectArray[0] !== null) {
-      navigate("/presale")
+      navigate("/presale");
     }
-  }, [])
-  
+  }, []);
 
   const validateForm = () => {
     let isValid = true;
@@ -56,38 +56,49 @@ const Login = () => {
     e.preventDefault();
     if (!validateForm()) return;
 
+    setloading(true)
     try {
       const formData = {
-        email,password,
-      }
-  
-      const {data} = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/login`,formData,{withCredentials: true})
-  
+        email,
+        password,
+      };
+
+      const { data } = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/login`,
+        formData,
+        { withCredentials: true }
+      );
+
       if (data.status === true) {
-        toast.success(data.message)
-        localStorage.setItem("user",JSON.stringify(data.data))      
-        navigate("/presale")
+        setloading(false)
+        toast.success(data.message);
+        localStorage.setItem("user", JSON.stringify(data.data));
+        navigate("/presale");
       }
-  
+
       if (data.status === false) {
-        toast.error(data.message)
+         setloading(false)
+        toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error.response.data.message || "Internal server error")
+       setloading(false)
+      toast.error(error.response.data.message || "Internal server error");
     }
-
-  
-
   };
 
   return (
     <>
       {/* Top Branding Bar */}
       <div className="blur-bg py-3 px-4 d-flex justify-content-between align-items-center w-100 shadow-sm position-absolute top-0">
-        <img src={logo} alt="Wave Logo" className="img-fluid" style={{maxWidth:"120px"}} />
-        <button 
+        <img
+          src={logo}
+          alt="Wave Logo"
+          className="img-fluid"
+          style={{ maxWidth: "120px" }}
+        />
+        <button
           className="btn btn-primary px-4"
-          onClick={() => navigate('/signup')}
+          onClick={() => navigate("/signup")}
         >
           Sign Up
         </button>
@@ -100,12 +111,17 @@ const Login = () => {
 
         {/* Centered Login Box */}
         <div className="position-absolute translate-centrt w-100 mw-100 px-3">
-          <div className="login-box shadow-lg rounded-3 bg-white " style={{ maxWidth: "450px" }}>
+          <div
+            className="login-box shadow-lg rounded-3 bg-white "
+            style={{ maxWidth: "450px" }}
+          >
             <div className="p-3 pb-0">
               <h2 className="fw-semibold">
                 Sign in to <span className="text-primary">Wave</span>
               </h2>
-              <p className="text-secondary mb-4">Fill your email and password to sign in</p>
+              <p className="text-secondary mb-4">
+                Fill your email and password to sign in
+              </p>
             </div>
             <hr />
 
@@ -115,12 +131,16 @@ const Login = () => {
                 <label className="form-label fw-medium">Email</label>
                 <input
                   type="email"
-                  className={`form-control rounded-2 ${emailErrMessage ? "is-invalid" : ""}`}
+                  className={`form-control rounded-2 ${
+                    emailErrMessage ? "is-invalid" : ""
+                  }`}
                   placeholder="Enter email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
-                {emailErrMessage && <div className="invalid-feedback">{emailErrMessage}</div>}
+                {emailErrMessage && (
+                  <div className="invalid-feedback">{emailErrMessage}</div>
+                )}
               </div>
 
               {/* Password Input */}
@@ -128,12 +148,16 @@ const Login = () => {
                 <label className="form-label fw-medium">Password</label>
                 <input
                   type={showPassword ? "text" : "password"}
-                  className={`form-control rounded-2 ${passwordErrMessage ? "is-invalid" : ""}`}
+                  className={`form-control rounded-2 ${
+                    passwordErrMessage ? "is-invalid" : ""
+                  }`}
                   placeholder="Enter password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
-                {passwordErrMessage && <div className="invalid-feedback">{passwordErrMessage}</div>}
+                {passwordErrMessage && (
+                  <div className="invalid-feedback">{passwordErrMessage}</div>
+                )}
               </div>
 
               {/* Remember Me & Forgot Password */}
@@ -144,24 +168,37 @@ const Login = () => {
                     type="checkbox"
                     id="remember"
                   />
-                  <label className="form-check-label text-secondary" htmlFor="remember">
+                  <label
+                    className="form-check-label text-secondary"
+                    htmlFor="remember"
+                  >
                     Remember me
                   </label>
                 </div>
-                <Link to="/forgot-password" className="text-decoration-none text-primary small">
+                <Link
+                  to="/forgot-password"
+                  className="text-decoration-none text-primary small"
+                >
                   Forgot password?
                 </Link>
               </div>
 
               {/* Sign In Button */}
-              <button type="submit" className="btn btn-primary text-ligh w-100 py-2 rounded-2 fw-medium">
-                Sign In
+              <button
+                type="submit"
+                className="btn btn-primary text-ligh w-100 py-2 rounded-2 fw-medium"
+                disabled={loading}
+              >
+                {loading === true ? (<>Loading...</>) : (<>Sign In</>)}
               </button>
 
               {/* Sign Up Link */}
               <p className="text-center mt-2 text-secondary">
                 Don't have an account?{" "}
-                <a href="/signup" className="text-primary text-decoration-none fw-medium">
+                <a
+                  href="/signup"
+                  className="text-primary text-decoration-none fw-medium"
+                >
                   Sign Up
                 </a>
               </p>

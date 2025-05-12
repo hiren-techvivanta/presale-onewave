@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 
 const Register = () => {
   const navigate = useNavigate();
-  const {refCode} = useParams()
+  const { refCode } = useParams();
 
   const countryObj = customList(
     "countryCode",
@@ -34,6 +34,7 @@ const Register = () => {
   const [showPasswordFields, setShowPasswordFields] = useState(false);
   const [errors, setErrors] = useState({});
   const [country, setcountry] = useState();
+  const [loading, setloading] = useState(false);
 
   const nameCharRegex = /^[a-zA-Z\s]+$/;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -127,6 +128,7 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateStepTwo()) {
+      setloading(true);
       console.log("Registration form submitted:", form);
       const formData = {
         firstName: form.firstName,
@@ -138,19 +140,21 @@ const Register = () => {
         sponserId: refCode || "",
       };
 
-     try {
-      const { data } = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/register`,
-        formData
-      );
+      try {
+        const { data } = await axios.post(
+          `${process.env.REACT_APP_BACKEND_URL}/register`,
+          formData
+        );
 
-      if (data.status === true) {
-        toast.success(data.message);
-        navigate("/signup/verify/otp");
+        if (data.status === true) {
+          setloading(false);
+          toast.success(data.message);
+          navigate("/signup/verify/otp");
+        }
+      } catch (error) {
+        setloading(false);
+        toast.error(error.response.data.message || "Internal server error");
       }
-     } catch (error) {
-      toast.error(error.response.data.message || "Internal server error")
-     }
     }
   };
 
@@ -275,19 +279,19 @@ const Register = () => {
 
                   <div className="mb-2">
                     <label className="form-label">Phone</label>
-                      <input
-                        type="tel"
-                        className={`form-control ${
-                          errors.phone ? "is-invalid" : ""
-                        }`}
-                        placeholder="Your Phone No"
-                        name="phone"
-                        value={form.phone}
-                        onChange={handleChange}
-                      />
-                      {errors.phone && (
-                        <div className="invalid-feedback">{errors.phone}</div>
-                      )}
+                    <input
+                      type="tel"
+                      className={`form-control ${
+                        errors.phone ? "is-invalid" : ""
+                      }`}
+                      placeholder="Your Phone No"
+                      name="phone"
+                      value={form.phone}
+                      onChange={handleChange}
+                    />
+                    {errors.phone && (
+                      <div className="invalid-feedback">{errors.phone}</div>
+                    )}
                   </div>
 
                   <div className="mb-2">
@@ -379,8 +383,18 @@ const Register = () => {
                 </>
               )}
 
-              <button type="submit" className="btn btn-primary w-100 py-2">
-                {showPasswordFields ? "Register" : "Continue"}
+              <button
+                type="submit"
+                className="btn btn-primary w-100 py-2"
+                disabled={loading}
+              >
+                {loading === true ? (
+                  <>Loading...</>
+                ) : showPasswordFields ? (
+                  <>Register</>
+                ) : (
+                  <>Continue</>
+                )}
               </button>
             </form>
           </div>

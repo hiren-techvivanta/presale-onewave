@@ -37,6 +37,8 @@ createAppKit({
   },
 });
 
+export const wagmiClient = wagmiAdapter.wagmiConfig;
+
 export function AppKitProvider({ children }) {
   return (
     <WagmiProvider config={wagmiAdapter.wagmiConfig}>

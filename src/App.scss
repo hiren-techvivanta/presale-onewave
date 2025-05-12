@@ -70,7 +70,6 @@ body {
   }
 }
 
-
 .blur-bg {
   // filter: blur(0.1rem);
   background-color: #ffffffb2;
@@ -175,13 +174,26 @@ body {
 }
 
 .nav-text {
-  color: $light !important;
+  color: $light!important;
   transition: all 0.4s ease-in-out;
 
   &:hover {
     color: #fff !important;
     font-weight: 500;
     text-shadow: 0 0 10px #ffffff6b;
+  }
+}
+
+@media (max-width: 768px) {
+  .nav-text {
+    color: $dark !important;
+    transition: all 0.4s ease-in-out;
+
+    &:hover {
+      color: #fff !important;
+      font-weight: 500;
+      text-shadow: 0 0 10px #ffffff6b;
+    }
   }
 }
 
@@ -673,8 +685,6 @@ input[type="number"]::-webkit-inner-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
-
-
 
 .text-gradient {
   background: linear-gradient(
@@ -17897,5 +17907,5 @@ img-comparison-slider:focus {
 
 .point-dis {
   cursor: not-allowed !important;
-   pointer-events: all !important;
+  pointer-events: all !important;
 }

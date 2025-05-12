@@ -18,6 +18,8 @@ const ResetPassword = () => {
   const [passwordErrMessage, setPasswordErrMessage] = useState("");
   const [confirmPasswordErrMessage, setConfirmPasswordErrMessage] = useState("");
 
+    const [loading, setloading] = useState(false)
+
   useEffect(() => {
     const user = localStorage.getItem("user");
     if (user) {
@@ -54,6 +56,8 @@ const ResetPassword = () => {
 
     if (!validateForm()) return;
 
+    setloading(true)
+
     try {
       const response = await axios.put(
         `${process.env.REACT_APP_BACKEND_URL}/resetPassword`,
@@ -62,10 +66,12 @@ const ResetPassword = () => {
       );
 
       if (response.data.status === true) {
+        setloading(false)
         toast.success(response.data.message);
         navigate("/signin");
       }
     } catch (error) {
+      setloading(false)
       toast.error(error.response?.data?.message || "Internal server error");
     }
   };
@@ -120,14 +126,14 @@ const ResetPassword = () => {
               </div>
 
               {/* Reset Button */}
-              <button type="submit" className="btn btn-primary text-light w-100 py-2 rounded-2 fw-medium">
-                Reset
+              <button type="submit" className="btn btn-primary text-light w-100 py-2 rounded-2 fw-medium" disabled={loading}>
+                {loading === true ? "Loading..." : "Reset"}
               </button>
 
               {/* Sign Up Option */}
               <p className="text-center mt-2 text-secondary">
                 Don’t have an account?{" "}
-                <Link to="/signup" className="text-primary text-decoration-none fw-medium">
+                <Link to="/signup" className="text-primary text-decoration-none fw-medium" >
                   Sign Up
                 </Link>
               </p>

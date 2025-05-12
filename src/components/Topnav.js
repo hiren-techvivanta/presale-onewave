@@ -42,6 +42,11 @@ const Topnav = () => {
     navigate("/");
   };
 
+  const handleDisconnectWallet = () => { 
+    disconnect()
+    window.location.reload()
+   }
+
   return (
     <>
       <nav class="navbar navbar-expand-lg blur-bg-2">
@@ -85,7 +90,7 @@ const Topnav = () => {
               {showDisconnect && (
                 <button
                   class="rounded-2 custom-login px-4 py-2 me-3"
-                  onClick={disconnect}
+                  onClick={handleDisconnectWallet}
                 >
                   Disconnect Wallet
                 </button>

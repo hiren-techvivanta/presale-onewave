@@ -12,6 +12,7 @@ import CentralizedInvestment from "./pages/investment/CentralizedInvestment";
 import ResetPassword from "./pages/auth/ResetPassword";
 import Error404 from "./pages/error/Error404";
 import TermsOfService from "./pages/TermsOfService/TermsOfService";
+import WavePresale from "./pages/investment/Decentralizedinvestment";
 
 function App() {
   return (
@@ -31,7 +32,9 @@ function App() {
             path="/investment/centralized"
             element={<CentralizedInvestment />}
           />
-          <Route path="/investment/decentralized" element={<Investments />} />
+          <Route path="/investment/decentralized" element={<WavePresale />} />
+          {/* <Route path="/investment/decentralized" element={<Investments />} /> */}
+
           <Route
             path="/investment/decentralized/:ref"
             element={<Investments />}

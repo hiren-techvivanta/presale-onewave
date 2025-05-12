@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import Topnav from "../../components/Topnav";
+import { useNavigate } from "react-router-dom";
 
 const TermsOfService = () => {
+  const navigate = useNavigate()
   return (
     <>
       <div className="dashboard-container">
-        <Topnav />
+        {/* <Topnav /> */}
         <div className="row">
           <div className="col-12">
             <h1 className="text-center pt-5 mt-5 text-white">Wave Terms of Use</h1>
@@ -16,6 +18,7 @@ const TermsOfService = () => {
                 <div className="col-12 col-md-10 mx-auto">
                   <div className="card">
                     <div className="card-body">
+                    <div className="text-end"><button className="btn btn-secondary" onClick={() => navigate(-1)}><i className="fa-solid fa-arrow-left pe-2"></i> Go Back</button></div>
                       <h5 className="text-info fw-bold">1. Acceptance of Terms</h5>
                       <p className="text-secondary">
                         Welcome to Wave! These Terms of Use ("Terms") govern
@@ -399,7 +402,7 @@ const TermsOfService = () => {
                       </p>
 
                       <h5 className="text-info fw-bold">11. Contact Us</h5>
-                      <p>If you have any questions or concerns about these Terms or the Services, please contact us at [Contact Email].</p>
+                      <p>If you have any questions or concerns about these Terms or the Services, please contact us at support@onewave.app.</p>
                       <p>By using the Wave platform, you agree to abide by these Terms of Use. Thank you for choosing Wave for your investment needs!</p>
                     </div>
                   </div>

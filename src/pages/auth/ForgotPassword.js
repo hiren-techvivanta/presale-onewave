@@ -8,6 +8,7 @@ const ForgotPassword = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [emailErrMessage, setEmailErrMessage] = useState("");
+  const [loading, setloading] = useState(false);
 
   useEffect(() => {
     const user = localStorage.getItem("user");
@@ -18,21 +19,28 @@ const ForgotPassword = () => {
     }
   }, []);
 
-  const handleSubmit = async (e) => { 
-    e.preventDefault()
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
+      setloading(true);
       const formData = {
-        email
-      }
-      const {data} = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/forgetPassword`,formData,{withCredentials:true})
+        email,
+      };
+      const { data } = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/forgetPassword`,
+        formData,
+        { withCredentials: true }
+      );
 
       if (data.status === true) {
-        toast.info("Chack your Email to change password")
+        setloading(false);
+        toast.info("Chack your Email to change password");
       }
     } catch (error) {
-      toast.error(error.response.data.message || "Internal server error")
+      setloading(false);
+      toast.error(error.response.data.message || "Internal server error");
     }
-   }
+  };
   return (
     <>
       <div className="blur-bg py-3 px-4 d-flex justify-content-between align-items-center w-100 shadow-sm position-absolute top-0">
@@ -91,8 +99,16 @@ const ForgotPassword = () => {
               <button
                 type="submit"
                 className="btn btn-primary text-ligh w-100 py-2 rounded-2 fw-medium"
+                disabled={loading}
               >
-                Continue <i class="fa-solid fa-arrow-right ms-2"></i>
+                {loading === true ? (
+                  <>Loading...</>
+                ) : (
+                  <>
+                    {" "}
+                    Continue <i class="fa-solid fa-arrow-right ms-2"></i>
+                  </>
+                )}
               </button>
 
               {/* Sign Up Link */}
