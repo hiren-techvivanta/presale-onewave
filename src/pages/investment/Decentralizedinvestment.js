@@ -43,7 +43,8 @@ export default function WavePresale() {
   const [showBuyNow, setshowBuyNow] = useState(false);
   const [refWallet, setrefWallet] = useState(ref);
   const [loading, setloading] = useState(false);
-  const [cPayment, setcPayment] = useState("")
+  const [cPayment, setcPayment] = useState("");
+  const [nowTokens, setnowTokens] = useState(0);
 
   const toggleSidebar = () => {
     setSidebarCollapsed(!sidebarCollapsed);
@@ -62,7 +63,7 @@ export default function WavePresale() {
         setPhaseValuePrice(0.4);
         break;
       case "3":
-        setPhaseValue(1.66667);
+        setPhaseValue(1.6666667);
         setPhaseValuePrice(0.6);
         break;
       case "4":
@@ -94,7 +95,7 @@ export default function WavePresale() {
     if (!amount || isNaN(amount)) {
       setAmountErrorMessage("Please enter a valid amount.");
       valid = false;
-    } else if (amount < 1) {
+    } else if (amount < 10) {
       setAmountErrorMessage("Minimum amount is 10 USDT.");
       valid = false;
     } else {
@@ -218,16 +219,36 @@ export default function WavePresale() {
     }
   };
 
-  useEffect(() => {
-   axios.get(`${process.env.REACT_APP_BACKEND_URL}/buy/transaction`,{withCredentials:true}).then((res) => {
-    if (res.data.status === "success") {
-      setcPayment(res.data.data)
+    const getData = async () => {
+    try {
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/buy/total`,
+        { withCredentials: true }
+      );
+      if (data.status === true) {
+        setnowTokens(data.data.totalWave);
+      }
+    } catch (error) {
+      toast.error(error.response.data.message || "Internal server error");
     }
-   }).catch((e) => {
-    toast.error(e.response.data.message || "Internal server error")
-   })
-  }, [])
-  
+  };
+ 
+
+  useEffect(() => {
+    getData()
+    axios
+      .get(`${process.env.REACT_APP_BACKEND_URL}/buy/transaction`, {
+        withCredentials: true,
+      })
+      .then((res) => {
+        if (res.data.status === "success") {
+          setcPayment(res.data.data);
+        }
+      })
+      .catch((e) => {
+        toast.error(e.response.data.message || "Internal server error");
+      });
+  }, []);
 
   const { data: totalWave } = useReadContract({
     address: process.env.REACT_APP_SMART_CONTRACT,
@@ -236,7 +257,7 @@ export default function WavePresale() {
   });
 
   let valueWave = Number(totalWave) / 1000000000000000000;
-  let x = (valueWave * 100) / 23000000;
+  let x = ((valueWave + Number(nowTokens) * 100) / 23000000) ;  
   let width = x;
 
   const totalDeCoin = vestings?.reduce((sum, v) => {
@@ -279,7 +300,12 @@ export default function WavePresale() {
             </div>
             <div className="card-content">
               <p className="card-label m-0">Your Total Wave Balance</p>
-              <p className="card-value">{(Number(totalDeCoin)/1000000000000000000). toFixed(2)} WAVE</p>
+              <p className="card-value">
+                {isConnected
+                  ? ((Number(totalDeCoin) / 1000000000000000000) + nowTokens).toFixed(2)
+                  : 0}{" "}
+                WAVE
+              </p>
             </div>
           </div>
 
@@ -301,7 +327,12 @@ export default function WavePresale() {
             </div>
             <div className="card-content">
               <p className="card-label m-0">Number of vested coins</p>
-              <p className="card-value">{(Number(totalVesting)/1000000000000000000).toFixed(2)} WAVE</p>
+              <p className="card-value">
+                {isConnected
+                  ? (Number(totalVesting) / 1000000000000000000).toFixed(2)
+                  : 0}{" "}
+                WAVE
+              </p>
             </div>
           </div>
         </div>
@@ -348,12 +379,16 @@ export default function WavePresale() {
                         You Pay (IN USDT)
                       </label>
                       <input
-                        type="number"
+                        type="text"
+                        maxLength="6"
                         className="form-control rounded-2"
                         placeholder="Enter Amount In USDT"
                         onChange={(e) => {
-                          setAmountErrorMessage("");
-                          setAmounts(e.target.value);
+                           const value = e.target.value;
+                          if (/^\d*$/.test(value)) {
+                            setAmountErrorMessage("");
+                            setAmounts(e.target.value);
+                          }
                         }}
                       />
                       {amountErrorMessage && (

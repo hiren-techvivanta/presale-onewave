@@ -306,7 +306,7 @@ export default function WavePresale() {
   const [activeTab, setActiveTab] = useState("all");
 
   const navigate = useNavigate();
-    const { isConnected, address } = useAccount();
+  const { isConnected, address } = useAccount();
 
   const [showConnectButton, setShowConnectButton] = useState(false);
   const [amounts, setAmounts] = useState("");
@@ -319,25 +319,26 @@ export default function WavePresale() {
   const [loading, setloading] = useState(false);
   const [phaseData, setPhaseData] = useState([]);
   const [cPayment, setcPayment] = useState("");
+  const [nowTokens, setnowTokens] = useState(0);
 
   useEffect(() => {
     getPhaseData();
     getHistory();
 
     switch (phases) {
-      case "1":
+      case "0.2":
         setPhaseValue(5);
         setPhaseValuePrice(0.2);
         break;
-      case "2":
+      case "0.4":
         setPhaseValue(2.5);
         setPhaseValuePrice(0.4);
         break;
-      case "3":
-        setPhaseValue(1.66);
+      case "0.6":
+        setPhaseValue(1.6666667);
         setPhaseValuePrice(0.6);
         break;
-      case "4":
+      case "0.8":
         setPhaseValue(1.25);
         setPhaseValuePrice(0.8);
         break;
@@ -431,17 +432,20 @@ export default function WavePresale() {
     }
   };
 
-    const { data: vestings, isLoading } = useReadContract({
-      address: process.env.REACT_APP_SMART_CONTRACT,
-      abi: contractAbi,
-      functionName: "getVestingRecords",
-      args: [address],
-      enabled: !!address,
-    });
+  const { data: vestings, isLoading } = useReadContract({
+    address: process.env.REACT_APP_SMART_CONTRACT,
+    abi: contractAbi,
+    functionName: "getVestingRecords",
+    args: [address],
+    enabled: !!address,
+  });
 
   useEffect(() => {
+    getData();
     axios
-      .get(`${process.env.REACT_APP_BACKEND_URL}/buy/transaction`, { withCredentials: true })
+      .get(`${process.env.REACT_APP_BACKEND_URL}/buy/transaction`, {
+        withCredentials: true,
+      })
       .then((res) => {
         if (res.data.status === "success") {
           setcPayment(res.data.data);
@@ -458,11 +462,25 @@ export default function WavePresale() {
     functionName: "totalWaveLocked",
   });
 
+  const getData = async () => {
+    try {
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/buy/total`,
+        { withCredentials: true }
+      );
+      if (data.status === true) {
+        setnowTokens(data.data.totalWave);
+      }
+    } catch (error) {
+      toast.error(error.response.data.message || "Internal server error");
+    }
+  };
+
   let valueWave = Number(totalWave) / 1000000000000000000;
-  let x = (valueWave * 100) / 23000000;
+  let x = (valueWave + Number(nowTokens) * 100) / 23000000;
   let width = x;
 
-    const totalDeCoin = vestings?.reduce((sum, v) => {
+  const totalDeCoin = vestings?.reduce((sum, v) => {
     return sum + Number(v.amountPurchased);
   }, 0);
 
@@ -502,7 +520,12 @@ export default function WavePresale() {
             </div>
             <div className="card-content">
               <p className="card-label m-0">Your Total Wave Balance</p>
-              <p className="card-value">{(Number(totalDeCoin)/1000000000000000000).toFixed(2)} WAVE</p>
+              <p className="card-value">
+                {isConnected
+                  ? ((Number(totalDeCoin) / 1000000000000000000) + (nowTokens)).toFixed(2)
+                  : 0}{" "}
+                WAVE
+              </p>
             </div>
           </div>
 
@@ -562,14 +585,21 @@ export default function WavePresale() {
                         You Pay (IN USDT)
                       </label>
                       <input
-                        type="number"
+                        type="text"
                         className="form-control rounded-2"
                         placeholder="Enter Amount In USDT"
+                        maxLength={6}
+                        value={amounts}
                         onChange={(e) => {
-                          setAmountErrorMessage("");
-                          setAmounts(e.target.value);
+                          const value = e.target.value;
+                          // Allow only digits
+                          if (/^\d*$/.test(value)) {
+                            setAmountErrorMessage("");
+                            setAmounts(value);
+                          }
                         }}
                       />
+
                       {amountErrorMessage && (
                         <p className="text-danger m-0 mt-1">
                           {amountErrorMessage}

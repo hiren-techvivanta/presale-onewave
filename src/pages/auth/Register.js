@@ -9,6 +9,9 @@ const Register = () => {
   const navigate = useNavigate();
   const { refCode } = useParams();
 
+  console.log();
+  
+
   const countryObj = customList(
     "countryCode",
     "{countryNameEn} (+{countryCallingCode})"
@@ -35,6 +38,7 @@ const Register = () => {
   const [errors, setErrors] = useState({});
   const [country, setcountry] = useState();
   const [loading, setloading] = useState(false);
+  const [refEmailAddress, setrefEmailAddress] = useState(refCode)
 
   const nameCharRegex = /^[a-zA-Z\s]+$/;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -136,7 +140,7 @@ const Register = () => {
         email: form.email,
         password: form.password,
         nationality: form.country,
-        refEmail: refCode || "",
+        refEmail: refEmailAddress || "",
       };
 
       try {
@@ -302,8 +306,8 @@ const Register = () => {
                       }`}
                       placeholder="Referral Id"
                       name="refEmail"
-                      value={refCode && refCode}
-                      onChange={handleChange}
+                      value={refEmailAddress}
+                      onChange={(e) => setrefEmailAddress(e.target.value)}
                     />
                     {errors.refEmail && (
                       <div className="invalid-feedback">{errors.refEmail}</div>

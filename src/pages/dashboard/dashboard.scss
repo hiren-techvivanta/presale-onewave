@@ -421,7 +421,7 @@ $warning-text: #ff8902;
       flex: 1;
       
       &.phase, &.bnb, &.usd {
-        flex: 0 0 150px;
+       
         
         @media (max-width: 992px) {
           flex: 1;
