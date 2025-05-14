@@ -8,6 +8,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { formatUnits, parseEther, parseUnits } from "viem";
 import { Modal } from "react-bootstrap";
+import OTPInput from "react-otp-input";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -20,6 +21,8 @@ const Dashboard = () => {
   const [nowTokens, setnowTokens] = useState(0);
   const [modalShow, setModalShow] = React.useState(false);
   const [nowRef, setnowRef] = useState([]);
+  const [totalrefNow, settotalrefNow] = useState(0);
+  const [history, sethistory] = useState([]);
 
   const { writeContractAsync } = useWriteContract();
 
@@ -84,19 +87,6 @@ const Dashboard = () => {
     enabled: !!address,
   });
 
-  // // get ref list
-  // const { data: refList } = useReadContract({
-  //   address: process.env.REACT_APP_SMART_CONTRACT,
-  //   abi: contractAbi,
-  //   functionName: "getUserReferralSummary",
-  //   args: [
-  //     address
-  //     // "0xF594E5931638dbf21f84594769BB1bBcf8D4f12E",
-  //     // 0,
-  //   ],
-  //   enabled: !!address,
-  // });
-
   // get ref list
   const { data: refList } = useReadContract({
     address: process.env.REACT_APP_SMART_CONTRACT,
@@ -143,41 +133,168 @@ const Dashboard = () => {
       });
   }, []);
 
-  const totalrefNow = nowRef?.reduce((sum, v) => {
+  const totalrefNow2 = nowRef?.reduce((sum, v) => {
     return sum + Number(v.credit);
   }, 0);
 
+  useEffect(() => {
+    axios
+      .get(`${process.env.REACT_APP_BACKEND_URL}/referral/balance`, {
+        withCredentials: true,
+      })
+      .then((res) => {
+        if (res.data.status === true) {
+          settotalrefNow(res.data.data.balance);
+        }
+      })
+      .catch((e) => {
+        toast.error(e.response.data.message || "Internal server error");
+      });
+  }, []);
+
+  const getHistory = async () => {
+    try {
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/buy/transaction`,
+        { withCredentials: true }
+      );
+
+      if (data.status === true) {
+        sethistory(data.data);
+      }
+    } catch (e) {
+      toast.error(e.response.data.message);
+    }
+  };
+
+  useEffect(() => {
+    getHistory();
+  }, []);
+
   function MyVerticallyCenteredModal(props) {
-    const [waddress, setWaddress] = useState("");
+    const [waddress, setWaddress] = useState(address);
     const [maxAmo, setmaxAmo] = useState(0);
+    const [otp, setOtp] = useState();
+    const [show, setshow] = useState("3");
+    const [bAddress, setbAddress] = useState("");
+    const [error, seterror] = useState("");
 
     useEffect(() => {
       if (totalrefNow && (!maxAmo || Number(totalrefNow) < Number(maxAmo))) {
         setmaxAmo(totalrefNow);
+      } else {
       }
-    }, [maxAmo]);
+    }, [maxAmo, props.totalrefNow]);
+
+    useEffect(() => {
+      axios
+        .get(`${process.env.REACT_APP_BACKEND_URL}/get/address`, {
+          withCredentials: true,
+        })
+        .then((res) => {
+          if (res.data.status === true) {
+            setbAddress(res.data.data.walletAddress);
+          }
+        })
+        .catch((err) => {
+          setshow("1");
+          toast.error(err.response?.data?.message || "Internal server error");
+        });
+    }, []);
+
+    useEffect(() => {
+      if (modalShow === true) {
+        if (!address) {
+          setshow("1");
+          seterror("Please Connect Wallet to continue");
+        } else {
+          if (bAddress) {
+            if (address !== bAddress) {
+              toast.error(`Please connect right wallet ${bAddress.slice(0, 4)}***${bAddress.slice(-4)}`);
+              setModalShow(false);
+            }
+          }
+        }
+      }
+    }, [bAddress, modalShow]);
+
+    const handleKeyPress = (e) => {
+      const charCode = e.which ? e.which : e.keyCode;
+      if (charCode < 48 || charCode > 57) {
+        e.preventDefault();
+      }
+    };
 
     const handleSubmit = async (e) => {
       e.preventDefault();
       try {
-        let conAddress = process.env.REACT_APP_SMART_CONTRACT;
-        let useradress = waddress;
+        const formData = {
+          walletAddress: waddress,
+          amountInUsdt: maxAmo,
+        };
 
-        console.log("max amo", typeof maxAmo, maxAmo * 1000000000000000000);
+        const { data } = await axios.post(
+          `${process.env.REACT_APP_BACKEND_URL}/buy/referral/claim`,
+          formData,
+          { withCredentials: true }
+        );
 
-        const usdtAmount = maxAmo * 1000000000000000000;
-
-        const tx = await writeContractAsync({
-          address: process.env.REACT_APP_SMART_CONTRACT,
-          abi: contractAbi,
-          functionName: "transRef",
-          args: [conAddress, useradress, usdtAmount],
-        });
-
-        console.log(tx);
+        if (data.status === true) {
+          toast.success(data.message);
+          setModalShow(false);
+          window.location.reload();
+        }
       } catch (e) {
-        console.log(e);
+        toast.error(e.response.data.message || "Internal server error");
       }
+    };
+
+    const handleAddAddress = async (e) => {
+      e.preventDefault();
+
+      const formData = {
+        walletAddress: address,
+      };
+      try {
+        const res = await axios.put(
+          `${process.env.REACT_APP_BACKEND_URL}/add/address`,
+          formData,
+          { withCredentials: true }
+        );
+        if (res.data.status === true) {
+          toast.success(res.data.message);
+          setshow("2");
+        }
+      } catch (err) {
+        toast.error(err.response?.data?.message || "Internal server error");
+      }
+    };
+
+    const handleSendOtp = async (e) => {
+      e.preventDefault();
+      const formData = {
+        otp,
+      };
+      try {
+        const { data } = await axios.put(
+          `${process.env.REACT_APP_BACKEND_URL}/verify/address`,
+          formData,
+          { withCredentials: true }
+        );
+
+        if (data.status === true) {
+          toast.success(data.message);
+          setshow("3");
+        }
+      } catch (err) {
+        toast.error(err.response?.data?.message || "Internal server error");
+      }
+    };
+
+    const getSubmitHandler = () => {
+      if (show === "1") return handleAddAddress;
+      if (show === "2") return handleSendOtp;
+      return handleSubmit;
     };
 
     return (
@@ -187,45 +304,101 @@ const Dashboard = () => {
         aria-labelledby="contained-modal-title-vcenter"
         centered
       >
-        <Modal.Header closeButton>
-          <Modal.Title id="contained-modal-title-vcenter">
-            Widrow Referrals Bounc
-          </Modal.Title>
-        </Modal.Header>
         <Modal.Body>
           <div className="container-fluid">
-            <form onSubmit={handleSubmit}>
-              <div className="row g-3">
-                <div className="col-12">
-                  <label>Wallet Address</label>
-                  <input
-                    type="text"
-                    placeholder="Enter Your Wallet Address"
-                    className="form-control"
-                    value={waddress}
-                    onChange={(e) => setWaddress(e.target.value)}
-                  />
+            <form onSubmit={getSubmitHandler()}>
+              {show === "3" && (
+                <div className="row g-3">
+                  <div className="col-12">
+                    <label>Wallet Address</label>
+                    <input
+                      type="text"
+                      placeholder="Enter Your Wallet Address"
+                      className="form-control"
+                      value={address}
+                      disabled
+                      onChange={(e) => setWaddress(e.target.value)}
+                    />
+                  </div>
+                  <div className="col-12">
+                    <label>Amount</label>
+                    <input
+                      type="text"
+                      placeholder="Amount you want to withdraw"
+                      className="form-control"
+                      value={maxAmo}
+                      disabled
+                      onChange={(e) => {
+                        if (/^\d*\.?\d*$/.test(e.target.value)) {
+                          setmaxAmo(e.target.value);
+                        }
+                      }}
+                    />
+                  </div>
+                  <div className="col-12">
+                    <button type="submit" className="btn btn-primary w-100">
+                      Withdraw
+                    </button>
+                  </div>
                 </div>
-                <div className="col-12">
-                  <label>Amount</label>
-                  <input
-                    type="text"
-                    placeholder="Amount You want to wi"
-                    className="form-control"
-                    value={maxAmo}
-                    onChange={(e) => {
-                      if (/^\d*\.?\d*$/.test(e.target.value)) {
-                        setmaxAmo(e.target.value);
-                      }
-                    }}
-                  />
+              )}
+
+              {show === "1" && (
+                <div className="row g-3">
+                  <h5 className="text-center">Add Wallet</h5>
+                  <p className="text-center text-danger">{error && error}</p>
+                  <div className="col-12 mb-3">
+                    <label>Wallet Address</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Enter Wallet Address"
+                      value={address}
+                      disabled
+                    />
+                  </div>
+                  <div className="col-12 mb-3">
+                    <button
+                      type="submit"
+                      className="w-100 btn btn-primary"
+                      disabled={error.length !== 0 ? true : false}
+                    >
+                      Add
+                    </button>
+                  </div>
                 </div>
-                <div className="col-12">
-                  <button type="submit" className="btn btn-primary w-100">
-                    Widrow
-                  </button>
+              )}
+
+              {show === "2" && (
+                <div className="row g-3">
+                  <h5 className="text-center">Verify OTP</h5>
+                  <div className="col-12 mb-3">
+                    <label>Verify OTP</label>
+                    <OTPInput
+                      value={otp}
+                      onChange={setOtp}
+                      numInputs={6}
+                      containerStyle={"w-100"}
+                      inputStyle={"form-control rounded-2 w-100"}
+                      renderSeparator={<span>-</span>}
+                      renderInput={(props) => (
+                        <input
+                          {...props}
+                          onKeyPress={(e) => {
+                            handleKeyPress(e);
+                            props.onKeyPress?.(e);
+                          }}
+                        />
+                      )}
+                    />
+                  </div>
+                  <div className="col-12 mb-3">
+                    <button type="submit" className="w-100 btn btn-primary">
+                      Verify
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
             </form>
           </div>
         </Modal.Body>
@@ -267,7 +440,7 @@ const Dashboard = () => {
             </div>
             <div className="stat-info">
               <h3 className="m-0">Total WAVE Allocated and Vesting</h3>
-              <h2 className="m-0">2.300cr. WAVE</h2>
+              <h2 className="m-0">230.00M WAVE</h2>
             </div>
           </div>
 
@@ -329,14 +502,21 @@ const Dashboard = () => {
           <div className="referral-card">
             <div className="stat-info">
               <h3>Total Earnings Via Wallet</h3>
-              <h2>{totalRefList / 1000000000000000000} USDT</h2>
+              <h2>
+                {totalRefList === undefined
+                  ? 0
+                  : totalRefList / 1000000000000000000}{" "}
+                USDT
+              </h2>
             </div>
           </div>
 
           <div className="referral-card">
             <div className="stat-info">
               <h3>Total Earnings Via Now Payments</h3>
-              <h2>{} USDT</h2>
+              <h2>
+                {totalrefNow2 === undefined ? 0 : totalrefNow2.toFixed(2)} USDT
+              </h2>
             </div>
           </div>
         </div>
@@ -388,28 +568,36 @@ const Dashboard = () => {
             </>
           ) : (
             <>
-              <div className="referrals-table">
-                <div className="table-header">
-                  <div className="table-cell phase">User</div>
-                  <div className="table-cell bnb">Reward in USDT</div>
-                  <div className="table-cell usd">User spend</div>
-                </div>
+              {refList === undefined ? (
+                <>
+                  <p>No Referrals Found</p>
+                </>
+              ) : (
+                <>
+                  <div className="referrals-table">
+                    <div className="table-header">
+                      <div className="table-cell phase">User</div>
+                      <div className="table-cell bnb">Reward in USDT</div>
+                      <div className="table-cell usd">User spend</div>
+                    </div>
 
-                {refList?.map((v, i) => (
-                  <div className="table-row" key={i}>
-                    <div className="table-cell phase">{`${v.referee.slice(
-                      0,
-                      4
-                    )}***${v.referee.slice(-4)}`}</div>
-                    <div className="table-cell bnb">
-                      {Number(v.rewardUSDT) / 1000000000000000000} USDT
-                    </div>
-                    <div className="table-cell usd">
-                      {Number(v.usdtAmount) / 1000000000000000000} USDT
-                    </div>
+                    {refList?.map((v, i) => (
+                      <div className="table-row" key={i}>
+                        <div className="table-cell phase">{`${v.referee.slice(
+                          0,
+                          4
+                        )}***${v.referee.slice(-4)}`}</div>
+                        <div className="table-cell bnb">
+                          {Number(v.rewardUSDT) / 1000000000000000000} USDT
+                        </div>
+                        <div className="table-cell usd">
+                          {Number(v.usdtAmount) / 1000000000000000000} USDT
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                </>
+              )}
             </>
           )}
         </div>
@@ -419,9 +607,13 @@ const Dashboard = () => {
             <div>
               <button
                 className="btn btn-primary"
-                onClick={() => setModalShow(true)}
+                onClick={() => {
+                  if (totalrefNow !== 0) {
+                    setModalShow(true);
+                  }
+                }}
               >
-                widrow {totalrefNow.toFixed(2)} USDT
+                Claim {totalrefNow.toFixed(2)} USDT
               </button>
             </div>
           </div>
@@ -437,6 +629,7 @@ const Dashboard = () => {
                   <div className="table-cell phase">User</div>
                   <div className="table-cell bnb">Reward in USDT</div>
                   <div className="table-cell usd">User spend</div>
+                  <div className="table-cell usd">Reward Status</div>
                 </div>
 
                 {nowRef?.map((v, i) => (
@@ -451,11 +644,52 @@ const Dashboard = () => {
                     <div className="table-cell usd">
                       {(v.credit * 20).toFixed(2)} USDT
                     </div>
+                    <div className="table-cell usd">{v.incomeClaimStatus}</div>
                   </div>
                 ))}
               </div>
             </>
           )}
+        </div>
+        <div className="presale-referrals-card mt-3 mb-3">
+          <h5>Transaction History</h5>
+          <div className="overflow-auto">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Phase</th>
+                  <th>Wave</th>
+                  <th>Usdt</th>
+                  <th>Transaction Type</th>
+                </tr>
+              </thead>
+              <tbody>
+                {vestings?.map((v, i) => (
+                  <tr key={i}>
+                    <td>Phase {Number(v.phase) + 1}</td>
+                    <td>
+                      {(
+                        Number(v.amountPurchased) / 1000000000000000000
+                      ).toFixed(2)}
+                    </td>
+                    <td>
+                      {(Number(v.usdtAmount) / 1000000000000000000).toFixed(2)}
+                    </td>
+                    <td>Decentralized</td>
+                  </tr>
+                ))}
+                {history &&
+                  history?.map((v, i) => (
+                    <tr key={i}>
+                      <td>{v.phase}</td>
+                      <td>{v.tokenQuantity?.toFixed(2)}</td>
+                      <td>{v.amount?.toFixed(2)}</td>
+                      <td>Centralized</td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
       <MyVerticallyCenteredModal

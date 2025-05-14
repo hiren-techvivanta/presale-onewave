@@ -107,10 +107,10 @@ export default function WavePresale() {
 
   const approveTransaction = async (e) => {
     e.preventDefault();
-    setloading(true);
+
     try {
       if (!validateInputs()) return;
-
+      setloading(true);
       const usdtAmount = parseEther(amounts);
       const approveTx = await writeContractAsync({
         address: process.env.REACT_APP_USDT_SMART_CONTRACT,
@@ -219,7 +219,7 @@ export default function WavePresale() {
     }
   };
 
-    const getData = async () => {
+  const getData = async () => {
     try {
       const { data } = await axios.get(
         `${process.env.REACT_APP_BACKEND_URL}/buy/total`,
@@ -232,10 +232,9 @@ export default function WavePresale() {
       toast.error(error.response.data.message || "Internal server error");
     }
   };
- 
 
   useEffect(() => {
-    getData()
+    getData();
     axios
       .get(`${process.env.REACT_APP_BACKEND_URL}/buy/transaction`, {
         withCredentials: true,
@@ -257,7 +256,7 @@ export default function WavePresale() {
   });
 
   let valueWave = Number(totalWave) / 1000000000000000000;
-  let x = ((valueWave + Number(nowTokens) * 100) / 23000000) ;  
+  let x = (valueWave + Number(nowTokens) * 100) / 23000000;
   let width = x;
 
   const totalDeCoin = vestings?.reduce((sum, v) => {
@@ -289,7 +288,7 @@ export default function WavePresale() {
               ></div>
             </div>
           </div>
-          <div className="tokens-info">2.30cr WAVE</div>
+          <div className="tokens-info">230.00M WAVE</div>
         </div>
 
         {/* Info Cards */}
@@ -302,7 +301,10 @@ export default function WavePresale() {
               <p className="card-label m-0">Your Total Wave Balance</p>
               <p className="card-value">
                 {isConnected
-                  ? ((Number(totalDeCoin) / 1000000000000000000) + nowTokens).toFixed(2)
+                  ? (
+                      Number(totalDeCoin) / 1000000000000000000 +
+                      nowTokens
+                    ).toFixed(2)
                   : 0}{" "}
                 WAVE
               </p>
@@ -384,7 +386,7 @@ export default function WavePresale() {
                         className="form-control rounded-2"
                         placeholder="Enter Amount In USDT"
                         onChange={(e) => {
-                           const value = e.target.value;
+                          const value = e.target.value;
                           if (/^\d*$/.test(value)) {
                             setAmountErrorMessage("");
                             setAmounts(e.target.value);

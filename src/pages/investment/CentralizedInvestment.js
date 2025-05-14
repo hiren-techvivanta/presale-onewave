@@ -376,7 +376,7 @@ export default function WavePresale() {
     if (!amount || isNaN(amount)) {
       setAmountErrorMessage("Please enter a valid amount.");
       valid = false;
-    } else if (amount < 1) {
+    } else if (amount < 10) {
       setAmountErrorMessage("Minimum amount is 10 USDT.");
       valid = false;
     } else {
@@ -387,9 +387,10 @@ export default function WavePresale() {
   };
 
   const handlePurchase = async (usdtAmountParam) => {
-    setloading(true);
+    
     try {
       if (!validateInputs()) return;
+      setloading(true);
 
       const pakgeId = phaseData.filter(
         (element) => +phases === element.tokenPrice
@@ -509,7 +510,7 @@ export default function WavePresale() {
               ></div>
             </div>
           </div>
-          <div className="tokens-info">2.30cr WAVE</div>
+          <div className="tokens-info">230.00M WAVE</div>
         </div>
 
         {/* Info Cards */}

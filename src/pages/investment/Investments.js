@@ -99,7 +99,6 @@ const Investments = () => {
         args: [process.env.REACT_APP_SMART_CONTRACT, usdtAmount],
       });
 
-      console.log("USDT Approved:", approveTx);
       setshowBuyNow(true);
       // await handlePurchase(usdtAmount);
     } catch (error) {

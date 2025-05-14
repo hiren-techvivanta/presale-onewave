@@ -9,8 +9,6 @@ const Register = () => {
   const navigate = useNavigate();
   const { refCode } = useParams();
 
-  console.log();
-  
 
   const countryObj = customList(
     "countryCode",
@@ -38,7 +36,7 @@ const Register = () => {
   const [errors, setErrors] = useState({});
   const [country, setcountry] = useState();
   const [loading, setloading] = useState(false);
-  const [refEmailAddress, setrefEmailAddress] = useState(refCode)
+  const [refEmailAddress, setrefEmailAddress] = useState(refCode);
 
   const nameCharRegex = /^[a-zA-Z\s]+$/;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -269,11 +267,13 @@ const Register = () => {
                       onChange={handleChange}
                     >
                       <option value="">Select Country</option>
-                      {countries.map((country) => (
-                        <option key={country.code} value={country.name}>
-                          {country.name}
-                        </option>
-                      ))}
+                      {[...countries]
+                        .sort((a, b) => a.name.localeCompare(b.name))
+                        .map((country) => (
+                          <option key={country.code} value={country.name}>
+                            {country.name}
+                          </option>
+                        ))}
                     </select>
                     {errors.country && (
                       <div className="invalid-feedback">{errors.country}</div>
@@ -298,7 +298,9 @@ const Register = () => {
                   </div>
 
                   <div className="mb-2">
-                    <label className="form-label">Referral Email (optional)</label>
+                    <label className="form-label">
+                      Referral Email (optional)
+                    </label>
                     <input
                       type="email"
                       className={`form-control ${
@@ -318,6 +320,14 @@ const Register = () => {
 
               {showPasswordFields && (
                 <>
+                  <div className="text-end">
+                    <button
+                      className="btn btn-secondary"
+                      onClick={() => setShowPasswordFields(false)}
+                    >
+                      <i className="fa-solid fa-arrow-left me-2"></i> Go back
+                    </button>
+                  </div>
                   <div className="mb-2 position-relative">
                     <label className="form-label">Password</label>
                     <input
@@ -337,7 +347,10 @@ const Register = () => {
                     >
                       <i className={`fa ${showPassword ? "fa-eye" : "fa-eye-slash"}`} />
                     </button> */}
-                    <p className="fs-xs ps-2 text-secondary">Use letters, numbers, and special characters to create a strong password.</p>
+                    <p className="fs-xs ps-2 text-secondary">
+                      Use letters, numbers, and special characters to create a
+                      strong password.
+                    </p>
                     {errors.password && (
                       <div className="invalid-feedback">{errors.password}</div>
                     )}
