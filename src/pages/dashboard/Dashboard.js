@@ -615,14 +615,47 @@ const Dashboard = () => {
             </>
           ) : (
             <>
-              <div className="referrals-table">
+            <div className="overflow-auto mt-2">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Reward in USDT</th>
+                  <th>User spend</th>
+                  <th>Payment Type</th>
+                  <th>Reward Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                  {nowRef?.map((v, i) => (
+                    <tr key={i}>
+                      <td>
+                        {`${v.forReferral.email.slice(
+                      0,
+                      3
+                    )}***${v.forReferral.email.slice(-12)}`}
+                      </td>
+                      <td> {v.credit.toFixed(2)} USDT</td>
+                      <td>  {(v.credit * 20).toFixed(2)} USDT</td>
+                      <td>{v.referralBuyFrom}</td>
+                      <td>{v.incomeClaimStatus}</td>
+                      <td> {v.incomeClaimStatus === "Completed" ?  <Link onClick={() => {
+                      window.open(`${process.env.REACT_APP_BSC_URL}/${v.trxHash}`)
+                    }}>Click me</Link> : <></>}</td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+            </div>
+              {/* <div className="referrals-table mt-2">
                 <div className="table-header">
                   <div className="table-cell phase">User</div>
                   <div className="table-cell bnb">Reward in USDT</div>
                   <div className="table-cell usd">User spend</div>
                   <div className="table-cell usd">Payment Type</div>
                   <div className="table-cell usd">Reward Status</div>
-                  <div className="table-cell usd">Action</div>
+                  <div className="table-cell usd"></div>
                 </div>
 
                 {nowRef?.map((v, i) => (
@@ -644,7 +677,7 @@ const Dashboard = () => {
                     }}>Click me</Link>
                   </div>
                 ))}
-              </div>
+              </div> */}
             </>
           )}
         </div>

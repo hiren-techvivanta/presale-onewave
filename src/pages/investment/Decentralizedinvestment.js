@@ -95,7 +95,7 @@ export default function WavePresale() {
     if (!amount || isNaN(amount)) {
       setAmountErrorMessage("Please enter a valid amount.");
       valid = false;
-    } else if (amount < 1) {
+    } else if (amount < 10) {
       setAmountErrorMessage("Minimum amount is 10 USDT.");
       valid = false;
     } else {
