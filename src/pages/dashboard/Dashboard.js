@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Topnav from "../../components/Topnav";
 import "./dashboard.scss";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAccount, useReadContract, useWriteContract } from "wagmi";
 import contractAbi from "../../assets/json/abi.json";
 import axios from "axios";
@@ -92,11 +92,7 @@ const Dashboard = () => {
     address: process.env.REACT_APP_SMART_CONTRACT,
     abi: contractAbi,
     functionName: "getReferralRecords",
-    args: [
-      address,
-      // "0xF594E5931638dbf21f84594769BB1bBcf8D4f12E",
-      // 0,
-    ],
+    args: [address],
     enabled: !!address,
   });
 
@@ -172,51 +168,13 @@ const Dashboard = () => {
   }, []);
 
   function MyVerticallyCenteredModal(props) {
-    const [waddress, setWaddress] = useState(address);
     const [maxAmo, setmaxAmo] = useState(0);
     const [otp, setOtp] = useState();
-    const [show, setshow] = useState("3");
+    const [show, setshow] = useState("1");
     const [bAddress, setbAddress] = useState("");
     const [error, seterror] = useState("");
-
-    useEffect(() => {
-      if (totalrefNow && (!maxAmo || Number(totalrefNow) < Number(maxAmo))) {
-        setmaxAmo(totalrefNow);
-      } else {
-      }
-    }, [maxAmo, props.totalrefNow]);
-
-    useEffect(() => {
-      axios
-        .get(`${process.env.REACT_APP_BACKEND_URL}/get/address`, {
-          withCredentials: true,
-        })
-        .then((res) => {
-          if (res.data.status === true) {
-            setbAddress(res.data.data.walletAddress);
-          }
-        })
-        .catch((err) => {
-          setshow("1");
-          toast.error(err.response?.data?.message || "Internal server error");
-        });
-    }, []);
-
-    useEffect(() => {
-      if (modalShow === true) {
-        if (!address) {
-          setshow("1");
-          seterror("Please Connect Wallet to continue");
-        } else {
-          if (bAddress) {
-            if (address !== bAddress) {
-              toast.error(`Please connect right wallet ${bAddress.slice(0, 4)}***${bAddress.slice(-4)}`);
-              setModalShow(false);
-            }
-          }
-        }
-      }
-    }, [bAddress, modalShow]);
+    const [wAddress, setwAddress] = useState("");
+    const { address } = useAccount();
 
     const handleKeyPress = (e) => {
       const charCode = e.which ? e.which : e.keyCode;
@@ -229,7 +187,7 @@ const Dashboard = () => {
       e.preventDefault();
       try {
         const formData = {
-          walletAddress: waddress,
+          walletAddress: address,
           amountInUsdt: maxAmo,
         };
 
@@ -241,7 +199,7 @@ const Dashboard = () => {
 
         if (data.status === true) {
           toast.success(data.message);
-          setModalShow(false);
+          props.onHide();
           window.location.reload();
         }
       } catch (e) {
@@ -253,7 +211,7 @@ const Dashboard = () => {
       e.preventDefault();
 
       const formData = {
-        walletAddress: address,
+        walletAddress: wAddress,
       };
       try {
         const res = await axios.put(
@@ -285,11 +243,44 @@ const Dashboard = () => {
         if (data.status === true) {
           toast.success(data.message);
           setshow("3");
+          setmaxAmo(totalrefNow);
         }
       } catch (err) {
         toast.error(err.response?.data?.message || "Internal server error");
       }
     };
+
+    useEffect(() => {
+      if (props.show) {
+        axios
+          .get(`${process.env.REACT_APP_BACKEND_URL}/get/address`, {
+            withCredentials: true,
+          })
+          .then((res) => {
+            if (res.data.status === true) {
+              const storedAddress = res.data.data.walletAddress;
+              if (!storedAddress) {
+                setshow("1");
+              }
+              if (storedAddress) {
+                setbAddress(storedAddress);
+                setshow("3");
+                setmaxAmo(totalrefNow);
+              }
+            } else {
+              setshow("1");
+            }
+          })
+          .catch((err) => {
+            setshow("1");
+          });
+      } else {
+        setshow("1");
+        setmaxAmo(0);
+        setOtp("");
+        setbAddress("");
+      }
+    }, [props.show, address]);
 
     const getSubmitHandler = () => {
       if (show === "1") return handleAddAddress;
@@ -313,26 +304,18 @@ const Dashboard = () => {
                     <label>Wallet Address</label>
                     <input
                       type="text"
-                      placeholder="Enter Your Wallet Address"
                       className="form-control"
                       value={address}
                       disabled
-                      onChange={(e) => setWaddress(e.target.value)}
                     />
                   </div>
                   <div className="col-12">
                     <label>Amount</label>
                     <input
                       type="text"
-                      placeholder="Amount you want to withdraw"
                       className="form-control"
-                      value={maxAmo}
+                      value={maxAmo.toFixed(2)}
                       disabled
-                      onChange={(e) => {
-                        if (/^\d*\.?\d*$/.test(e.target.value)) {
-                          setmaxAmo(e.target.value);
-                        }
-                      }}
                     />
                   </div>
                   <div className="col-12">
@@ -346,22 +329,19 @@ const Dashboard = () => {
               {show === "1" && (
                 <div className="row g-3">
                   <h5 className="text-center">Add Wallet</h5>
-                  <p className="text-center text-danger">{error && error}</p>
                   <div className="col-12 mb-3">
                     <label>Wallet Address</label>
                     <input
                       type="text"
                       className="form-control"
-                      placeholder="Enter Wallet Address"
-                      value={address}
-                      disabled
+                      onChange={(e) => setwAddress(e.target.value)}
                     />
                   </div>
                   <div className="col-12 mb-3">
                     <button
-                      type="submit"
+                      type="button"
                       className="w-100 btn btn-primary"
-                      disabled={error.length !== 0 ? true : false}
+                      onClick={(e) => handleAddAddress(e)}
                     >
                       Add
                     </button>
@@ -406,6 +386,58 @@ const Dashboard = () => {
     );
   }
 
+  const totalWaveBuy = history?.reduce((sum, v) => {
+    return sum + Number(v.tokenQuantity);
+  }, 0);
+
+  const handleClaimAmpunt = async (e) => {
+    e.preventDefault();
+
+    try {
+      axios
+        .get(`${process.env.REACT_APP_BACKEND_URL}/get/address`, {
+          withCredentials: true,
+        })
+        .then((res) => {
+          if (res.data.status === true) {
+            const storedAddress = res.data.data.walletAddress;
+            if (!storedAddress) {
+              toast.info("Please add wallet to continue");
+              navigate("/add/wallet");
+            }
+            if (storedAddress) {
+              const formData = {
+                walletAddress: storedAddress,
+                amountInUsdt: totalrefNow,
+              };
+              axios
+                .post(
+                  `${process.env.REACT_APP_BACKEND_URL}/buy/referral/claim`,
+                  formData,
+                  { withCredentials: true }
+                )
+                .then((res) => {
+                  if (res.data.status === true) {
+                    toast.success(res.data.message);
+                    window.location.reload();
+                  }
+                })
+                .catch((err) => {
+                  toast.error(
+                    err.response.data.message || "Internal server error"
+                  );
+                });
+            }
+          }
+        })
+        .catch((erro) => {
+          toast.error(erro.response.data.message || "Internal server error");
+        });
+    } catch (error) {
+      toast.error(error.response.data.message || "Internal server error");
+    }
+  };
+
   return (
     <div className="dashboard-container">
       <Topnav />
@@ -427,20 +459,22 @@ const Dashboard = () => {
               <h2 className="m-0">
                 {isConnected === false
                   ? 0
-                  : totalDeCoin?.toFixed(2) / 1000000000000000000}{" "}
+                  : (totalDeCoin / 1000000000000000000).toFixed(2)}{" "}
                 Wave
               </h2>
             </div>
           </div>
 
-          <div className="stat-card" style={{ maxWidth: "410px" }}>
+          <div className="stat-card">
             <div className="icon-container">
-              {/* <FontAwesomeIcon icon={faCoins} className="icon" /> */}
-              <i className="fa-solid fa-coins icon"></i>
+              {/* <FontAwesomeIcon icon={faWallet} className="icon" /> */}
+              <i className="fa-solid fa-dollar icon"></i>
             </div>
             <div className="stat-info">
-              <h3 className="m-0">Total WAVE Allocated and Vesting</h3>
-              <h2 className="m-0">230.00M WAVE</h2>
+              <h3 className="m-0">Total Bought via now payments</h3>
+              <h2 className="m-0">
+                {totalWaveBuy !== 0 ? totalWaveBuy.toFixed(2) : 0} Wave
+              </h2>
             </div>
           </div>
 
@@ -459,16 +493,14 @@ const Dashboard = () => {
           </div>
         </div>
         <div className="stats-container">
-          <div className="stat-card">
+          <div className="stat-card" style={{ maxWidth: "410px" }}>
             <div className="icon-container">
-              {/* <FontAwesomeIcon icon={faWallet} className="icon" /> */}
-              <i className="fa-solid fa-dollar icon"></i>
+              {/* <FontAwesomeIcon icon={faCoins} className="icon" /> */}
+              <i className="fa-solid fa-coins icon"></i>
             </div>
             <div className="stat-info">
-              <h3 className="m-0">Total Bought via now payments</h3>
-              <h2 className="m-0">
-                {nowTokens !== undefined ? nowTokens.toFixed(2) : 0} Wave
-              </h2>
+              <h3 className="m-0">Total WAVE Allocated and Vesting</h3>
+              <h2 className="m-0">230 M WAVE</h2>
             </div>
           </div>
         </div>
@@ -559,59 +591,18 @@ const Dashboard = () => {
         </div>
 
         {/* Presale Referrals Card */}
-        <div className="presale-referrals-card">
-          <h3>Decentralized Payment Referrals</h3>
-
-          {refList?.length === 0 ? (
-            <>
-              <p>No Referrals Found</p>
-            </>
-          ) : (
-            <>
-              {refList === undefined ? (
-                <>
-                  <p>No Referrals Found</p>
-                </>
-              ) : (
-                <>
-                  <div className="referrals-table">
-                    <div className="table-header">
-                      <div className="table-cell phase">User</div>
-                      <div className="table-cell bnb">Reward in USDT</div>
-                      <div className="table-cell usd">User spend</div>
-                    </div>
-
-                    {refList?.map((v, i) => (
-                      <div className="table-row" key={i}>
-                        <div className="table-cell phase">{`${v.referee.slice(
-                          0,
-                          4
-                        )}***${v.referee.slice(-4)}`}</div>
-                        <div className="table-cell bnb">
-                          {Number(v.rewardUSDT) / 1000000000000000000} USDT
-                        </div>
-                        <div className="table-cell usd">
-                          {Number(v.usdtAmount) / 1000000000000000000} USDT
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </>
-              )}
-            </>
-          )}
-        </div>
         <div className="presale-referrals-card mt-3 mb-3">
           <div className="d-flex justify-content-between">
-            <h3>Centralized Payment Referrals</h3>
+            <h3>Payment Referrals</h3>
             <div>
               <button
                 className="btn btn-primary"
-                onClick={() => {
+                onClick={(e) => {
                   if (totalrefNow !== 0) {
-                    setModalShow(true);
+                    handleClaimAmpunt(e);
                   }
                 }}
+                disabled={totalrefNow === 0 ? true : false}
               >
                 Claim {totalrefNow.toFixed(2)} USDT
               </button>
@@ -629,7 +620,9 @@ const Dashboard = () => {
                   <div className="table-cell phase">User</div>
                   <div className="table-cell bnb">Reward in USDT</div>
                   <div className="table-cell usd">User spend</div>
+                  <div className="table-cell usd">Payment Type</div>
                   <div className="table-cell usd">Reward Status</div>
+                  <div className="table-cell usd">Action</div>
                 </div>
 
                 {nowRef?.map((v, i) => (
@@ -644,7 +637,11 @@ const Dashboard = () => {
                     <div className="table-cell usd">
                       {(v.credit * 20).toFixed(2)} USDT
                     </div>
+                    <div className="table-cell usd">{v.referralBuyFrom}</div>
                     <div className="table-cell usd">{v.incomeClaimStatus}</div>
+                    <Link onClick={() => {
+                      window.open(`${process.env.REACT_APP_BSC_URL}/${v.trxHash}`)
+                    }}>Click me</Link>
                   </div>
                 ))}
               </div>

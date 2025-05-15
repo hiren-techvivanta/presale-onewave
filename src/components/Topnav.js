@@ -49,7 +49,7 @@ const Topnav = () => {
 
   return (
     <>
-      <nav className="navbar navbar-expand-lg blur-bg-2">
+      <nav className="navbar navbar-expand-lg blur-bg-2" style={{borderBottom:"none"}}>
         <div className="container position-relative z-2">
           <div onClick={() => navigate("/dashboard")}>
             <img

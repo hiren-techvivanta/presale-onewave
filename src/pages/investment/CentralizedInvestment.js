@@ -387,7 +387,6 @@ export default function WavePresale() {
   };
 
   const handlePurchase = async (usdtAmountParam) => {
-    
     try {
       if (!validateInputs()) return;
       setloading(true);
@@ -477,6 +476,10 @@ export default function WavePresale() {
     }
   };
 
+  const totalWaveBuy = history?.reduce((sum, v) => {
+    return sum + Number(v.tokenQuantity);
+  }, 0);
+
   let valueWave = Number(totalWave) / 1000000000000000000;
   let x = (valueWave + Number(nowTokens) * 100) / 23000000;
   let width = x;
@@ -510,7 +513,7 @@ export default function WavePresale() {
               ></div>
             </div>
           </div>
-          <div className="tokens-info">230.00M WAVE</div>
+          <div className="tokens-info">230 M WAVE</div>
         </div>
 
         {/* Info Cards */}
@@ -522,10 +525,9 @@ export default function WavePresale() {
             <div className="card-content">
               <p className="card-label m-0">Your Total Wave Balance</p>
               <p className="card-value">
-                {isConnected
-                  ? ((Number(totalDeCoin) / 1000000000000000000) + (nowTokens)).toFixed(2)
-                  : 0}{" "}
-                WAVE
+                 {isConnected
+                  ? ((Number(totalDeCoin) / 1000000000000000000) + (totalWaveBuy)).toFixed(2)
+                  : 0 + totalWaveBuy.toFixed(2)} WAVE
               </p>
             </div>
           </div>
@@ -659,7 +661,7 @@ export default function WavePresale() {
                     <div className="transaction-amounts flex-wrap">
                       <div className="amount-bought">
                         <span className="label">Phase:</span>
-                        <span className="value"> Phase {v.phase}</span>
+                        <span className="value">{v.phase}</span>
                       </div>
                       <div className="amount-bought">
                         <span className="label">WAVE Bought:</span>
@@ -669,9 +671,14 @@ export default function WavePresale() {
                         </span>
                       </div>
                       <div className="amount-bought">
+                        <span className="label">Bought With:</span>
+                        <span className="value"> {v.amount} USDT</span>
+                      </div>
+                      <div className="amount-bought">
                         <span className="label">Lock In Period:</span>
                         <span className="value"> {v.lockingPeriod}</span>
                       </div>
+                      
                     </div>
                   </div>
                 </div>

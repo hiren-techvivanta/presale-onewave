@@ -43,7 +43,7 @@ export default function WavePresale() {
   const [showBuyNow, setshowBuyNow] = useState(false);
   const [refWallet, setrefWallet] = useState(ref);
   const [loading, setloading] = useState(false);
-  const [cPayment, setcPayment] = useState("");
+  const [cPayment, setcPayment] = useState([]);
   const [nowTokens, setnowTokens] = useState(0);
 
   const toggleSidebar = () => {
@@ -95,7 +95,7 @@ export default function WavePresale() {
     if (!amount || isNaN(amount)) {
       setAmountErrorMessage("Please enter a valid amount.");
       valid = false;
-    } else if (amount < 10) {
+    } else if (amount < 1) {
       setAmountErrorMessage("Minimum amount is 10 USDT.");
       valid = false;
     } else {
@@ -147,9 +147,11 @@ export default function WavePresale() {
         phase: `Phase ${phases}`,
         walletAddress: address,
         trxHash: tx,
+        refWalletAddress:referrer,
         amountInUsdt: amounts,
         waveQty: (parseFloat(amounts) * phaseValue).toFixed(2),
         status: "Success",
+
       };
 
       const { data } = await axios.post(
@@ -173,6 +175,7 @@ export default function WavePresale() {
         walletAddress: address,
         trxHash: "",
         amountInUsdt: amounts,
+        refWalletAddress: refWallet || "0x0000000000000000000000000000000000000000",
         waveQty: (parseFloat(amounts) * phaseValue).toFixed(2),
         status: "Failed",
       };
@@ -240,7 +243,7 @@ export default function WavePresale() {
         withCredentials: true,
       })
       .then((res) => {
-        if (res.data.status === "success") {
+        if (res.data.status === true) {
           setcPayment(res.data.data);
         }
       })
@@ -255,6 +258,10 @@ export default function WavePresale() {
     functionName: "totalWaveLocked",
   });
 
+   const totalWaveBuy = cPayment && cPayment?.reduce((sum, v) => {
+    return sum + Number(v.tokenQuantity);
+  }, 0);
+
   let valueWave = Number(totalWave) / 1000000000000000000;
   let x = (valueWave + Number(nowTokens) * 100) / 23000000;
   let width = x;
@@ -266,6 +273,9 @@ export default function WavePresale() {
   const totalVesting = vestings?.reduce((sum, v) => {
     return sum + Number(v.amountClaimed);
   }, 0);
+
+  // console.log(typeof vestings[0]?.phase , vestings[0]?.phase );
+  
 
   return (
     <div className="wave-presale">
@@ -288,7 +298,7 @@ export default function WavePresale() {
               ></div>
             </div>
           </div>
-          <div className="tokens-info">230.00M WAVE</div>
+          <div className="tokens-info">230 M WAVE</div>
         </div>
 
         {/* Info Cards */}
@@ -303,9 +313,9 @@ export default function WavePresale() {
                 {isConnected
                   ? (
                       Number(totalDeCoin) / 1000000000000000000 +
-                      nowTokens
+                      totalWaveBuy
                     ).toFixed(2)
-                  : 0}{" "}
+                  : 0 + totalWaveBuy.toFixed(2)}{" "}
                 WAVE
               </p>
             </div>
@@ -352,6 +362,7 @@ export default function WavePresale() {
                       <label
                         htmlFor="phase"
                         className="form-label fs-5 fw-semibold text-secondary"
+                        style={{color:"#696969"}}
                       >
                         Phase
                       </label>
@@ -502,6 +513,12 @@ export default function WavePresale() {
                               Number(v.usdtAmount) / 1000000000000000000
                             ).toFixed(2)}{" "}
                             USDT
+                          </span>
+                        </div>
+                          <div className="amount-bought">
+                          <span className="label">Lock In Period:</span>
+                          <span className="value">
+                           {v.phase === 0n ? 12 : v.phase === 1n ? 9 : v.phase === 2n ? 6 : 3}
                           </span>
                         </div>
                         <div className="amount-bought">

@@ -13,6 +13,7 @@ import ResetPassword from "./pages/auth/ResetPassword";
 import Error404 from "./pages/error/Error404";
 import TermsOfService from "./pages/TermsOfService/TermsOfService";
 import WavePresale from "./pages/investment/Decentralizedinvestment";
+import AddWallet from "./pages/auth/AddWallet";
 
 function App() {
   return (
@@ -42,6 +43,10 @@ function App() {
           <Route
             path="/terms"
             element={<TermsOfService />}
+          />
+            <Route
+            path="/add/wallet"
+            element={<AddWallet />}
           />
 
           <Route path="*" element={<Error404 />} />
