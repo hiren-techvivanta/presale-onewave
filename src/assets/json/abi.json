@@ -1,75 +1,27 @@
 [
   {
-    "inputs": [],
-    "name": "claimReferralRewards",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "recordIndex",
-        "type": "uint256"
-      }
-    ],
-    "name": "claimTokens",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "depositWave",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_waveToken",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_usdtToken",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "_waveToken", "type": "address" },
+      { "internalType": "address", "name": "_usdtToken", "type": "address" }
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "owner", "type": "address" }
     ],
     "name": "OwnableInvalidOwner",
     "type": "error"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "account", "type": "address" }
     ],
     "name": "OwnableUnauthorizedAccount",
     "type": "error"
   },
+  { "inputs": [], "name": "ReentrancyGuardReentrantCall", "type": "error" },
   {
     "anonymous": false,
     "inputs": [
@@ -88,29 +40,6 @@
     ],
     "name": "OwnershipTransferred",
     "type": "event"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "enum WAVEVestingWithHistory.SalePhase",
-        "name": "phase",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint256",
-        "name": "usdtAmount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "referrer",
-        "type": "address"
-      }
-    ],
-    "name": "purchaseTokens",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
   },
   {
     "anonymous": false,
@@ -182,13 +111,6 @@
     "type": "event"
   },
   {
-    "inputs": [],
-    "name": "renounceOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "anonymous": false,
     "inputs": [
       {
@@ -224,7 +146,7 @@
       },
       {
         "indexed": false,
-        "internalType": "enum WAVEVestingWithHistory.SalePhase",
+        "internalType": "enum WAVEPRESALE.SalePhase",
         "name": "phase",
         "type": "uint8"
       },
@@ -249,65 +171,6 @@
     ],
     "name": "TokensPurchased",
     "type": "event"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "newOwner",
-        "type": "address"
-      }
-    ],
-    "name": "transferOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "conAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "address[]",
-        "name": "userAddresses",
-        "type": "address[]"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "amounts",
-        "type": "uint256[]"
-      }
-    ],
-    "name": "transRef",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "conAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "address[]",
-        "name": "userAddresses",
-        "type": "address[]"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "amounts",
-        "type": "uint256[]"
-      }
-    ],
-    "name": "transWave",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
   },
   {
     "anonymous": false,
@@ -367,72 +230,63 @@
     "type": "event"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "withdrawUnsoldWAVE",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "inputs": [],
+    "name": "REFERRAL_PERCENT",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "wusd",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "inputs": [],
+    "name": "VESTING_DURATION",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "recordIndex",
-        "type": "uint256"
-      }
-    ],
-    "name": "getClaimableTokens",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "inputs": [],
+    "name": "VESTING_PERCENT",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "referrer",
-        "type": "address"
-      }
+      { "internalType": "uint256", "name": "recordIndex", "type": "uint256" }
+    ],
+    "name": "claimTokens",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "amount", "type": "uint256" }
+    ],
+    "name": "depositWave",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "user", "type": "address" },
+      { "internalType": "uint256", "name": "recordIndex", "type": "uint256" }
+    ],
+    "name": "getClaimableTokens",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "referrer", "type": "address" }
     ],
     "name": "getReferralRecords",
     "outputs": [
       {
         "components": [
-          {
-            "internalType": "address",
-            "name": "referee",
-            "type": "address"
-          },
+          { "internalType": "address", "name": "referee", "type": "address" },
           {
             "internalType": "uint256",
             "name": "usdtAmount",
@@ -443,13 +297,10 @@
             "name": "rewardUSDT",
             "type": "uint256"
           },
-          {
-            "internalType": "uint48",
-            "name": "timestamp",
-            "type": "uint48"
-          }
+          { "internalType": "uint48", "name": "timestamp", "type": "uint48" },
+          { "internalType": "bool", "name": "isClaimed", "type": "bool" }
         ],
-        "internalType": "struct WAVEVestingWithHistory.ReferralRecord[]",
+        "internalType": "struct WAVEPRESALE.ReferralRecord[]",
         "name": "",
         "type": "tuple[]"
       }
@@ -459,11 +310,7 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "user", "type": "address" }
     ],
     "name": "getUserReferralSummary",
     "outputs": [
@@ -488,11 +335,7 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "user", "type": "address" }
     ],
     "name": "getUserSummary",
     "outputs": [
@@ -522,65 +365,33 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "index",
-        "type": "uint256"
-      }
+      { "internalType": "address", "name": "user", "type": "address" },
+      { "internalType": "uint256", "name": "index", "type": "uint256" }
     ],
     "name": "getUserVestingRecord",
     "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "phase",
-        "type": "uint256"
-      },
+      { "internalType": "uint256", "name": "phase", "type": "uint256" },
       {
         "internalType": "uint256",
         "name": "amountPurchased",
         "type": "uint256"
       },
-      {
-        "internalType": "uint256",
-        "name": "amountClaimed",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "purchaseTime",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "lastClaimTime",
-        "type": "uint256"
-      }
+      { "internalType": "uint256", "name": "amountClaimed", "type": "uint256" },
+      { "internalType": "uint256", "name": "purchaseTime", "type": "uint256" },
+      { "internalType": "uint256", "name": "lastClaimTime", "type": "uint256" }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "user", "type": "address" }
     ],
     "name": "getVestingRecords",
     "outputs": [
       {
         "components": [
-          {
-            "internalType": "uint256",
-            "name": "phase",
-            "type": "uint256"
-          },
+          { "internalType": "uint256", "name": "phase", "type": "uint256" },
           {
             "internalType": "uint256",
             "name": "usdtAmount",
@@ -603,12 +414,11 @@
           },
           {
             "internalType": "uint48",
-
             "name": "lastClaimTime",
             "type": "uint48"
           }
         ],
-        "internalType": "struct WAVEVestingWithHistory.VestingRecord[]",
+        "internalType": "struct WAVEPRESALE.VestingRecord[]",
         "name": "",
         "type": "tuple[]"
       }
@@ -619,59 +429,24 @@
   {
     "inputs": [],
     "name": "owner",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
       {
-        "internalType": "enum WAVEVestingWithHistory.SalePhase",
+        "internalType": "enum WAVEPRESALE.SalePhase",
         "name": "",
         "type": "uint8"
       }
     ],
     "name": "phaseConfigs",
     "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "price",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "totalSupply",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "cliffDuration",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "soldAmount",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "REFERRAL_PERCENT",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
+      { "internalType": "uint256", "name": "price", "type": "uint256" },
+      { "internalType": "uint256", "name": "totalSupply", "type": "uint256" },
+      { "internalType": "uint256", "name": "cliffDuration", "type": "uint256" },
+      { "internalType": "uint256", "name": "soldAmount", "type": "uint256" }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -679,171 +454,127 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
+        "internalType": "enumWAVEPRESALE.SalePhase",
+        "name": "phase",
+        "type": "uint8"
+      },
+      { "internalType": "uint256", "name": "usdtAmount", "type": "uint256" },
+      { "internalType": "address", "name": "referrer", "type": "address" }
     ],
+    "name": "purchaseTokens",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "name": "totalReferralRewardsUSDT",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "totalUSDTCollected",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "totalWaveLocked",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "conAddress", "type": "address" },
+      {
+        "internalType": "address[]",
+        "name": "userAddresses",
+        "type": "address[]"
+      },
+      { "internalType": "uint256[]", "name": "amounts", "type": "uint256[]" }
+    ],
+    "name": "transRef",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "conAddress", "type": "address" },
+      {
+        "internalType": "address[]",
+        "name": "userAddresses",
+        "type": "address[]"
+      },
+      { "internalType": "uint256[]", "name": "amounts", "type": "uint256[]" }
+    ],
+    "name": "transWave",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "newOwner", "type": "address" }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "usdtToken",
     "outputs": [
-      {
-        "internalType": "contract IERC20",
-        "name": "",
-        "type": "address"
-      }
+      { "internalType": "contract IERC20", "name": "", "type": "address" }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
+      { "internalType": "address", "name": "", "type": "address" },
+      { "internalType": "uint256", "name": "", "type": "uint256" }
     ],
     "name": "userReferralRecords",
     "outputs": [
-      {
-        "internalType": "address",
-        "name": "referee",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "usdtAmount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "rewardUSDT",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint48",
-        "name": "timestamp",
-        "type": "uint48"
-      }
+      { "internalType": "address", "name": "referee", "type": "address" },
+      { "internalType": "uint256", "name": "usdtAmount", "type": "uint256" },
+      { "internalType": "uint256", "name": "rewardUSDT", "type": "uint256" },
+      { "internalType": "uint48", "name": "timestamp", "type": "uint48" },
+      { "internalType": "bool", "name": "isClaimed", "type": "bool" }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
+      { "internalType": "address", "name": "", "type": "address" },
+      { "internalType": "uint256", "name": "", "type": "uint256" }
     ],
     "name": "userVestingRecords",
     "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "phase",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "usdtAmount",
-        "type": "uint256"
-      },
+      { "internalType": "uint256", "name": "phase", "type": "uint256" },
+      { "internalType": "uint256", "name": "usdtAmount", "type": "uint256" },
       {
         "internalType": "uint256",
         "name": "amountPurchased",
         "type": "uint256"
       },
-      {
-        "internalType": "uint256",
-        "name": "amountClaimed",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint48",
-        "name": "purchaseTime",
-        "type": "uint48"
-      },
-      {
-        "internalType": "uint48",
-        "name": "lastClaimTime",
-        "type": "uint48"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "VESTING_DURATION",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "VESTING_PERCENT",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
+      { "internalType": "uint256", "name": "amountClaimed", "type": "uint256" },
+      { "internalType": "uint48", "name": "purchaseTime", "type": "uint48" },
+      { "internalType": "uint48", "name": "lastClaimTime", "type": "uint48" }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -852,13 +583,27 @@
     "inputs": [],
     "name": "waveToken",
     "outputs": [
-      {
-        "internalType": "contract IERC20",
-        "name": "",
-        "type": "address"
-      }
+      { "internalType": "contract IERC20", "name": "", "type": "address" }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "amount", "type": "uint256" }
+    ],
+    "name": "withdrawUnsoldWAVE",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "amount", "type": "uint256" }
+    ],
+    "name": "wusd",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   }
 ]

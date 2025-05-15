@@ -555,7 +555,7 @@ const Dashboard = () => {
 
         {/* Referral Link Card */}
         <div className="referral-link-card">
-          <h3>Referral Link for Centralized Payment</h3>
+          <h3>Referral Link</h3>
           <div className="link-container">
             <div className="link-box">
               <span className="link-text">{referralLink}</span>
@@ -565,29 +565,6 @@ const Dashboard = () => {
               <span>{copied ? "Copied" : "Copy"}</span>
             </button>
           </div>
-          {isConnected && (
-            <>
-              <h3 className="mt-3">Referral Link for Decentralized Payment</h3>
-              <div
-                className="link-container mt-3  overflow-hidden"
-                style={{ flexWrap: "nowrap" }}
-              >
-                <div className="link-box w-75  overflow-hidden">
-                  <span className="link-text" onClick={handleCopyAddress}>
-                    {referralurl}
-                  </span>
-                </div>
-                <button
-                  className="action-btn copy-btn overflow-hidden"
-                  onClick={handleCopyAddress}
-                >
-                  {/* <FontAwesomeIcon icon={copied ? faCircleCheck : faCopy} /> */}
-                  <i className="fa-solid fa-copy"></i>
-                  <span>{copied2 ? "Copied" : "Copy"}</span>
-                </button>
-              </div>
-            </>
-          )}
         </div>
 
         {/* Presale Referrals Card */}
