@@ -9,7 +9,6 @@ const Register = () => {
   const navigate = useNavigate();
   const { refCode } = useParams();
 
-
   const countryObj = customList(
     "countryCode",
     "{countryNameEn} (+{countryCallingCode})"
@@ -32,11 +31,13 @@ const Register = () => {
     agree: false,
   });
 
-  const [showPasswordFields, setShowPasswordFields] = useState(false);
+  const [showPasswordFields, setShowPasswordFields] = useState(true);
   const [errors, setErrors] = useState({});
   const [country, setcountry] = useState();
   const [loading, setloading] = useState(false);
   const [refEmailAddress, setrefEmailAddress] = useState(refCode);
+  const [showPassword, setshowPassword] = useState(false);
+  const [showPassword2, setshowPassword2] = useState(false);
 
   const nameCharRegex = /^[a-zA-Z\s]+$/;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -330,23 +331,30 @@ const Register = () => {
                   </div>
                   <div className="mb-2 position-relative">
                     <label className="form-label">Password</label>
-                    <input
-                      type="password"
-                      className={`form-control ${
-                        errors.password ? "is-invalid" : ""
+                    <div class="position-relative">
+                      <input
+                        className={`form-control ${
+                        errors.rePassword ? "is-invalid" : ""
                       }`}
-                      name="password"
-                      placeholder="Password"
-                      value={form.password}
-                      onChange={handleChange}
-                    />
-                    {/* <button
-                      type="button"
-                      className="btn btn-link position-absolute end-0 top-50 translate-middle-y"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      <i className={`fa ${showPassword ? "fa-eye" : "fa-eye-slash"}`} />
-                    </button> */}
+                        name="password"
+                        type={showPassword === false ? "password" : "text"}
+                        id="pass-visibility"
+                        placeholder="Enter password"
+                        value={form.password}
+                        onChange={handleChange}
+                      />
+                      <label
+                        class="password-toggle-btn"
+                        aria-label="Show/hide password"
+                      >
+                        <input
+                          class="password-toggle-check"
+                          type="checkbox"
+                          onChange={() => setshowPassword(!showPassword)}
+                        />
+                        <span class="password-toggle-indicator"></span>
+                      </label>
+                    </div>
                     <p className="fs-xs ps-2 text-secondary">
                       Use letters, numbers, and special characters to create a
                       strong password.
@@ -358,16 +366,30 @@ const Register = () => {
 
                   <div className="mb-2">
                     <label className="form-label">Re-enter Password</label>
-                    <input
-                      type="password"
-                      className={`form-control ${
+                     <div class="position-relative">
+                      <input
+                        className={`form-control ${
                         errors.rePassword ? "is-invalid" : ""
                       }`}
-                      placeholder="Re Enter Password"
-                      name="rePassword"
-                      value={form.rePassword}
-                      onChange={handleChange}
-                    />
+                        name="rePassword"
+                        type={showPassword2 === false ? "password" : "text"}
+                        id="pass-visibility"
+                        placeholder="Enter password"
+                        value={form.rePassword}
+                        onChange={handleChange}
+                      />
+                      <label
+                        class="password-toggle-btn"
+                        aria-label="Show/hide password"
+                      >
+                        <input
+                          class="password-toggle-check"
+                          type="checkbox"
+                          onChange={() => setshowPassword2(!showPassword2)}
+                        />
+                        <span class="password-toggle-indicator"></span>
+                      </label>
+                    </div>
                     {errors.rePassword && (
                       <div className="invalid-feedback">
                         {errors.rePassword}
@@ -386,7 +408,14 @@ const Register = () => {
                     />
                     <label className="form-check-label" htmlFor="agree">
                       I agree to the{" "}
-                      <Link to="/terms" className="text-decoration-none">
+                      <Link
+                        onClick={() =>
+                          window.open(
+                            `${process.env.REACT_APP_PROJECT_URL}/terms`
+                          )
+                        }
+                        className="text-decoration-none"
+                      >
                         {" "}
                         terms and conditions
                       </Link>

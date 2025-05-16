@@ -46,8 +46,8 @@ $tablet-breakpoint: 1024px;
 .wave-presale {
   background: linear-gradient(
     86.17deg,
-    rgba(112, 171, 255, 1) 12.210000306367874%,
-    rgba(0, 105, 255, 1) 92.71000027656555%
+    rgb(255, 255, 255) 100%,
+    rgb(255, 255, 255) 100%
   );
   min-height: 100vh;
   position: relative;
@@ -133,7 +133,6 @@ $tablet-breakpoint: 1024px;
   padding: 0 1rem;
 
   .presale-title {
-    color: #fff;
     text-align: center;
     font-size: 55px;
     font-weight: 700;
@@ -157,7 +156,6 @@ $tablet-breakpoint: 1024px;
   }
 
   .phase-info {
-    color: #fff;
     font-size: 32px;
     font-weight: 700;
     white-space: nowrap;
@@ -193,7 +191,6 @@ $tablet-breakpoint: 1024px;
   }
 
   .tokens-info {
-    color: #fff;
     font-size: 26px;
     font-weight: 500;
     white-space: nowrap;

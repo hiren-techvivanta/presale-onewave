@@ -3,8 +3,8 @@
 // Variables
 $blue-gradient: linear-gradient(
   86.17deg,
-  rgba(112, 171, 255, 1) 12.21%,
-  rgba(0, 105, 255, 1) 92.71%
+  rgb(255, 255, 255) 12.21%,
+  rgb(255, 255, 255) 92.71%
 );
 $primary-blue: #2477f1;
 $dark-blue: #0046ad;
@@ -20,7 +20,7 @@ $warning-text: #ff8902;
 @mixin card {
   background: $white;
   border-radius: 20px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   padding: 10px;
 }
 
@@ -131,10 +131,9 @@ $warning-text: #ff8902;
 .dashboard-title, .referrals-title {
   font-size: 56px;
   font-weight: 700;
-  color: $white;
   text-align: center;
   margin: 60px 0 40px;
-  text-shadow: 0 7px 3px #0000006b;
+  text-shadow: 0 7px 3px #00000027;
   
   @media (max-width: 768px) {
     font-size: 40px;
@@ -169,6 +168,9 @@ $warning-text: #ff8902;
   flex: 1;
   min-width: 300px;
   max-width: 335px;
+  opacity: 1;
+  position: relative;
+  z-index: 4;
   
   @media (max-width: 480px) {
     flex-direction: column;
@@ -516,12 +518,12 @@ $warning-text: #ff8902;
 }
 
 .dashboardy {
-   color: #fff;
+  color: #000000;
     text-align: center;
     font-family: "PlusJakartaSans-Bold", sans-serif;
     font-size: 45px;
     font-weight: 700;
     position: relative;
     margin: 3rem 0;
-    text-shadow: 0 7px 3px #0000006b;
+    text-shadow: 0 7px 3px #00000027;
   }

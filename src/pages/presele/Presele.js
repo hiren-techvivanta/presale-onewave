@@ -92,29 +92,29 @@ const Presele = () => {
         <img src={i13} className="floating-asset asset13" alt="i1" />
         <div className="container">
           <h1
-            className="text-center text-white"
+            className="text-center"
             style={{
               paddingTop: "7rem",
               fontWeight: "700",
-              textShadow: "0 0.4rem 0.15rem rgb(55 59 62 / 30%)",
+              textShadow: "0 0.4rem 0.15rem rgb(55 59 62 / 10%)",
             }}
           >
             World's First Real World Assets (RWA)
           </h1>
           <h1
-            className="text-center text-white"
+            className="text-center"
             style={{
               fontWeight: "700",
-              textShadow: "0 0.4rem 0.15rem rgb(55 59 62 / 30%)",
+              textShadow: "0 0.4rem 0.15rem rgb(55 59 62 / 10%)",
             }}
           >
             Backed Presale
           </h1>
           <p
-            className="text-center text-white"
+            className="text-center"
             style={{
               fontSize: "1.1rem",
-              textShadow: "0 0.25rem 0.15rem rgb(55 59 62 / 50%)",
+              textShadow: "0 0.25rem 0.15rem rgb(55 59 62 / 10%)",
             }}
           >
             OneWave Presale sets a new benchmark in crypto—backed by real-world
@@ -126,7 +126,7 @@ const Presele = () => {
             <div className="row gx-4 justify-content-center">
               {/* <!-- Repeat for each presale card --> */}
               <div className="col-md-6 col-lg-3 mb-4">
-                <div className="presale-card position-relative bg-white rounded-4 shadow-sm p-3">
+                <div className="presale-card position-relative bg-white rounded-4 shadow p-3">
                   <h4 className="fw-bold mb-4">Presale Phase 1</h4>
                   <hr className="" />
                   <div className="info-row d-flex py-2">
@@ -161,7 +161,7 @@ const Presele = () => {
                 </div>
               </div>
               <div className="col-md-6 col-lg-3 mb-4">
-                <div className="presale-card position-relative bg-white rounded-4 shadow-sm p-3">
+                <div className="presale-card position-relative bg-white rounded-4 shadow p-3">
                   <h4 className="fw-bold mb-4">Presale Phase 2</h4>
                   <hr className="" />
                   <div className="info-row d-flex py-2">
@@ -193,7 +193,7 @@ const Presele = () => {
                 </div>
               </div>
               <div className="col-md-6 col-lg-3 mb-4">
-                <div className="presale-card position-relative bg-white rounded-4 shadow-sm p-3">
+                <div className="presale-card position-relative bg-white rounded-4 shadow p-3">
                   <h4 className="fw-bold mb-4">Presale Phase 3</h4>
                   <hr className="" />
                   <div className="info-row d-flex py-2">
@@ -224,7 +224,7 @@ const Presele = () => {
                 </div>
               </div>
               <div className="col-md-6 col-lg-3 mb-4">
-                <div className="presale-card position-relative bg-white rounded-4 shadow-sm p-3">
+                <div className="presale-card position-relative bg-white rounded-4 shadow p-3">
                   <h4 className="fw-bold mb-4">Presale Phase 4</h4>
                   <hr className="" />
                   <div className="info-row d-flex py-2">

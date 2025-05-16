@@ -12,7 +12,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [emailErrMessage, setEmailErrMessage] = useState("");
   const [passwordErrMessage, setPasswordErrMessage] = useState("");
-  const [loading, setloading] = useState(false)
+  const [loading, setloading] = useState(false);
 
   useEffect(() => {
     const user = localStorage.getItem("user");
@@ -56,7 +56,7 @@ const Login = () => {
     e.preventDefault();
     if (!validateForm()) return;
 
-    setloading(true)
+    setloading(true);
     try {
       const formData = {
         email,
@@ -70,18 +70,18 @@ const Login = () => {
       );
 
       if (data.status === true) {
-        setloading(false)
+        setloading(false);
         toast.success(data.message);
         localStorage.setItem("user", JSON.stringify(data.data));
         navigate("/presale");
       }
 
       if (data.status === false) {
-         setloading(false)
+        setloading(false);
         toast.error(data.message);
       }
     } catch (error) {
-       setloading(false)
+      setloading(false);
       toast.error(error.response.data.message || "Internal server error");
     }
   };
@@ -127,7 +127,7 @@ const Login = () => {
 
             <form className="px-3" onSubmit={handleLogin}>
               {/* Email Input */}
-              <div className="mb-2">
+              <div className="mb-3">
                 <label className="form-label fw-medium">Email</label>
                 <input
                   type="email"
@@ -144,17 +144,25 @@ const Login = () => {
               </div>
 
               {/* Password Input */}
-              <div className="mb-2 position-relative">
-                <label className="form-label fw-medium">Password</label>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  className={`form-control rounded-2 ${
-                    passwordErrMessage ? "is-invalid" : ""
-                  }`}
-                  placeholder="Enter password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
+              <div className="mb-3 position-relative">
+               <label className="form-label fw-medium">Password</label> 
+               
+                <div class="position-relative">
+                  <input
+                    class="form-control"
+                    type={showPassword === false ? "password" : "text"}
+                    id="pass-visibility"
+                    placeholder="Enter password"
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <label
+                    class="password-toggle-btn"
+                    aria-label="Show/hide password"
+                  >
+                    <input class="password-toggle-check" type="checkbox" onChange={() => setShowPassword(!showPassword)} />
+                    <span class="password-toggle-indicator"></span>
+                  </label>
+                </div>
                 {passwordErrMessage && (
                   <div className="invalid-feedback">{passwordErrMessage}</div>
                 )}
@@ -189,7 +197,7 @@ const Login = () => {
                 className="btn btn-primary text-ligh w-100 py-2 rounded-2 fw-medium"
                 disabled={loading}
               >
-                {loading === true ? (<>Loading...</>) : (<>Sign In</>)}
+                {loading === true ? <>Loading...</> : <>Sign In</>}
               </button>
 
               {/* Sign Up Link */}

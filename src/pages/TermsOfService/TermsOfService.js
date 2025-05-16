@@ -10,13 +10,13 @@ const TermsOfService = () => {
         {/* <Topnav /> */}
         <div className="row">
           <div className="col-12">
-            <h1 className="text-center pt-5 mt-5 text-white">Wave Terms of Use</h1>
+            <h1 className="text-center pt-5 mt-5">Wave Terms of Use</h1>
           </div>
           <div className="col-12">
             <div className="container pt-5">
               <div className="row">
                 <div className="col-12 col-md-10 mx-auto">
-                  <div className="card">
+                  <div className="card shadow border-0">
                     <div className="card-body">
                     <div className="text-end"><button className="btn btn-secondary" onClick={() => navigate(-1)}><i className="fa-solid fa-arrow-left pe-2"></i> Go Back</button></div>
                       <h5 className="text-info fw-bold">1. Acceptance of Terms</h5>

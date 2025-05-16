@@ -425,7 +425,7 @@ export default function WavePresale() {
                         disabled
                       />
                     </div>
-                    <div className="col-md-12 mb-3 border rounded-3 p-3">
+                    {/* <div className="col-md-12 mb-3 border rounded-3 p-3">
                       <label className="form-label fs-5 fw-semibold text-secondary">
                         Ref Wallet Address (optional)
                       </label>
@@ -436,7 +436,7 @@ export default function WavePresale() {
                         value={refWallet}
                         onChange={(e) => setrefWallet(e.target.value)}
                       />
-                    </div>
+                    </div> */}
                   </div>
                 </form>
               </div>

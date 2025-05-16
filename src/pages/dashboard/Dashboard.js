@@ -509,8 +509,8 @@ const Dashboard = () => {
         <div className="presale-section">
           <div className="no-presale">
             <div className="dashboardy">Dashboard</div>
-            <h2 className="text-white">No Presale Participation Found</h2>
-            <p>You haven't participated in any presales yet.</p>
+            <h2 className="">No Presale Participation Found</h2>
+            <p className="text-black">You haven't participated in any presales yet.</p>
             <button
               className="buy-wave-btn"
               onClick={() => navigate("/presale")}

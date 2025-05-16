@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import logo from "../assets/images/logo-white.png";
+import logo from "../assets/images/logo.png";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAccount, useDisconnect } from "wagmi";
@@ -89,7 +89,7 @@ const Topnav = () => {
 
               {showDisconnect && (
                 <button
-                  className="rounded-2 custom-login px-4 py-2 me-3"
+                  className="rounded-2 btn btn-primary px-4 py-2 me-3"
                   onClick={handleDisconnectWallet}
                 >
                   Disconnect Wallet
@@ -97,7 +97,7 @@ const Topnav = () => {
               )} 
               {!showDisconnect && (
                 <button
-                  className="rounded-2 custom-login px-4 py-2 me-3"
+                  className="rounded-2 btn btn-primary px-4 py-2 me-3"
                   onClick={open}
                 >
                   Connect Wallet
@@ -105,7 +105,7 @@ const Topnav = () => {
               )}
 
               <button
-                className="rounded-2 custom-login px-4 py-2"
+                className="rounded-2 btn btn-primary px-4 py-2"
                 type="submit"
                 onClick={() =>
                   user === null ? navigate("/signin") : handleLogout()
