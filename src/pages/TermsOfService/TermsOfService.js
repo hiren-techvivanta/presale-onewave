@@ -18,7 +18,7 @@ const TermsOfService = () => {
                 <div className="col-12 col-md-10 mx-auto">
                   <div className="card shadow border-0">
                     <div className="card-body">
-                    <div className="text-end"><button className="btn btn-secondary" onClick={() => navigate(-1)}><i className="fa-solid fa-arrow-left pe-2"></i> Go Back</button></div>
+                    <div className="text-end"><button className="btn btn-secondary" onClick={() => navigate(-1 || "/")}><i className="fa-solid fa-arrow-left pe-2"></i> Go Back</button></div>
                       <h5 className="text-info fw-bold">1. Acceptance of Terms</h5>
                       <p className="text-secondary">
                         Welcome to Wave! These Terms of Use ("Terms") govern

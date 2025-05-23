@@ -55,16 +55,16 @@ export default function WavePresale() {
 
     switch (phases) {
       case "1":
-        setPhaseValue(5);
-        setPhaseValuePrice(0.2);
+        setPhaseValue(2);
+        setPhaseValuePrice(0.5);
         break;
       case "2":
-        setPhaseValue(2.5);
-        setPhaseValuePrice(0.4);
-        break;
-      case "3":
         setPhaseValue(1.6666667);
         setPhaseValuePrice(0.6);
+        break;
+      case "3":
+        setPhaseValue(1.42857142857);
+        setPhaseValuePrice(0.7);
         break;
       case "4":
         setPhaseValue(1.25);

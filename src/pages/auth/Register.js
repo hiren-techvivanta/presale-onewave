@@ -31,7 +31,7 @@ const Register = () => {
     agree: false,
   });
 
-  const [showPasswordFields, setShowPasswordFields] = useState(true);
+  const [showPasswordFields, setShowPasswordFields] = useState(false);
   const [errors, setErrors] = useState({});
   const [country, setcountry] = useState();
   const [loading, setloading] = useState(false);
