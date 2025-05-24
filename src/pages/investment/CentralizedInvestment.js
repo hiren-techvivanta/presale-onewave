@@ -31,15 +31,15 @@ export default function WavePresale() {
     getHistory();
 
     switch (phases) {
-      case "0.2":
+      case "0.5":
         setPhaseValue(2);
         setPhaseValuePrice(0.5);
         break;
-      case "0.4":
+      case "0.6":
         setPhaseValue(1.6666667);
         setPhaseValuePrice(0.6);
         break;
-      case "0.6":
+      case "0.7":
         setPhaseValue(1.42857142857);
         setPhaseValuePrice(0.7);
         break;
