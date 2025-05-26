@@ -133,7 +133,7 @@ const Presele = () => {
                     <span className="label me-auto">Price</span>
                     <div className="flex-grow-1 mx-2 dor-range"></div>{" "}
                     {/* dynamic spacer */}
-                    <span className="value">$0.2</span>
+                    <span className="value">$0.5</span>
                   </div>
                   <div className="info-row d-flex py-2">
                     <span className="label me-auto">Cliff</span>
@@ -167,7 +167,7 @@ const Presele = () => {
                   <div className="info-row d-flex py-2">
                     <span className="label me-auto">Price</span>
                     <div className="flex-grow-1 mx-2 dor-range"></div>{" "}
-                    <span className="value">$0.4</span>
+                    <span className="value">$0.6</span>
                   </div>
                   <div className="info-row d-flex py-2">
                     <span className="label me-auto">Cliff</span>
@@ -199,7 +199,7 @@ const Presele = () => {
                   <div className="info-row d-flex py-2">
                     <span className="label me-auto">Price</span>
                     <div className="flex-grow-1 mx-2 dor-range"></div>{" "}
-                    <span className="value">$0.6</span>
+                    <span className="value">$0.7</span>
                   </div>
                   <div className="info-row d-flex py-2">
                     <span className="label me-auto">Cliff</span>

@@ -105,22 +105,39 @@ export default function WavePresale() {
     return valid;
   };
 
+  const { data: totalUsdt } = useReadContract({
+    address: process.env.REACT_APP_USDT_SMART_CONTRACT,
+    abi: usdtcontractAbi,
+    functionName: "balanceOf",
+    args: [address],
+  });
+
+  const usdtInWallet = Number(totalUsdt) / 1000000000000000000 || 0;
+
   const approveTransaction = async (e) => {
     e.preventDefault();
 
     try {
       if (!validateInputs()) return;
       setloading(true);
-      const usdtAmount = parseEther(amounts);
-      const approveTx = await writeContractAsync({
-        address: process.env.REACT_APP_USDT_SMART_CONTRACT,
-        abi: usdtcontractAbi,
-        functionName: "approve",
-        args: [process.env.REACT_APP_SMART_CONTRACT, usdtAmount],
-      });
-      setshowBuyNow(true);
-      setloading(false);
-      await handlePurchase(usdtAmount);
+
+      if (usdtInWallet <= amounts) {
+        toast.error("You do not have enough funds to continue the transaction.")
+        setloading(false);
+        return
+      } else {
+        const usdtAmount = parseEther(amounts);
+        const approveTx = await writeContractAsync({
+          address: process.env.REACT_APP_USDT_SMART_CONTRACT,
+          abi: usdtcontractAbi,
+          functionName: "approve",
+          args: [process.env.REACT_APP_SMART_CONTRACT, usdtAmount],
+        });
+
+        setshowBuyNow(true);
+        setloading(false);
+        await handlePurchase(usdtAmount);
+      }
     } catch (error) {
       setloading(false);
       toast.error("Approval Failed");
@@ -133,8 +150,7 @@ export default function WavePresale() {
       const usdtAmount = parseUnits(amounts, 18);
 
       const phase = Number(phases - 1);
-      const referrer =
-        refWallet || "0x0000000000000000000000000000000000000000";
+      const referrer = "0x0000000000000000000000000000000000000000";
 
       const tx = await writeContractAsync({
         address: process.env.REACT_APP_SMART_CONTRACT,
@@ -147,11 +163,10 @@ export default function WavePresale() {
         phase: `Phase ${phases}`,
         walletAddress: address,
         trxHash: tx,
-        refWalletAddress:referrer,
+        refWalletAddress: referrer,
         amountInUsdt: amounts,
         waveQty: (parseFloat(amounts) * phaseValue).toFixed(2),
         status: "Success",
-
       };
 
       const { data } = await axios.post(
@@ -163,9 +178,9 @@ export default function WavePresale() {
 
       if (data.status === true) {
         toast.success("Transaction Successful");
-        setTimeout(() => {
-          window.location.reload();
-        }, 2000);
+        // setTimeout(() => {
+        //   window.location.reload();
+        // }, 2000);
       }
       setshowBuyNow(false);
       setAmounts(0);
@@ -175,7 +190,8 @@ export default function WavePresale() {
         walletAddress: address,
         trxHash: "",
         amountInUsdt: amounts,
-        refWalletAddress: refWallet || "0x0000000000000000000000000000000000000000",
+        refWalletAddress:
+          refWallet || "0x0000000000000000000000000000000000000000",
         waveQty: (parseFloat(amounts) * phaseValue).toFixed(2),
         status: "Failed",
       };
@@ -258,12 +274,14 @@ export default function WavePresale() {
     functionName: "totalWaveLocked",
   });
 
-   const totalWaveBuy = cPayment && cPayment?.reduce((sum, v) => {
-    return sum + Number(v.tokenQuantity);
-  }, 0);
+  const totalWaveBuy =
+    cPayment &&
+    cPayment?.reduce((sum, v) => {
+      return sum + Number(v.tokenQuantity);
+    }, 0);
 
   let valueWave = Number(totalWave) / 1000000000000000000;
-  let x = (valueWave + Number(nowTokens) * 100) / 23000000;
+  let x = (valueWave + Number(nowTokens) * 100) / 5700000;
   let width = x;
 
   const totalDeCoin = vestings?.reduce((sum, v) => {
@@ -275,7 +293,6 @@ export default function WavePresale() {
   }, 0);
 
   // console.log(typeof vestings[0]?.phase , vestings[0]?.phase );
-  
 
   return (
     <div className="wave-presale">
@@ -298,7 +315,7 @@ export default function WavePresale() {
               ></div>
             </div>
           </div>
-          <div className="tokens-info">230 M WAVE</div>
+          <div className="tokens-info">57 M WAVE</div>
         </div>
 
         {/* Info Cards */}
@@ -362,7 +379,7 @@ export default function WavePresale() {
                       <label
                         htmlFor="phase"
                         className="form-label fs-5 fw-semibold text-secondary"
-                        style={{color:"#696969"}}
+                        style={{ color: "#696969" }}
                       >
                         Phase
                       </label>
@@ -515,10 +532,16 @@ export default function WavePresale() {
                             USDT
                           </span>
                         </div>
-                          <div className="amount-bought">
+                        <div className="amount-bought">
                           <span className="label">Lock In Period:</span>
                           <span className="value">
-                           {v.phase === 0n ? 12 : v.phase === 1n ? 9 : v.phase === 2n ? 6 : 3}
+                            {v.phase === 0n
+                              ? 12
+                              : v.phase === 1n
+                              ? 9
+                              : v.phase === 2n
+                              ? 6
+                              : 3}
                           </span>
                         </div>
                         <div className="amount-bought">

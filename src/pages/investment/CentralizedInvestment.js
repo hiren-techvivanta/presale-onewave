@@ -4,7 +4,7 @@ import Topnav from "../../components/Topnav";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { useAccount, useReadContract } from "wagmi";
+import { useAccount, useReadContract, useWriteContract } from "wagmi";
 import contractAbi from "../../assets/json/abi.json";
 
 export default function WavePresale() {
@@ -25,6 +25,8 @@ export default function WavePresale() {
   const [phaseData, setPhaseData] = useState([]);
   const [cPayment, setcPayment] = useState("");
   const [nowTokens, setnowTokens] = useState(0);
+
+    const { writeContractAsync, isPending } = useWriteContract();
 
   useEffect(() => {
     getPhaseData();
@@ -186,7 +188,7 @@ export default function WavePresale() {
   }, 0);
 
   let valueWave = Number(totalWave) / 1000000000000000000;
-  let x = (valueWave + Number(nowTokens) * 100) / 23000000;
+  let x = (valueWave + Number(nowTokens) * 100) / 5700000;
   let width = x;
 
   const totalDeCoin = vestings?.reduce((sum, v) => {
@@ -196,6 +198,25 @@ export default function WavePresale() {
   const totalVesting = vestings?.reduce((sum, v) => {
     return sum + Number(v.amountClaimed);
   }, 0);
+
+    const handleClaim = async (vestingId) => {
+    try {
+      const tx = await writeContractAsync({
+        address: process.env.REACT_APP_SMART_CONTRACT,
+        abi: contractAbi,
+        functionName: "claimTokens",
+        args: [vestingId],
+      });
+
+      toast.success("Claim transaction sent!");
+
+      setTimeout(() => {
+        window.location.reload();
+      }, 4000);
+    } catch (error) {
+      toast.error("Claim failed");
+    }
+  };
 
   return (
     <div className="wave-presale">
@@ -218,7 +239,7 @@ export default function WavePresale() {
               ></div>
             </div>
           </div>
-          <div className="tokens-info">230 M WAVE</div>
+          <div className="tokens-info">57 M WAVE</div>
         </div>
 
         {/* Info Cards */}
@@ -230,9 +251,13 @@ export default function WavePresale() {
             <div className="card-content">
               <p className="card-label m-0">Your Total Wave Balance</p>
               <p className="card-value">
-                 {isConnected
-                  ? ((Number(totalDeCoin) / 1000000000000000000) + (totalWaveBuy)).toFixed(2)
-                  : 0 + totalWaveBuy.toFixed(2)} WAVE
+                {isConnected
+                  ? (
+                      Number(totalDeCoin) / 1000000000000000000 +
+                      totalWaveBuy
+                    ).toFixed(2)
+                  : 0 + totalWaveBuy.toFixed(2)}{" "}
+                WAVE
               </p>
             </div>
           </div>
@@ -383,9 +408,54 @@ export default function WavePresale() {
                         <span className="label">Lock In Period:</span>
                         <span className="value"> {v.lockingPeriod}</span>
                       </div>
-                      
                     </div>
                   </div>
+                   <div className="text-center">
+                  {(() => {
+                        const phase = Number(v.phase); // 0-indexed
+                        const lockMonths = [12, 9, 6, 3];
+                        const lockInMonths = lockMonths[phase] || 0;
+
+                        const purchaseTime = Number(v.purchaseTime); // seconds
+                        const unlockDate = new Date(purchaseTime * 1000);
+                        unlockDate.setMonth(
+                          unlockDate.getMonth() + lockInMonths
+                        );
+
+                        const now = new Date();
+                        const isUnlocked = now >= unlockDate;
+                        const alreadyClaimed =
+                          Number(v.amountClaimed) >= Number(v.amountPurchased);
+
+                        if (!isUnlocked) {
+                          return (
+                            <button
+                              className="btn btn-secondary btn-sm"
+                              disabled
+                            >
+                              Locked
+                            </button>
+                          );
+                        }
+
+                        if (alreadyClaimed) {
+                          return (
+                            <button className="btn btn-success btn-sm" disabled>
+                              Claimed
+                            </button>
+                          );
+                        }
+
+                        return (
+                          <button
+                            className="btn btn-primary btn-sm"
+                            onClick={() => handleClaim(i)}
+                          >
+                            Claim
+                          </button>
+                        );
+                      })()}
+                </div>
                 </div>
               ))}
             </div>

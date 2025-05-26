@@ -500,7 +500,7 @@ const Dashboard = () => {
             </div>
             <div className="stat-info">
               <h3 className="m-0">Total WAVE Allocated and Vesting</h3>
-              <h2 className="m-0">230 M WAVE</h2>
+              <h2 className="m-0">57 M WAVE</h2>
             </div>
           </div>
         </div>
