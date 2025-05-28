@@ -315,7 +315,7 @@ export default function WavePresale() {
               ></div>
             </div>
           </div>
-          <div className="tokens-info">57 M WAVE</div>
+          <div className="tokens-info">57.5 M WAVE</div>
         </div>
 
         {/* Info Cards */}

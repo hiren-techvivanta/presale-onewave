@@ -9,16 +9,17 @@ import logo from "../../assets/images/logo.png";
 const ResetPassword = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const token = searchParams.get('token');
+  const token = searchParams.get("token");
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [passwordErrMessage, setPasswordErrMessage] = useState("");
   const [confirmPasswordErrMessage, setConfirmPasswordErrMessage] = useState("");
 
-    const [loading, setloading] = useState(false)
+  const [loading, setloading] = useState(false);
 
   useEffect(() => {
     const user = localStorage.getItem("user");
@@ -56,7 +57,7 @@ const ResetPassword = () => {
 
     if (!validateForm()) return;
 
-    setloading(true)
+    setloading(true);
 
     try {
       const response = await axios.put(
@@ -66,12 +67,12 @@ const ResetPassword = () => {
       );
 
       if (response.data.status === true) {
-        setloading(false)
+        setloading(false);
         toast.success(response.data.message);
         navigate("/signin");
       }
     } catch (error) {
-      setloading(false)
+      setloading(false);
       toast.error(error.response?.data?.message || "Internal server error");
     }
   };
@@ -80,8 +81,16 @@ const ResetPassword = () => {
     <>
       {/* Top Bar */}
       <div className="blur-bg py-3 px-4 d-flex justify-content-between align-items-center w-100 shadow-sm position-absolute top-0">
-        <img src={logo} alt="Logo" className="img-fluid" style={{ maxWidth: "120px" }} />
-        <button className="btn btn-primary px-4" onClick={() => navigate('/signup')}>
+        <img
+          src={logo}
+          alt="Logo"
+          className="img-fluid"
+          style={{ maxWidth: "120px" }}
+        />
+        <button
+          className="btn btn-primary px-4"
+          onClick={() => navigate("/signup")}
+        >
           Sign Up
         </button>
       </div>
@@ -91,49 +100,91 @@ const ResetPassword = () => {
         <div className="position-absolute w-100 h-100 bg-dark bg-opacity-10"></div>
 
         <div className="position-absolute translate-centrt w-100 mw-100 px-3">
-          <div className="login-box shadow-lg rounded-3 bg-white" style={{ maxWidth: "450px" }}>
+          <div
+            className="login-box shadow-lg rounded-3 bg-white"
+            style={{ maxWidth: "450px" }}
+          >
             <div className="p-3 pb-0">
               <h2 className="fw-semibold">Reset Password</h2>
-              <p className="text-secondary mb-4">Fill new password and confirm to reset your account password</p>
+              <p className="text-secondary mb-4">
+                Fill new password and confirm to reset your account password
+              </p>
             </div>
             <hr />
 
             <form className="px-3" onSubmit={handleReset}>
               {/* New Password */}
-              <div className="mb-2">
+              <div className="mb-3 position-relative">
                 <label className="form-label fw-medium">New Password</label>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  className={`form-control rounded-2 ${passwordErrMessage ? "is-invalid" : ""}`}
-                  placeholder="Enter new password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-                {passwordErrMessage && <div className="invalid-feedback">{passwordErrMessage}</div>}
+                <div className="position-relative">
+                  <input
+                    className={`form-control rounded-2 ${
+                      passwordErrMessage ? "is-invalid" : ""
+                    }`}
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter new password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <label className="password-toggle-btn" aria-label="Show/hide password">
+                    <input
+                      className="password-toggle-check"
+                      type="checkbox"
+                      onChange={() => setShowPassword(!showPassword)}
+                    />
+                    <span className="password-toggle-indicator"></span>
+                  </label>
+                  {passwordErrMessage && (
+                    <div className="invalid-feedback">{passwordErrMessage}</div>
+                  )}
+                </div>
               </div>
 
               {/* Confirm Password */}
-              <div className="mb-2">
+              <div className="mb-2 position-relative">
                 <label className="form-label fw-medium">Confirm Password</label>
-                <input
-                  type="password"
-                  className={`form-control rounded-2 ${confirmPasswordErrMessage ? "is-invalid" : ""}`}
-                  placeholder="Confirm password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                />
-                {confirmPasswordErrMessage && <div className="invalid-feedback">{confirmPasswordErrMessage}</div>}
+                <div className="position-relative">
+                  <input
+                    className={`form-control rounded-2 ${
+                      confirmPasswordErrMessage ? "is-invalid" : ""
+                    }`}
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="Confirm password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                  />
+                  <label className="password-toggle-btn" aria-label="Show/hide password">
+                    <input
+                      className="password-toggle-check"
+                      type="checkbox"
+                      onChange={() => setShowConfirmPassword(!showConfirmPassword)}
+                    />
+                    <span className="password-toggle-indicator"></span>
+                  </label>
+                  {confirmPasswordErrMessage && (
+                    <div className="invalid-feedback">
+                      {confirmPasswordErrMessage}
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Reset Button */}
-              <button type="submit" className="btn btn-primary text-light w-100 py-2 rounded-2 fw-medium" disabled={loading}>
-                {loading === true ? "Loading..." : "Reset"}
+              <button
+                type="submit"
+                className="btn btn-primary text-light w-100 py-2 rounded-2 fw-medium"
+                disabled={loading}
+              >
+                {loading ? "Loading..." : "Reset"}
               </button>
 
               {/* Sign Up Option */}
               <p className="text-center mt-2 text-secondary">
                 Don’t have an account?{" "}
-                <Link to="/signup" className="text-primary text-decoration-none fw-medium" >
+                <Link
+                  to="/signup"
+                  className="text-primary text-decoration-none fw-medium"
+                >
                   Sign Up
                 </Link>
               </p>
