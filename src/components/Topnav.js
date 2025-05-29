@@ -10,7 +10,7 @@ const Topnav = () => {
 
   const { isConnected, address } = useAccount();
   const { disconnect } = useDisconnect();
-    const { open, close } = useAppKit();
+  const { open, close } = useAppKit();
 
   const [user, setuser] = useState([]);
   const [showDisconnect, setshowDisconnect] = useState(false);
@@ -42,14 +42,17 @@ const Topnav = () => {
     navigate("/");
   };
 
-  const handleDisconnectWallet = () => { 
-    disconnect()
-    window.location.reload()
-   }
+  const handleDisconnectWallet = () => {
+    disconnect();
+    window.location.reload();
+  };
 
   return (
     <>
-      <nav className="navbar navbar-expand-lg blur-bg-2" style={{borderBottom:"none"}}>
+      <nav
+        className="navbar navbar-expand-lg blur-bg-2"
+        style={{ borderBottom: "none" }}
+      >
         <div className="container position-relative z-2">
           <div onClick={() => navigate("/dashboard")}>
             <img
@@ -73,18 +76,27 @@ const Topnav = () => {
           </button>
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-           
-            <li className="nav-item px-2">
-          <Link className="nav-link nav-text" to="/dashboard">Dashboard</Link>
-        </li>
-        <li className="nav-item px-2">
-          <Link className="nav-link nav-text" to="/presale">Presale</Link>
-        </li>
-        
+              <li className="nav-item px-2">
+                <Link className="nav-link nav-text" to="/dashboard">
+                  Dashboard
+                </Link>
+              </li>
+              <li className="nav-item px-2">
+                <Link className="nav-link nav-text" to="/presale">
+                  Presale
+                </Link>
+              </li>
+              <li className="nav-item px-2 d-md-none">
+                <p className="fw-bold my-2 me-3">
+                {address && <i className="fa-solid fa-wallet me-2"></i>}
+                {address && `${address.slice(0, 4)}***${address.slice(-4)}`}
+              </p>
+              </li>
             </ul>
-            <div className="ms-auto d-flex">
-              <p className="fw-bold text-white my-2 me-3">
-                {address && <i className="fa-solid fa-wallet me-2"></i>}{address && `${address.slice(0, 4)}***${address.slice(-4)}`}
+            <div className="ms-md-auto d-flex mb-2 mx-2">
+              <p className="fw-bold my-2 me-3 d-none d-md-block">
+                {address && <i className="fa-solid fa-wallet me-2"></i>}
+                {address && `${address.slice(0, 4)}***${address.slice(-4)}`}
               </p>
 
               {showDisconnect && (
@@ -94,7 +106,7 @@ const Topnav = () => {
                 >
                   Disconnect Wallet
                 </button>
-              )} 
+              )}
               {!showDisconnect && (
                 <button
                   className="rounded-2 btn btn-primary px-4 py-2 me-3"

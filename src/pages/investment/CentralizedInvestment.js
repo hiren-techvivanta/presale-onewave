@@ -284,7 +284,7 @@ export default function WavePresale() {
               {!showConnectButton && (
                 <form>
                   <div className="row g-3">
-                    <div className="col-6 col-md-12 mb-3 border rounded-3 p-3">
+                    <div className="col-12 mb-3 border rounded-3 p-3">
                       <label
                         htmlFor="phase"
                         className="form-label fs-5 fw-semibold text-secondary"
@@ -313,7 +313,7 @@ export default function WavePresale() {
                         </p>
                       )}
                     </div>
-                    <div className="col-6 col-md-12 mb-3 border rounded-3 p-3">
+                    <div className="col-12 mb-3 border rounded-3 p-3">
                       <label className="form-label fs-5 fw-semibold text-secondary">
                         You Pay (IN USDT)
                       </label>
@@ -339,7 +339,7 @@ export default function WavePresale() {
                         </p>
                       )}
                     </div>
-                    <div className="col-6 col-md-12 mb-3 border rounded-3 p-3">
+                    <div className="col-12 mb-3 border rounded-3 p-3">
                       <label className="form-label fs-5 fw-semibold text-secondary">
                         You Get (IN Wave)
                       </label>

@@ -37,7 +37,7 @@ const Presele = () => {
               <p className="text-center fw-semibold text-secondary">
                 Choose option to continue purchase
               </p>
-              <div className="d-flex justify-content-center align-items-center gap-3">
+              <div className="d-blog d-md-flex justify-content-md-center align-items-md-center gap-3 text-center">
                 <div>
                   <button
                     className="btn btn-primary py-3 px-4 fw-semibold rounded-3"
@@ -47,15 +47,7 @@ const Presele = () => {
                   </button>
                 </div>
                 <div className="d-flex flex-column">
-                  <hr
-                    className="w-100"
-                    style={{ transform: "rotate(90deg)" }}
-                  />
-                  <p className="m-0">or</p>
-                  <hr
-                    className="w-100"
-                    style={{ transform: "rotate(90deg)" }}
-                  />
+                  <p className="m-0 my-2">or</p>
                 </div>
                 <div>
                   <button className="btn btn-primary py-3 px-4 fw-semibold rounded-3"
