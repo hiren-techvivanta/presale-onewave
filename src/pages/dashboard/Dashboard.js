@@ -288,6 +288,8 @@ const Dashboard = () => {
       return handleSubmit;
     };
 
+    console.log(nowRef);
+
     return (
       <Modal
         {...props}
@@ -510,7 +512,9 @@ const Dashboard = () => {
           <div className="no-presale">
             <div className="dashboardy">Dashboard</div>
             <h2 className="">No Presale Participation Found</h2>
-            <p className="text-black">You haven't participated in any presales yet.</p>
+            <p className="text-black">
+              You haven't participated in any presales yet.
+            </p>
             <button
               className="buy-wave-btn"
               onClick={() => navigate("/presale")}
@@ -592,39 +596,86 @@ const Dashboard = () => {
             </>
           ) : (
             <>
-            <div className="overflow-auto mt-2">
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>User</th>
-                  <th>Reward in USDT</th>
-                  <th>User spend</th>
-                  <th>Payment Type</th>
-                  <th>Reward Status</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                  {nowRef?.map((v, i) => (
-                    <tr key={i}>
-                      <td>
-                        {`${v.forReferral.email.slice(
-                      0,
-                      3
-                    )}***${v.forReferral.email.slice(-12)}`}
-                      </td>
-                      <td> {v.credit.toFixed(2)} USDT</td>
-                      <td>  {(v.credit * 20).toFixed(2)} USDT</td>
-                      <td>{v.referralBuyFrom}</td>
-                      <td>{v.incomeClaimStatus}</td>
-                      <td> {v.incomeClaimStatus === "Completed" ?  <Link onClick={() => {
-                      window.open(`${process.env.REACT_APP_BSC_URL}/${v.trxHash}`)
-                    }}>Click me</Link> : <></>}</td>
+              <div className="overflow-auto mt-2">
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th>User</th>
+                      <th>Reward in USDT</th>
+                      <th>User spend</th>
+                      <th>Payment Type</th>
+                      <th>Reward Status</th>
+                      <th>Action</th>
                     </tr>
-                  ))}
-              </tbody>
-            </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {nowRef?.map((user, userIndex) =>
+                      user.userReferralTrx &&
+                      user.userReferralTrx.length > 0 ? (
+                        user.userReferralTrx.map((transaction, txIndex) => (
+                          <tr key={`${userIndex}-${txIndex}`}>
+                            <td>
+                              {user?.email
+                                ? (() => {
+                                    const [localPart, domain] =
+                                      user.email.split("@");
+                                    return `${localPart.slice(
+                                      0,
+                                      2
+                                    )}***${localPart.slice(-1)}@${domain}`;
+                                  })()
+                                : "N/A"}
+                            </td>
+                            <td>{transaction?.credit?.toFixed(2) || 0} USDT</td>
+                            <td>
+                              {(transaction?.credit * 20)?.toFixed(2) || 0} USDT
+                            </td>
+                            <td>{transaction?.referralBuyFrom}</td>
+                            <td>{transaction?.incomeClaimStatus}</td>
+                            <td>
+                              {transaction?.incomeClaimStatus === "Completed" &&
+                              transaction?.trxHash ? (
+                                <Link
+                                  onClick={() => {
+                                    window.open(
+                                      `${process.env.REACT_APP_BSC_URL}/${transaction?.trxHash}`
+                                    );
+                                  }}
+                                >
+                                  Click me
+                                </Link>
+                              ) : (
+                                <></>
+                              )}
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        // Show row even if no transactions
+                        <tr key={userIndex}>
+                          <td>
+                            {user?.email
+                              ? (() => {
+                                  const [localPart, domain] =
+                                    user.email.split("@");
+                                  return `${localPart.slice(
+                                    0,
+                                    2
+                                  )}***${localPart.slice(-1)}@${domain}`;
+                                })()
+                              : "N/A"}
+                          </td>
+                          <td>0 USDT</td>
+                          <td>0 USDT</td>
+                          <td>-</td>
+                          <td>-</td>
+                          <td></td>
+                        </tr>
+                      )
+                    )}
+                  </tbody>
+                </table>
+              </div>
               {/* <div className="referrals-table mt-2">
                 <div className="table-header">
                   <div className="table-cell phase">User</div>
