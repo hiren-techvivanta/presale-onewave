@@ -129,9 +129,13 @@ const Dashboard = () => {
       });
   }, []);
 
-  const totalrefNow2 = nowRef?.reduce((sum, v) => {
-    return sum + Number(v.credit);
-  }, 0);
+const totalrefNow2 = nowRef?.reduce((sum, user) => {
+  const userTotal = user.userReferralTrx?.reduce((userSum, transaction) => {
+    return userSum + (Number(transaction?.credit) || 0);
+  }, 0) || 0;
+  
+  return sum + userTotal;
+}, 0);
 
   useEffect(() => {
     axios
@@ -167,6 +171,7 @@ const Dashboard = () => {
     getHistory();
   }, []);
 
+  // modal
   function MyVerticallyCenteredModal(props) {
     const [maxAmo, setmaxAmo] = useState(0);
     const [otp, setOtp] = useState();
@@ -288,7 +293,6 @@ const Dashboard = () => {
       return handleSubmit;
     };
 
-    console.log(nowRef);
 
     return (
       <Modal
@@ -440,6 +444,10 @@ const Dashboard = () => {
     }
   };
 
+  console.log(nowRef);
+  
+  console.log(totalrefNow2);
+  
   return (
     <div className="dashboard-container">
       <Topnav />
