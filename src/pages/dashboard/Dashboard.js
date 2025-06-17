@@ -443,10 +443,6 @@ const totalrefNow2 = nowRef?.reduce((sum, user) => {
       toast.error(error.response.data.message || "Internal server error");
     }
   };
-
-  console.log(nowRef);
-  
-  console.log(totalrefNow2);
   
   return (
     <div className="dashboard-container">
