@@ -147,20 +147,20 @@ const Login = () => {
               <div className="mb-3 position-relative">
                <label className="form-label fw-medium">Password</label> 
                
-                <div class="position-relative">
+                <div className="position-relative">
                   <input
-                    class="form-control"
+                    className="form-control"
                     type={showPassword === false ? "password" : "text"}
                     id="pass-visibility"
                     placeholder="Enter password"
                     onChange={(e) => setPassword(e.target.value)}
                   />
                   <label
-                    class="password-toggle-btn"
+                    className="password-toggle-btn"
                     aria-label="Show/hide password"
                   >
-                    <input class="password-toggle-check" type="checkbox" onChange={() => setShowPassword(!showPassword)} />
-                    <span class="password-toggle-indicator"></span>
+                    <input className="password-toggle-check" type="checkbox" onChange={() => setShowPassword(!showPassword)} />
+                    <span className="password-toggle-indicator"></span>
                   </label>
                 </div>
                 {passwordErrMessage && (

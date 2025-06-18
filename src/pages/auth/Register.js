@@ -331,7 +331,7 @@ const Register = () => {
                   </div>
                   <div className="mb-2 position-relative">
                     <label className="form-label">Password</label>
-                    <div class="position-relative">
+                    <div className="position-relative">
                       <input
                         className={`form-control ${
                         errors.rePassword ? "is-invalid" : ""
@@ -344,15 +344,15 @@ const Register = () => {
                         onChange={handleChange}
                       />
                       <label
-                        class="password-toggle-btn"
+                        className="password-toggle-btn"
                         aria-label="Show/hide password"
                       >
                         <input
-                          class="password-toggle-check"
+                          className="password-toggle-check"
                           type="checkbox"
                           onChange={() => setshowPassword(!showPassword)}
                         />
-                        <span class="password-toggle-indicator"></span>
+                        <span className="password-toggle-indicator"></span>
                       </label>
                     </div>
                     <p className="fs-xs ps-2 text-secondary">
@@ -366,7 +366,7 @@ const Register = () => {
 
                   <div className="mb-2">
                     <label className="form-label">Re-enter Password</label>
-                     <div class="position-relative">
+                     <div className="position-relative">
                       <input
                         className={`form-control ${
                         errors.rePassword ? "is-invalid" : ""
@@ -379,15 +379,15 @@ const Register = () => {
                         onChange={handleChange}
                       />
                       <label
-                        class="password-toggle-btn"
+                        className="password-toggle-btn"
                         aria-label="Show/hide password"
                       >
                         <input
-                          class="password-toggle-check"
+                          className="password-toggle-check"
                           type="checkbox"
                           onChange={() => setshowPassword2(!showPassword2)}
                         />
-                        <span class="password-toggle-indicator"></span>
+                        <span className="password-toggle-indicator"></span>
                       </label>
                     </div>
                     {errors.rePassword && (

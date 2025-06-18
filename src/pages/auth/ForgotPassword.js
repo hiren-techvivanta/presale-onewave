@@ -21,8 +21,13 @@ const ForgotPassword = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setloading(true);
     try {
-      setloading(true);
+      if (!email) {
+        setEmailErrMessage("Email is required");
+        return;
+      }
+
       const formData = {
         email,
       };
@@ -96,20 +101,22 @@ const ForgotPassword = () => {
               </div>
 
               {/* Sign In Button */}
-              <button
-                type="submit"
-                className="btn btn-primary text-ligh w-100 py-2 rounded-2 fw-medium"
-                disabled={loading}
-              >
-                {loading === true ? (
-                  <>Loading...</>
-                ) : (
-                  <>
-                    {" "}
-                    Continue <i className="fa-solid fa-arrow-right ms-2"></i>
-                  </>
-                )}
-              </button>
+              {loading === true ? (
+                <>
+                  <button className="btn btn-primary text-ligh w-100 py-2 rounded-2 fw-medium" disabled>
+                    Loading...
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    type="submit"
+                    className="btn btn-primary text-ligh w-100 py-2 rounded-2 fw-medium"
+                  >
+                    Continue
+                  </button>
+                </>
+              )}
 
               {/* Sign Up Link */}
               <div className="d-flex gap-3 justify-content-center py-2">
