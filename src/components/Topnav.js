@@ -42,8 +42,39 @@ const Topnav = () => {
     navigate("/");
   };
 
+  // const handleDisconnectWallet = () => {
+  //   disconnect();
+  //   window.location.reload();
+  // };
+
   const handleDisconnectWallet = () => {
     disconnect();
+
+    // Safari-specific storage clearing
+    const clearStorage = () => {
+      try {
+        // Clear wagmi-related storage keys
+        Object.keys(localStorage).forEach((key) => {
+          if (key.startsWith("wagmi.") || key.startsWith("wc@2")) {
+            localStorage.removeItem(key);
+          }
+        });
+
+        // Clear sessionStorage if used
+        Object.keys(sessionStorage).forEach((key) => {
+          if (key.startsWith("wagmi.")) {
+            sessionStorage.removeItem(key);
+          }
+        });
+      } catch (e) {
+        console.error("Storage clearing error:", e);
+      }
+    };
+
+    clearStorage();
+
+    // Force full page reload
+    window.location.href = "/";
     window.location.reload();
   };
 
@@ -88,9 +119,9 @@ const Topnav = () => {
               </li>
               <li className="nav-item px-2 d-md-none">
                 <p className="fw-bold my-2 me-3">
-                {address && <i className="fa-solid fa-wallet me-2"></i>}
-                {address && `${address.slice(0, 4)}***${address.slice(-4)}`}
-              </p>
+                  {address && <i className="fa-solid fa-wallet me-2"></i>}
+                  {address && `${address.slice(0, 4)}***${address.slice(-4)}`}
+                </p>
               </li>
             </ul>
             <div className="ms-md-auto d-flex mb-2 mx-2">

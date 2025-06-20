@@ -129,13 +129,14 @@ const Dashboard = () => {
       });
   }, []);
 
-const totalrefNow2 = nowRef?.reduce((sum, user) => {
-  const userTotal = user.userReferralTrx?.reduce((userSum, transaction) => {
-    return userSum + (Number(transaction?.credit) || 0);
-  }, 0) || 0;
-  
-  return sum + userTotal;
-}, 0);
+  const totalrefNow2 = nowRef?.reduce((sum, user) => {
+    const userTotal =
+      user.userReferralTrx?.reduce((userSum, transaction) => {
+        return userSum + (Number(transaction?.credit) || 0);
+      }, 0) || 0;
+
+    return sum + userTotal;
+  }, 0);
 
   useEffect(() => {
     axios
@@ -293,7 +294,6 @@ const totalrefNow2 = nowRef?.reduce((sum, user) => {
       return handleSubmit;
     };
 
-
     return (
       <Modal
         {...props}
@@ -443,7 +443,7 @@ const totalrefNow2 = nowRef?.reduce((sum, user) => {
       toast.error(error.response.data.message || "Internal server error");
     }
   };
-  
+
   return (
     <div className="dashboard-container">
       <Topnav />
@@ -716,41 +716,38 @@ const totalrefNow2 = nowRef?.reduce((sum, user) => {
         <div className="presale-referrals-card mt-3 mb-3">
           <h5>Transaction History</h5>
           <div className="overflow-auto">
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>Phase</th>
-                  <th>Wave</th>
-                  <th>Usdt</th>
-                  <th>Transaction Type</th>
-                </tr>
-              </thead>
-              <tbody>
-                {vestings?.map((v, i) => (
-                  <tr key={i}>
-                    <td>Phase {Number(v.phase) + 1}</td>
-                    <td>
-                      {(
-                        Number(v.amountPurchased) / 1000000000000000000
-                      ).toFixed(2)}
-                    </td>
-                    <td>
-                      {(Number(v.usdtAmount) / 1000000000000000000).toFixed(2)}
-                    </td>
-                    <td>Decentralized</td>
+            {!vestings?.length && !history?.length ? (
+              <h6 className="text-center">No Transaction History Found</h6>
+            ) : (
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Phase</th>
+                    <th>Wave</th>
+                    <th>Usdt</th>
+                    <th>Transaction Type</th>
                   </tr>
-                ))}
-                {history &&
-                  history?.map((v, i) => (
-                    <tr key={i}>
+                </thead>
+                <tbody>
+                  {vestings?.map((v, i) => (
+                    <tr key={`vesting-${i}`}>
+                      <td>Phase {Number(v.phase) + 1}</td>
+                      <td>{(Number(v.amountPurchased) / 1e18).toFixed(2)}</td>
+                      <td>{(Number(v.usdtAmount) / 1e18).toFixed(2)}</td>
+                      <td>Decentralized</td>
+                    </tr>
+                  ))}
+                  {history?.map((v, i) => (
+                    <tr key={`history-${i}`}>
                       <td>{v.phase}</td>
-                      <td>{v.tokenQuantity?.toFixed(2)}</td>
-                      <td>{v.amount?.toFixed(2)}</td>
+                      <td>{Number(v.tokenQuantity).toFixed(2)}</td>
+                      <td>{Number(v.amount).toFixed(2)}</td>
                       <td>Centralized</td>
                     </tr>
                   ))}
-              </tbody>
-            </table>
+                </tbody>
+              </table>
+            )}
           </div>
         </div>
       </div>

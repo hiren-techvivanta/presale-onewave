@@ -122,9 +122,11 @@ export default function WavePresale() {
       setloading(true);
 
       if (usdtInWallet <= amounts) {
-        toast.error("You do not have enough funds to continue the transaction.")
+        toast.error(
+          "You do not have enough funds to continue the transaction."
+        );
         setloading(false);
-        return
+        return;
       } else {
         const usdtAmount = parseEther(amounts);
         const approveTx = await writeContractAsync({
@@ -134,9 +136,12 @@ export default function WavePresale() {
           args: [process.env.REACT_APP_SMART_CONTRACT, usdtAmount],
         });
 
-        setshowBuyNow(true);
-        setloading(false);
-        await handlePurchase(usdtAmount);
+        try {
+          setshowBuyNow(true);
+          await handlePurchase(usdtAmount);
+        } catch (error) {
+          toast.error("Transaction Fail");
+        }
       }
     } catch (error) {
       setloading(false);
@@ -174,16 +179,12 @@ export default function WavePresale() {
         formData,
         { withCredentials: true }
       );
-      setloading(false);
 
       if (data.status === true) {
         toast.success("Transaction Successful");
-        // setTimeout(() => {
-        //   window.location.reload();
-        // }, 2000);
+        window.location.reload();
+        return
       }
-      setshowBuyNow(false);
-      setAmounts(0);
     } catch (error) {
       const formData = {
         phase: `Phase ${phases}`,
@@ -203,11 +204,15 @@ export default function WavePresale() {
         formData,
         { withCredentials: true }
       );
-      setloading(false);
 
       if (data.status === true) {
         toast.error("Transaction Failed");
+        setloading(false);
       }
+    } finally {
+      setloading(false);
+      setshowBuyNow(false);
+      setAmounts(0);
     }
   };
 
@@ -232,7 +237,7 @@ export default function WavePresale() {
 
       setTimeout(() => {
         window.location.reload();
-      }, 4000);
+      }, 1500);
     } catch (error) {
       toast.error("Claim failed");
     }
@@ -291,8 +296,6 @@ export default function WavePresale() {
   const totalVesting = vestings?.reduce((sum, v) => {
     return sum + Number(v.amountClaimed);
   }, 0);
-
-  // console.log(typeof vestings[0]?.phase , vestings[0]?.phase );
 
   return (
     <div className="wave-presale">
@@ -413,6 +416,7 @@ export default function WavePresale() {
                         maxLength="6"
                         className="form-control rounded-2"
                         placeholder="Enter Amount In USDT"
+                        value={amounts}
                         onChange={(e) => {
                           const value = e.target.value;
                           if (/^\d*$/.test(value)) {
@@ -459,25 +463,26 @@ export default function WavePresale() {
               </div>
 
               {/* <button className="buy-button">Buy With BNB</button> */}
-              {showBuyNow === true ? (
-                <button
-                  className="btn btn-primary py-3 fs-5"
-                  // onClick={handlePurchase}
-                  onClick={handlePurchase}
-                  disabled={loading}
-                >
-                  {loading ? <>Loading...</> : <>Buy Now</>}
-                </button>
-              ) : (
-                <button
-                  className="btn btn-primary py-3 fs-5"
-                  // onClick={handlePurchase}
-                  onClick={approveTransaction}
-                  disabled={loading}
-                >
-                  {loading ? <>Loading...</> : <>Buy Now</>}
-                </button>
-              )}
+
+              <button
+                className="btn btn-primary py-3 fs-5"
+                // onClick={handlePurchase}
+                onClick={approveTransaction}
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <span
+                      class="spinner-border spinner-border-sm me-2"
+                      role="status"
+                      aria-hidden="true"
+                    ></span>{" "}
+                    Loading...
+                  </>
+                ) : (
+                  <>Buy Now</>
+                )}
+              </button>
             </div>
 
             {/* Transactions Section */}
@@ -623,9 +628,11 @@ export default function WavePresale() {
           </div>
         ) : (
           <div className="card p-3">
-            <p className="m-0 text-center fw-semibold">
-              Plase Connect Wallet To Invest In Wave
-            </p>
+            <div className="alert alert-info mb-0 mx-auto w-100 w-md-50 d-flex align-items-center gap-2">
+              {/* <i class="fa-solid fa-circle-exclamation me-2 fs-2"></i> */}
+              <i class="ai-octagon-alert fs-xl me-2"></i>
+              <p className="m-0">Plase Connect Wallet To Invest In Wave</p>
+            </div>
           </div>
         )}
       </main>
