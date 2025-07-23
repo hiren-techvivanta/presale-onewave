@@ -4,6 +4,7 @@ import logo from "../../assets/images/logo.png";
 import { customList } from "country-codes-list";
 import axios from "axios";
 import { toast } from "react-toastify";
+import CountdownCard from "../../components/CountdownCard";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -176,11 +177,11 @@ const Register = () => {
           Sign In
         </button>
       </div>
-
+      <CountdownCard />
       <div className="register-page position-relative vh-100">
         <div className="position-absolute w-100 h-100 bg-dark bg-opacity-10"></div>
 
-        <div className="position-absolute translate-centrt w-100 mw-100 px-3">
+        <div className="position-absolute translate-centrt2 w-100 mw-100 px-3">
           <div
             className="login-box shadow-lg rounded-3 bg-white "
             style={{ maxWidth: "450px" }}
@@ -334,8 +335,8 @@ const Register = () => {
                     <div className="position-relative">
                       <input
                         className={`form-control ${
-                        errors.rePassword ? "is-invalid" : ""
-                      }`}
+                          errors.rePassword ? "is-invalid" : ""
+                        }`}
                         name="password"
                         type={showPassword === false ? "password" : "text"}
                         id="pass-visibility"
@@ -366,11 +367,11 @@ const Register = () => {
 
                   <div className="mb-2">
                     <label className="form-label">Re-enter Password</label>
-                     <div className="position-relative">
+                    <div className="position-relative">
                       <input
                         className={`form-control ${
-                        errors.rePassword ? "is-invalid" : ""
-                      }`}
+                          errors.rePassword ? "is-invalid" : ""
+                        }`}
                         name="rePassword"
                         type={showPassword2 === false ? "password" : "text"}
                         id="pass-visibility"

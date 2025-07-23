@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import mainbg from "../../assets/images/login-slider.png";
 import logo from "../../assets/images/logo.png";
 import axios from "axios";
+import CountdownCard from "../../components/CountdownCard";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -103,13 +104,13 @@ const Login = () => {
           Sign Up
         </button>
       </div>
-
+      <CountdownCard />
       {/* Background + Centered Form */}
       <div className="login-page position-relative vh-100 mh-100">
         {/* Background Image Overlay */}
         <div className="position-absolute w-100 h-100 bg-dark bg-opacity-10"></div>
-
         {/* Centered Login Box */}
+
         <div className="position-absolute translate-centrt w-100 mw-100 px-3">
           <div
             className="login-box shadow-lg rounded-3 bg-white "
@@ -145,8 +146,8 @@ const Login = () => {
 
               {/* Password Input */}
               <div className="mb-3 position-relative">
-               <label className="form-label fw-medium">Password</label> 
-               
+                <label className="form-label fw-medium">Password</label>
+
                 <div className="position-relative">
                   <input
                     className="form-control"
@@ -159,7 +160,11 @@ const Login = () => {
                     className="password-toggle-btn"
                     aria-label="Show/hide password"
                   >
-                    <input className="password-toggle-check" type="checkbox" onChange={() => setShowPassword(!showPassword)} />
+                    <input
+                      className="password-toggle-check"
+                      type="checkbox"
+                      onChange={() => setShowPassword(!showPassword)}
+                    />
                     <span className="password-toggle-indicator"></span>
                   </label>
                 </div>
