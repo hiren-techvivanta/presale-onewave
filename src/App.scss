@@ -138,6 +138,45 @@ body {
   }
 }
 
+.translate-centrt2 {
+  top: 53% !important;
+  left: 10% !important;
+  transform: translateY(-50%) !important;
+}
+
+@media (max-width: 992px) {
+  .register-page {
+    height: 100vh !important;
+  }
+  .translate-centrt2 {
+    top: 50% !important;
+    left: 25% !important;
+    transform: translateY(-50%) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .register-page {
+    height: 100vh !important;
+  }
+  .translate-centrt2 {
+    top: 57% !important;
+    left: 20% !important;
+    transform: translateY(-50%) !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .register-page {
+    height: 100vh !important;
+  }
+  .translate-centrt2 {
+    top: 58% !important;
+    left: 0% !important;
+    transform: translateY(-50%) !important;
+  }
+}
+
 .blur-bg-2 {
   // filter: blur(0.1rem);
   position: relative;
@@ -17907,4 +17946,56 @@ img-comparison-slider:focus {
 .point-dis {
   cursor: not-allowed !important;
   pointer-events: all !important;
+}
+
+.timer {
+  top: 15%;
+  left: 15%;
+}
+
+/* For small devices (phones <576px) */
+@media (max-width: 575.98px) {
+  .timer {
+    top: 5%;
+    left: 4%;
+  }
+}
+
+/* For medium devices (tablets ≥576px and <768px) */
+@media (min-width: 576px) and (max-width: 767.98px) {
+  .timer {
+    top: 8%;
+    left: 20%;
+  }
+}
+
+/* For large devices (desktops ≥768px and <992px) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .timer {
+    top: 12%;
+    left: 23%;
+  }
+}
+
+/* For extra-large devices (≥992px and <1200px) */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+  .timer {
+    top: 14%;
+    left: 25%;
+  }
+}
+
+/* For XXL screens (≥1200px) */
+@media (min-width: 1200px) {
+  .timer {
+    top: 15%;
+    left: 15%;
+  }
+}
+
+@media (min-width: 1899px) {
+  .timer {
+    top: 25%;
+    left: 15%;
+  }
 }
